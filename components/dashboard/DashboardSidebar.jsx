@@ -20,8 +20,8 @@ const NAV_LINKS = {
   creator: [
     { label: 'My Profile', href: '/dashboard/profile', icon: User },
     { label: 'My Prompts', href: '/dashboard/prompts', icon: PenTool },
-    { label: 'Create Prompt', href: '/dashboard/prompts/new', icon: PlusCircle },
-    { label: 'Earnings', href: '/dashboard/earnings', icon: DollarSign },
+    { label: 'Create Prompt', href: '/dashboard/add-prompt', icon: PlusCircle },
+    { label: 'Analytics', href: '/dashboard/creator', icon: BarChart2 },
   ],
   admin: [
     { label: 'Overview', href: '/dashboard', icon: BarChart2 },
