@@ -18,6 +18,11 @@ function PromptsTable() {
   const [pagination, setPagination] = useState({ currentPage: initialPage, totalPages: 1 });
   const [loading, setLoading] = useState(true);
 
+  // Rejection Modal State
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectPromptId, setRejectPromptId] = useState(null);
+  const [rejectReason, setRejectReason] = useState('');
+
   useEffect(() => {
     const page = parseInt(searchParams.get('page') || '1', 10);
     fetchPrompts(page);
@@ -76,6 +81,31 @@ function PromptsTable() {
       toast.success(`Prompt marked as ${status.toUpperCase()}`);
     } catch (err) {
       toast.error('Failed to update status');
+    }
+  };
+
+  const openRejectModal = (id) => {
+    setRejectPromptId(id);
+    setRejectReason('');
+    setRejectModalOpen(true);
+  };
+
+  const submitRejection = async () => {
+    if (!rejectReason.trim()) {
+      toast.error('Feedback reason is required');
+      return;
+    }
+    try {
+      setPrompts(prompts.map(p => p._id === rejectPromptId ? { ...p, status: 'rejected' } : p));
+      await fetch(`${API_URL}/admin/prompts/${rejectPromptId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'rejected', feedback: rejectReason })
+      });
+      toast.success('Prompt rejected with feedback');
+      setRejectModalOpen(false);
+    } catch (err) {
+      toast.error('Failed to reject prompt');
     }
   };
 
@@ -168,7 +198,7 @@ function PromptsTable() {
                       <button onClick={() => updateStatus(p._id, 'approved')} title="Approve Prompt" className="p-2 bg-background border border-foreground/10 rounded-lg text-foreground/60 hover:text-green-500 hover:border-green-500 transition-colors">
                         <Check size={16} />
                       </button>
-                      <button onClick={() => updateStatus(p._id, 'rejected')} title="Reject Prompt" className="p-2 bg-background border border-foreground/10 rounded-lg text-foreground/60 hover:text-orange-500 hover:border-orange-500 transition-colors">
+                      <button onClick={() => openRejectModal(p._id)} title="Reject Prompt" className="p-2 bg-background border border-foreground/10 rounded-lg text-foreground/60 hover:text-orange-500 hover:border-orange-500 transition-colors">
                         <X size={16} />
                       </button>
                       <button onClick={() => handleDelete(p._id)} title="Delete Prompt Permanently" className="p-2 bg-background border border-foreground/10 rounded-lg text-foreground/60 hover:text-red-500 hover:border-red-500 transition-colors">
@@ -212,6 +242,45 @@ function PromptsTable() {
           >
             Next
           </button>
+        </div>
+      )}
+
+      {/* Rejection Modal */}
+      {rejectModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+          <div className="bg-surface border border-foreground/10 p-6 rounded-3xl w-full max-w-md shadow-2xl relative">
+            <button 
+              onClick={() => setRejectModalOpen(false)}
+              className="absolute top-4 right-4 p-2 text-foreground/60 hover:text-foreground bg-background rounded-full transition-colors"
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-2xl font-black text-foreground mb-2">Reject Prompt</h2>
+            <p className="text-sm text-foreground/60 mb-6">Please provide feedback to the creator explaining why this prompt is being rejected.</p>
+            
+            <textarea
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              placeholder="e.g. Violates community guidelines, low quality, plagiarized..."
+              className="w-full bg-background border border-foreground/10 rounded-xl p-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent min-h-[120px] mb-6 resize-none"
+            ></textarea>
+            
+            <div className="flex justify-end gap-3">
+              <button 
+                onClick={() => setRejectModalOpen(false)}
+                className="px-4 py-2 text-sm font-bold text-foreground/70 hover:text-foreground hover:bg-foreground/5 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={submitRejection}
+                disabled={!rejectReason.trim()}
+                className="px-6 py-2 bg-red-500 text-white text-sm font-bold rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-red-500/20"
+              >
+                Submit Rejection
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>

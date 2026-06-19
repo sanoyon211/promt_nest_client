@@ -6,7 +6,7 @@ import {
   User, Bookmark, Copy, 
   PenTool, PlusCircle, DollarSign, 
   Users, Settings, BarChart2,
-  X, Sparkles, LogOut, Star
+  X, Sparkles, LogOut, Star, ShieldAlert
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -27,6 +27,7 @@ const NAV_LINKS = {
     { label: 'Overview', href: '/dashboard', icon: BarChart2 },
     { label: 'Prompt Moderation', href: '/dashboard/admin/prompts', icon: PenTool },
     { label: 'User Management', href: '/dashboard/admin/users', icon: Users },
+    { label: 'Reported Content', href: '/dashboard/admin/reported', icon: ShieldAlert },
     { label: 'System Settings', href: '/dashboard/settings', icon: Settings },
   ]
 };
