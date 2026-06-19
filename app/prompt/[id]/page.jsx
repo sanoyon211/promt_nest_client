@@ -1,4 +1,3 @@
-import PrivateRoute from '@/components/PrivateRoute';
 import PromptDetailsClient from '@/components/prompt-details/PromptDetailsClient';
 
 export default async function PromptDetailsPage({ params }) {
@@ -7,8 +6,6 @@ export default async function PromptDetailsPage({ params }) {
   const id = resolvedParams.id;
 
   return (
-    <PrivateRoute>
-      <PromptDetailsClient promptId={id} />
-    </PrivateRoute>
+    <PromptDetailsClient promptId={id} />
   );
 }

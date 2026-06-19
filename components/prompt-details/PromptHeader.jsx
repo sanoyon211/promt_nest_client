@@ -1,6 +1,29 @@
-import { Sparkles, Copy, Calendar, Tag } from 'lucide-react';
+import { Sparkles, Copy, Calendar, Tag, Bookmark } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
 
-export default function PromptHeader({ prompt }) {
+export default function PromptHeader({ prompt, promptId }) {
+  const [bookmarked, setBookmarked] = useState(false);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+  const handleBookmark = async () => {
+    try {
+      // Simulate optimistic UI update
+      setBookmarked(!bookmarked);
+      if (!bookmarked) {
+        toast.success('Prompt bookmarked successfully!');
+      } else {
+        toast.info('Prompt removed from bookmarks.');
+      }
+      
+      await fetch(`${API_URL}/prompts/${promptId}/bookmark`, { method: 'POST' });
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to update bookmark.');
+      setBookmarked(false); // revert on error
+    }
+  };
+
   const getBadgeStyle = (type, value) => {
     const val = value?.toLowerCase();
     if (type === 'tier') {
@@ -16,21 +39,33 @@ export default function PromptHeader({ prompt }) {
 
   return (
     <div className="mb-10 border-b border-foreground/10 pb-10">
-      <div className="flex flex-wrap gap-2 mb-4">
-        {prompt.tier && (
-          <span className={`px-3 py-1 text-xs font-bold rounded-full ${getBadgeStyle('tier', prompt.tier)} uppercase tracking-wider`}>
-            {prompt.tier}
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex flex-wrap gap-2">
+          {prompt.tier && (
+            <span className={`px-3 py-1 text-xs font-bold rounded-full ${getBadgeStyle('tier', prompt.tier)} uppercase tracking-wider`}>
+              {prompt.tier}
+            </span>
+          )}
+          {prompt.level && (
+            <span className={`px-3 py-1 text-xs font-bold rounded-full ${getBadgeStyle('level', prompt.level)} uppercase tracking-wider`}>
+              {prompt.level}
+            </span>
+          )}
+          <span className="flex items-center px-3 py-1 text-xs font-bold rounded-full bg-surface border border-foreground/10 text-foreground/80 uppercase tracking-wider">
+            <Tag size={12} className="mr-1" />
+            {prompt.category || 'General'}
           </span>
-        )}
-        {prompt.level && (
-          <span className={`px-3 py-1 text-xs font-bold rounded-full ${getBadgeStyle('level', prompt.level)} uppercase tracking-wider`}>
-            {prompt.level}
-          </span>
-        )}
-        <span className="flex items-center px-3 py-1 text-xs font-bold rounded-full bg-surface border border-foreground/10 text-foreground/80 uppercase tracking-wider">
-          <Tag size={12} className="mr-1" />
-          {prompt.category || 'General'}
-        </span>
+        </div>
+        
+        <button 
+          onClick={handleBookmark}
+          className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors ${
+            bookmarked ? 'bg-primary/10 text-primary' : 'bg-surface border border-foreground/10 text-foreground/50 hover:bg-foreground/5 hover:text-foreground'
+          }`}
+          title="Bookmark Prompt"
+        >
+          <Bookmark size={20} className={bookmarked ? 'fill-current' : ''} />
+        </button>
       </div>
 
       <h1 className="text-4xl md:text-5xl font-black text-foreground mb-4 leading-tight">

@@ -5,6 +5,7 @@ import PromptContentBlock from './PromptContentBlock';
 import PromptInstructions from './PromptInstructions';
 import CreatorProfileSnippet from './CreatorProfileSnippet';
 import PromptReviews from './PromptReviews';
+import { useAuth } from '@/components/AuthProvider';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -12,6 +13,7 @@ export default function PromptDetailsClient({ promptId }) {
   const [prompt, setPrompt] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchPromptDetails = async () => {
@@ -34,7 +36,7 @@ export default function PromptDetailsClient({ promptId }) {
           category: promptId === '2' ? 'Coding' : 'Marketing',
           aiTool: promptId === '2' ? 'Claude 3.5 Sonnet' : 'ChatGPT',
           level: promptId === '2' ? 'Pro' : 'Beginner',
-          tier: promptId === '2' ? 'Premium' : 'Private', // Hardcoding different tiers to test PromptVerse color engine
+          tier: promptId === '2' ? 'Private' : 'Private', // Hardcoding different tiers to test PromptVerse color engine
           copyCount: 1250,
           updatedAt: '2023-10-15',
           creator: {
@@ -72,13 +74,16 @@ export default function PromptDetailsClient({ promptId }) {
     );
   }
 
+  // Calculate Visibility Logic
+  const isLocked = prompt.tier === 'Private' && user?.subscription !== 'Premium';
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <PromptHeader prompt={prompt} />
-      <PromptContentBlock content={prompt.content} />
+      <PromptHeader prompt={prompt} promptId={prompt.id} />
+      <PromptContentBlock promptId={prompt.id} content={prompt.content} isLocked={isLocked} />
       <PromptInstructions instructions={prompt.instructions} />
       <CreatorProfileSnippet creator={prompt.creator} />
-      <PromptReviews reviews={prompt.reviews} />
+      <PromptReviews reviews={prompt.reviews} isLocked={isLocked} />
     </div>
   );
 }
