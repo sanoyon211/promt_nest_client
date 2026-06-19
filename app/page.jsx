@@ -4,6 +4,7 @@ import WhyChooseUs from '@/components/WhyChooseUs';
 import TopCreators from '@/components/TopCreators';
 import Reviews from '@/components/Reviews';
 import FAQ from '@/components/FAQ';
+import CallToAction from '@/components/CallToAction';
 
 export default function HomePage() {
   return (
@@ -14,6 +15,7 @@ export default function HomePage() {
       <TopCreators />
       <Reviews />
       <FAQ />
+      <CallToAction />
     </>
   );
 }

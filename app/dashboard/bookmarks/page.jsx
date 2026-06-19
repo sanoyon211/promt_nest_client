@@ -23,11 +23,7 @@ export default function BookmarksPage() {
           throw new Error('Failed to fetch');
         }
       } catch (err) {
-        // Mock data fallback
-        setBookmarks([
-          { _id: '101', prompt: { _id: '2', title: 'Python Code Architect', category: 'Coding', tier: 'Private', creator: { name: 'Alice Marketing' } }, savedAt: '2023-11-05T00:00:00.000Z' },
-          { _id: '102', prompt: { _id: '5', title: 'SaaS Landing Page Copy', category: 'Copywriting', tier: 'Public', creator: { name: 'Bob Writing' } }, savedAt: '2023-11-10T00:00:00.000Z' },
-        ]);
+        setBookmarks([]);
       } finally {
         setLoading(false);
       }

@@ -87,63 +87,15 @@ export default function AllPromptsClient() {
           throw new Error('API down');
         }
       } catch (error) {
-        // Fallback simulation for local dev without backend
-        simulateServerResponse();
+        // Fallback to empty state if backend is down or empty
+        setPrompts([]);
+        setTotalPages(1);
       } finally {
         setLoading(false);
       }
     };
     fetchPrompts();
   }, [searchParams]);
-
-  // Accurate Mock Logic to mirror backend execution
-  const simulateServerResponse = () => {
-    const allMockPrompts = [
-      { id: 1, title: 'SEO Optimized Blog Generator', description: 'Create a comprehensive, keyword-rich blog post outline and intro in seconds.', level: 'Beginner', category: 'Marketing', aiTool: 'ChatGPT', copyCount: 1250, rating: 4.8, createdAt: '2023-01-01', author: { name: 'Alice' } },
-      { id: 2, title: 'Python Code Architect', description: 'Describe your application and let this prompt build the perfect Python class structure.', level: 'Pro', category: 'Coding', aiTool: 'Claude 3.5 Sonnet', copyCount: 840, rating: 4.9, createdAt: '2023-02-01', author: { name: 'Bob' } },
-      { id: 3, title: 'Cinematic Portrait Prompt', description: 'Generates extremely detailed photorealistic portrait prompts with lighting cues.', level: 'Public', category: 'AI Art', aiTool: 'Midjourney v6', copyCount: 3200, rating: 4.7, createdAt: '2023-03-01', author: { name: 'Charlie' } },
-      { id: 4, title: 'Cold Email Outreach', description: 'Write a high-converting cold email tailored to B2B SaaS decision makers.', level: 'Beginner', category: 'Sales', aiTool: 'ChatGPT', copyCount: 410, rating: 4.5, createdAt: '2023-04-01', author: { name: 'Diana' } },
-      { id: 5, title: 'React Performance Audit', description: 'Paste your React component and get a detailed performance and render cycle audit.', level: 'Pro', category: 'Web Dev', aiTool: 'Claude 3.5 Sonnet', copyCount: 150, rating: 4.9, createdAt: '2023-05-01', author: { name: 'Evan' } },
-      { id: 6, title: 'Fantasy World Map Generation', description: 'Strict parameters for generating cohesive fantasy maps with natural geography.', level: 'Public', category: 'Worldbuilding', aiTool: 'Midjourney v6', copyCount: 980, rating: 4.6, createdAt: '2023-06-01', author: { name: 'Fiona' } },
-      { id: 7, title: 'Next.js App Router Boilerplate', description: 'Quickly scaffold a complex Next.js app.', level: 'Pro', category: 'Web Dev', aiTool: 'Claude 3.5 Sonnet', copyCount: 650, rating: 4.8, createdAt: '2023-07-01', author: { name: 'George' } },
-      { id: 8, title: 'B2B LinkedIn Post Series', description: 'Generate a month of thought leadership content.', level: 'Public', category: 'Marketing', aiTool: 'ChatGPT', copyCount: 2200, rating: 4.4, createdAt: '2023-08-01', author: { name: 'Hannah' } },
-      { id: 9, title: 'Landing Page Copywriter', description: 'High converting landing page copy framework.', level: 'Pro', category: 'Marketing', aiTool: 'Claude 3.5 Sonnet', copyCount: 1800, rating: 4.9, createdAt: '2023-09-01', author: { name: 'Ian' } },
-    ];
-
-    let filtered = [...allMockPrompts];
-    
-    if (debouncedSearch) {
-      const q = debouncedSearch.toLowerCase();
-      filtered = filtered.filter(p => 
-        p.title.toLowerCase().includes(q) || 
-        p.category.toLowerCase().includes(q) ||
-        p.aiTool.toLowerCase().includes(q)
-      );
-    }
-    
-    if (category !== 'All') filtered = filtered.filter(p => p.category === category);
-    if (tool !== 'All') filtered = filtered.filter(p => p.aiTool === tool);
-    if (level !== 'All') filtered = filtered.filter(p => p.level === level);
-
-    if (sort === 'Most Popular') {
-      filtered.sort((a, b) => b.rating - a.rating);
-    } else if (sort === 'Most Copied') {
-      filtered.sort((a, b) => b.copyCount - a.copyCount);
-    } else {
-      filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    }
-
-    const limit = 6;
-    const totalCount = filtered.length;
-    const calcTotalPages = Math.max(1, Math.ceil(totalCount / limit));
-    
-    const safePage = Math.min(page, calcTotalPages);
-    const skip = (safePage - 1) * limit;
-    const paginated = filtered.slice(skip, skip + limit);
-
-    setTotalPages(calcTotalPages);
-    setPrompts(paginated);
-  };
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {

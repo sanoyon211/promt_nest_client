@@ -44,9 +44,13 @@ export default function CheckoutForm({ clientSecret }) {
       const simulatedPaymentIntent = { id: 'pi_simulated_123', amount: 500 };
 
       // Call Express Backend to upgrade user
-      const res = await fetch(`${API_URL}/payment/success`, {
+      const token = localStorage.getItem('access-token');
+      const res = await fetch(`${API_URL}/payments`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
         body: JSON.stringify({ 
           transactionId: simulatedPaymentIntent.id,
           amount: simulatedPaymentIntent.amount,

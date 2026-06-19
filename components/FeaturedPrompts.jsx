@@ -12,19 +12,24 @@ export default function FeaturedPrompts() {
   useEffect(() => {
     const fetchPrompts = async () => {
       try {
-        const res = await fetch(`${API_URL}/prompts/featured`);
+        // Fetching from the standard /prompts route since backend doesn't have /prompts/featured
+        const res = await fetch(`${API_URL}/prompts?limit=3`);
         if (res.ok) {
-          const data = await res.json();
-          setPrompts(data);
+          const json = await res.json();
+          const fetchedPrompts = json.data || json;
+          
+          if (fetchedPrompts && fetchedPrompts.length > 0) {
+            // Show real prompts from DB (up to 3)
+            setPrompts(fetchedPrompts.slice(0, 3));
+          } else {
+            // Show dummy prompts ONLY if the database is currently empty
+            throw new Error('No prompts yet');
+          }
         } else {
           throw new Error('API down');
         }
       } catch (error) {
-        setPrompts([
-          { id: 1, title: 'SEO Optimized Blog Generator', description: 'Create a comprehensive, keyword-rich blog post outline and intro in seconds.', tag: 'Marketing', isPro: false, author: { name: 'Alice' } },
-          { id: 2, title: 'Python Code Architect', description: 'Describe your application and let this prompt build the perfect Python class structure.', tag: 'Coding', isPro: true, author: { name: 'Bob' } },
-          { id: 3, title: 'Midjourney Cinematic Portrait', description: 'Generates extremely detailed photorealistic portrait prompts with lighting cues.', tag: 'AI Art', isPro: false, author: { name: 'Charlie' } },
-        ]);
+        setPrompts([]);
       } finally {
         setLoading(false);
       }

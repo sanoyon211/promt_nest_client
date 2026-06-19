@@ -13,6 +13,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 const NAV_LINKS = {
   user: [
     { label: 'My Profile', href: '/dashboard/profile', icon: User },
+    { label: 'My Prompts', href: '/dashboard/prompts', icon: PenTool },
+    { label: 'Create Prompt', href: '/dashboard/add-prompt', icon: PlusCircle },
     { label: 'Bookmarks', href: '/dashboard/bookmarks', icon: Bookmark },
     { label: 'Copied Prompts', href: '/dashboard/copied', icon: Copy },
     { label: 'My Reviews', href: '/dashboard/reviews', icon: Star },
@@ -37,8 +39,8 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   
-  // Default to user if no role is found
-  const role = user?.role || 'user';
+  // Default to user if no role is found, and ensure lowercase matching
+  const role = user?.role?.toLowerCase() || 'user';
   const links = NAV_LINKS[role] || NAV_LINKS.user;
 
   const SidebarContent = () => (

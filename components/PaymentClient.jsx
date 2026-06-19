@@ -18,9 +18,13 @@ export default function PaymentClient() {
     // Fetch the client secret from the backend Payment Intent
     const fetchIntent = async () => {
       try {
-        const res = await fetch(`${API_URL}/payment/create-intent`, {
+        const token = localStorage.getItem('access-token');
+        const res = await fetch(`${API_URL}/create-payment-intent`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+          },
           body: JSON.stringify({ plan: 'premium', amount: 500 }) // $5.00
         });
         

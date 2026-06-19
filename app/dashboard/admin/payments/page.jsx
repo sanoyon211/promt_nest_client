@@ -19,12 +19,7 @@ export default function AdminPaymentsPage() {
           throw new Error('Failed to fetch');
         }
       } catch (err) {
-        // Robust mock data
-        setPayments([
-          { _id: 'txn_1O2p3A', user: { email: 'alice@example.com' }, amount: 5.00, status: 'succeeded', createdAt: '2023-11-20T10:00:00.000Z' },
-          { _id: 'txn_2B3c4D', user: { email: 'bob@example.com' }, amount: 5.00, status: 'succeeded', createdAt: '2023-11-21T14:30:00.000Z' },
-          { _id: 'txn_3C4d5E', user: { email: 'charlie@example.com' }, amount: 5.00, status: 'failed', createdAt: '2023-11-22T09:15:00.000Z' },
-        ]);
+        setPayments([]);
       } finally {
         setLoading(false);
       }

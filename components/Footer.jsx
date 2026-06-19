@@ -16,8 +16,8 @@ export default function Footer() {
           <div>
             <h3 className="font-bold mb-4">Platform</h3>
             <ul className="space-y-2">
-              <li><Link href="/prompts" className="text-sm text-foreground/70 hover:text-primary transition-colors">Explore Prompts</Link></li>
-              <li><Link href="/creators" className="text-sm text-foreground/70 hover:text-primary transition-colors">Top Creators</Link></li>
+              <li><Link href="/all-prompts" className="text-sm text-foreground/70 hover:text-primary transition-colors">Explore Prompts</Link></li>
+              <li><Link href="/demo" className="text-sm text-foreground/70 hover:text-primary transition-colors">Demo Accounts</Link></li>
               <li><Link href="/pricing" className="text-sm text-foreground/70 hover:text-primary transition-colors">Pricing</Link></li>
             </ul>
           </div>

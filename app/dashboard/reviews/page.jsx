@@ -23,11 +23,7 @@ export default function MyReviewsPage() {
           throw new Error('Failed to fetch');
         }
       } catch (err) {
-        // Mock data fallback
-        setReviews([
-          { _id: 'r1', prompt: { _id: '2', title: 'Python Code Architect' }, rating: 5, text: 'Amazing structure, saves me hours every week!', createdAt: '2023-11-06T00:00:00.000Z' },
-          { _id: 'r2', prompt: { _id: '8', title: 'Next.js Boilerplate Gen' }, rating: 4, text: 'Very useful but sometimes requires manual tweaking for Tailwind v4.', createdAt: '2023-10-22T00:00:00.000Z' },
-        ]);
+        setReviews([]);
       } finally {
         setLoading(false);
       }

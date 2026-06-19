@@ -23,12 +23,7 @@ export default function MyPromptsPage() {
           throw new Error('Failed to fetch');
         }
       } catch (err) {
-        // Robust mock data for UI testing
-        setPrompts([
-          { _id: '1', title: 'SEO Blog Generator', category: 'SEO', status: 'Approved', copyCount: 1250, createdAt: '2023-10-12T00:00:00.000Z' },
-          { _id: '2', title: 'Python Code Architect', category: 'Coding', status: 'Pending', copyCount: 0, createdAt: '2023-11-01T00:00:00.000Z' },
-          { _id: '3', title: 'Viral Twitter Thread', category: 'Marketing', status: 'Rejected', copyCount: 0, createdAt: '2023-09-15T00:00:00.000Z' },
-        ]);
+        setPrompts([]);
       } finally {
         setLoading(false);
       }

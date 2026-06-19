@@ -22,13 +22,7 @@ export default function AdminUsersPage() {
           throw new Error('Failed to fetch');
         }
       } catch (err) {
-        // Robust mock data for UI testing
-        setUsers([
-          { _id: 'u1', name: 'Alice Cooper', email: 'alice@example.com', role: 'user', subscription: 'Premium', createdAt: '2023-01-15T00:00:00.000Z' },
-          { _id: 'u2', name: 'Bob Creator', email: 'bob@example.com', role: 'creator', subscription: 'Premium', createdAt: '2023-03-22T00:00:00.000Z' },
-          { _id: 'u3', name: 'Charlie Free', email: 'charlie@example.com', role: 'user', subscription: 'Free', createdAt: '2023-11-01T00:00:00.000Z' },
-          { _id: 'u4', name: 'Admin Adam', email: 'admin@example.com', role: 'admin', subscription: 'Premium', createdAt: '2022-12-05T00:00:00.000Z' },
-        ]);
+        setUsers([]);
       } finally {
         setLoading(false);
       }

@@ -40,27 +40,10 @@ function PromptsTable() {
         throw new Error('Failed to fetch');
       }
     } catch (err) {
-      // Realistic Mock Data for Pagination testing
-      const mockDB = Array.from({ length: 25 }).map((_, i) => ({
-        _id: `p${i + 1}`,
-        title: `Mock Moderation Prompt ${i + 1}`,
-        category: i % 2 === 0 ? 'Coding' : 'Marketing',
-        status: i % 3 === 0 ? 'pending' : (i % 3 === 1 ? 'approved' : 'rejected'),
-        featured: i % 5 === 0,
-        creator: { name: `Creator ${i % 4 + 1}` },
-        createdAt: new Date().toISOString()
-      }));
-      
-      const limit = 10;
-      const startIndex = (page - 1) * limit;
-      const paginatedItems = mockDB.slice(startIndex, startIndex + limit);
-      
-      // Artificial delay to show loading state transitioning
-      setTimeout(() => {
-        setPrompts(paginatedItems);
-        setPagination({ currentPage: page, totalPages: Math.ceil(mockDB.length / limit) });
-        setLoading(false);
-      }, 500);
+      setPrompts([]);
+      setPagination({ currentPage: 1, totalPages: 1 });
+    } finally {
+      setLoading(false);
     }
   };
 
