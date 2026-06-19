@@ -25,7 +25,7 @@ const NAV_LINKS = {
   ],
   admin: [
     { label: 'Overview', href: '/dashboard', icon: BarChart2 },
-    { label: 'User Management', href: '/dashboard/users', icon: Users },
+    { label: 'User Management', href: '/dashboard/admin/users', icon: Users },
     { label: 'System Settings', href: '/dashboard/settings', icon: Settings },
   ]
 };
