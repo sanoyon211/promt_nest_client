@@ -1,139 +1,72 @@
 'use client';
-
-import { createContext, useContext, useState, useEffect } from 'react';
-import { setSessionCookie, getSessionCookie, clearSessionCookie } from '@/app/actions/auth';
+import { createContext, useContext } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession, signIn, signUp, signOut } from '@/lib/auth-client';
+import { toast } from 'react-toastify';
 
 const AuthContext = createContext(null);
 
-// Placeholder for your existing Express + MongoDB API URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // Better Auth's native useSession hook securely handles HttpOnly cookies and session states
+  const { data: session, isPending: isLoading } = useSession();
+  const router = useRouter();
 
-  // Initialize session on mount to prevent redirect on page refresh
-  useEffect(() => {
-    async function initAuth() {
-      try {
-        const token = await getSessionCookie();
-        if (token) {
-          // Verify token and fetch user data from Express backend
-          const res = await fetch(`${API_URL}/auth/me`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          
-          if (res.ok) {
-            const userData = await res.json();
-            setUser(userData);
-          } else {
-            await clearSessionCookie();
-            setUser(null);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to restore session from existing token:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    
-    initAuth();
-  }, []);
+  // Extract user from Better Auth session data
+  const user = session?.user || null;
 
-  // Hybrid Auth0 for Google Login integration
   const loginWithGoogle = async () => {
     try {
-      setIsLoading(true);
-      // NOTE: Depending on your Auth0 setup, you might redirect to an Express endpoint here
-      // Example: window.location.href = `${API_URL}/auth/google`;
-      
-      // FOR DEMO: Simulated successful Google Login return payload from your Express backend Auth0 route
-      const simulatedToken = "auth0_google_jwt_simulation"; 
-      const simulatedUser = {
-        name: "Google User",
-        email: "google@example.com",
-        photoURL: "https://example.com/avatar.jpg",
-        role: "User", // CRITICAL: Ensure social login default role is 'User'
-        provider: "Auth0"
-      };
-
-      // Sync with existing Express + MongoDB backend
-      const res = await fetch(`${API_URL}/auth/sync-social`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: simulatedToken, user: simulatedUser })
+      await signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard"
       });
-
-      if (!res.ok) throw new Error("Failed to sync social login with backend");
-      
-      const { jwt, user: backendUser } = await res.json();
-      
-      // Store JWT securely as HttpOnly cookie
-      await setSessionCookie(jwt || simulatedToken);
-      setUser(backendUser || simulatedUser);
-    } catch (error) {
-      console.error("Google Login Error", error);
-    } finally {
-      setIsLoading(false);
+    } catch (err) {
+      console.error("Google Login Error", err);
+      toast.error('Google login failed.');
     }
   };
 
-  // Hybrid Better Auth for Email/Password (Registration)
-  const registerWithEmail = async (name, email, password, photoURL) => {
+  const registerWithEmail = async (name, email, photoURL, password) => {
     try {
-      setIsLoading(true);
-      const res = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, photoURL })
+      const { data, error } = await signUp.email({
+        name,
+        email,
+        password,
+        image: photoURL // Better Auth standard field is 'image' for avatars
       });
-      
-      if (!res.ok) throw new Error("Registration failed");
-      
-      const { jwt, user: newUser } = await res.json();
-      await setSessionCookie(jwt);
-      setUser(newUser);
-    } catch (error) {
-      console.error("Registration Error", error);
-      throw error;
-    } finally {
-      setIsLoading(false);
+      if (error) throw error;
+      toast.success('Registration successful!');
+      router.push('/dashboard');
+    } catch (err) {
+      console.error("Registration Error", err);
+      toast.error(err.message || 'Registration failed. Please try again.');
+      throw err;
     }
   };
 
-  // Hybrid Better Auth for Email/Password (Login)
   const loginWithEmail = async (email, password) => {
     try {
-      setIsLoading(true);
-      const res = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+      const { data, error } = await signIn.email({
+        email,
+        password
       });
-      
-      if (!res.ok) throw new Error("Login failed");
-      
-      const { jwt, user: loggedInUser } = await res.json();
-      await setSessionCookie(jwt);
-      setUser(loggedInUser);
-    } catch (error) {
-      console.error("Login Error", error);
-      throw error;
-    } finally {
-      setIsLoading(false);
+      if (error) throw error;
+      toast.success('Welcome back!');
+      router.push('/dashboard');
+    } catch (err) {
+      console.error("Login Error", err);
+      toast.error(err.message || 'Invalid credentials.');
+      throw err;
     }
   };
 
   const logout = async () => {
-    setIsLoading(true);
-    await clearSessionCookie();
-    setUser(null);
-    setIsLoading(false);
-    // Optionally trigger Express backend logout endpoint:
-    // await fetch(`${API_URL}/auth/logout`, { method: "POST" });
+    try {
+      await signOut();
+      router.push('/login');
+    } catch (err) {
+      console.error("Logout error", err);
+    }
   };
 
   return (
