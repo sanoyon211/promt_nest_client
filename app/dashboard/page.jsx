@@ -1,27 +1,22 @@
-import PrivateRoute from '@/components/PrivateRoute';
-
-export default function DashboardPage() {
+export default function DashboardHome() {
   return (
-    <PrivateRoute>
-      <div className="w-full flex flex-col items-start bg-surface p-8 rounded-2xl shadow-sm border border-foreground/5 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-        <p className="text-foreground/70 mb-8">Welcome to your secure area. This page is protected.</p>
-        
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 bg-background rounded-xl border border-foreground/10 flex flex-col items-center justify-center min-h-[150px]">
-            <span className="text-sm font-medium opacity-60">Total Prompts</span>
-            <span className="text-4xl font-bold mt-2 text-primary">0</span>
-          </div>
-          <div className="p-6 bg-background rounded-xl border border-foreground/10 flex flex-col items-center justify-center min-h-[150px]">
-            <span className="text-sm font-medium opacity-60">Active Subscriptions</span>
-            <span className="text-4xl font-bold mt-2 text-accent">0</span>
-          </div>
-          <div className="p-6 bg-background rounded-xl border border-foreground/10 flex flex-col items-center justify-center min-h-[150px]">
-            <span className="text-sm font-medium opacity-60">API Calls</span>
-            <span className="text-4xl font-bold mt-2 text-foreground">0</span>
-          </div>
+    <div className="max-w-7xl mx-auto w-full">
+      <h1 className="text-3xl font-bold text-foreground mb-6">Dashboard Overview</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-surface p-6 rounded-3xl border border-foreground/10 shadow-sm transition-transform hover:-translate-y-1">
+          <h3 className="text-foreground/60 font-bold mb-2 tracking-wide uppercase text-xs">Total Prompts</h3>
+          <p className="text-4xl font-black text-foreground">12</p>
+        </div>
+        <div className="bg-surface p-6 rounded-3xl border border-foreground/10 shadow-sm transition-transform hover:-translate-y-1">
+          <h3 className="text-foreground/60 font-bold mb-2 tracking-wide uppercase text-xs">Total Bookmarks</h3>
+          <p className="text-4xl font-black text-foreground">5</p>
+        </div>
+        <div className="bg-surface p-6 rounded-3xl border border-foreground/10 shadow-sm transition-transform hover:-translate-y-1 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-accent/10 rounded-full blur-2xl -z-10"></div>
+          <h3 className="text-foreground/60 font-bold mb-2 tracking-wide uppercase text-xs">Account Status</h3>
+          <p className="text-4xl font-black text-accent">Active</p>
         </div>
       </div>
-    </PrivateRoute>
+    </div>
   );
 }
