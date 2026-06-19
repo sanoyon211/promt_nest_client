@@ -37,8 +37,12 @@ export default function DashboardHeader({ setIsSidebarOpen }) {
             <p className="text-sm font-bold text-foreground leading-none">{user?.name || 'User'}</p>
             <p className="text-xs text-foreground/50 mt-1 uppercase tracking-wider">{user?.role || 'user'}</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold border border-accent/20">
-            {user?.name?.charAt(0).toUpperCase() || 'U'}
+          <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold border border-accent/20 overflow-hidden">
+            {(user?.photo || user?.photoURL) ? (
+              <img src={user.photo || user.photoURL} alt={user?.name || 'User'} className="w-full h-full object-cover" />
+            ) : (
+              user?.name?.charAt(0).toUpperCase() || 'U'
+            )}
           </div>
         </div>
       </div>

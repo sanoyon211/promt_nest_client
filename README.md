@@ -1,12 +1,12 @@
-# PromptVerse Client 🚀
+# AI Prompt Sharing & Marketplace Platform 🚀
 
-PromptVerse is a modern, premium web application designed for AI enthusiasts, creators, and developers to discover, share, and monetize high-quality AI prompts. 
+AI Prompt Sharing & Marketplace Platform is a modern, premium web application designed for AI enthusiasts, creators, and developers to discover, share, and monetize high-quality AI prompts. 
 
 ## 🌐 Live URL
-[https://promptverse.example.com](https://promptverse.example.com) *(Placeholder for production deployment)*
+[https://promt-nest-client.vercel.app](https://promt-nest-client.vercel.app) *(Placeholder for production deployment)*
 
 ## 🎯 Purpose
-With the rapid growth of AI tools like ChatGPT, Midjourney, and Gemini, crafting the perfect prompt has become a highly sought-after skill. PromptVerse serves as a centralized hub where users can:
+With the rapid growth of AI tools like ChatGPT, Midjourney, and Gemini, crafting the perfect prompt has become a highly sought-after skill. This platform serves as a centralized hub where users can:
 - **Discover** top-tier prompts across various categories (Coding, Marketing, Design, etc.).
 - **Create & Monetize** by offering Premium Prompts to paying subscribers.
 - **Save & Copy** prompts to their personal dashboards for immediate use.

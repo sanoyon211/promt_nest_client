@@ -129,8 +129,22 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const updateUserProfile = async (name, photoURL) => {
+    try {
+      if (!auth.currentUser) return;
+      await updateProfile(auth.currentUser, {
+        displayName: name,
+        photoURL: photoURL
+      });
+      setUser(prev => ({ ...prev, name, photoURL, photo: photoURL, displayName: name }));
+    } catch (err) {
+      console.error("Update profile error", err);
+      throw err;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, registerWithEmail, loginWithEmail, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, registerWithEmail, loginWithEmail, logout, updateUserProfile }}>
       {children}
     </AuthContext.Provider>
   );

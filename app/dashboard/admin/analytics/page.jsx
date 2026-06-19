@@ -7,27 +7,21 @@ import { useAuth } from '@/components/AuthProvider';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-const mockGrowthData = [
-  { name: 'Jan', users: 120, prompts: 40 },
-  { name: 'Feb', users: 350, prompts: 120 },
-  { name: 'Mar', users: 800, prompts: 350 },
-  { name: 'Apr', users: 1500, prompts: 800 },
-  { name: 'May', users: 2800, prompts: 1400 },
-  { name: 'Jun', users: 4500, prompts: 2200 },
-];
-
 export default function AdminAnalyticsPage() {
   const { theme, systemTheme } = useTheme();
   const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
-  const [stats, setStats] = useState({ totalUsers: 0, totalPrompts: 0, totalReviews: 0, totalCopies: 0 });
+  const [stats, setStats] = useState({ totalUsers: 0, totalPrompts: 0, totalReviews: 0, totalCopies: 0, chartData: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
     const fetchAnalytics = async () => {
       try {
-        const res = await fetch(`${API_URL}/admin/analytics`);
+        const token = localStorage.getItem('access-token');
+        const res = await fetch(`${API_URL}/admin/analytics`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         if (res.ok) {
           const data = await res.json();
           setStats(data);
@@ -35,13 +29,7 @@ export default function AdminAnalyticsPage() {
           throw new Error('Failed to fetch');
         }
       } catch (err) {
-        // Robust mock data for UI testing
-        setStats({
-          totalUsers: 4521,
-          totalPrompts: 2240,
-          totalReviews: 890,
-          totalCopies: 14500
-        });
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -123,7 +111,7 @@ export default function AdminAnalyticsPage() {
         <h2 className="text-xl font-bold text-foreground mb-6">Platform Growth (6 Mo)</h2>
         <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={mockGrowthData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart data={stats.chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.3}/>

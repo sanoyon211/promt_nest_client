@@ -13,14 +13,14 @@ export default function FeaturedPrompts() {
     const fetchPrompts = async () => {
       try {
         // Fetching from the standard /prompts route since backend doesn't have /prompts/featured
-        const res = await fetch(`${API_URL}/prompts?limit=3`);
+        const res = await fetch(`${API_URL}/prompts?limit=6`);
         if (res.ok) {
           const json = await res.json();
           const fetchedPrompts = json.data || json;
           
           if (fetchedPrompts && fetchedPrompts.length > 0) {
-            // Show real prompts from DB (up to 3)
-            setPrompts(fetchedPrompts.slice(0, 3));
+            // Show real prompts from DB (up to 6)
+            setPrompts(fetchedPrompts.slice(0, 6));
           } else {
             // Show dummy prompts ONLY if the database is currently empty
             throw new Error('No prompts yet');
