@@ -1,8 +1,8 @@
-import { Sparkles, Copy, Calendar, Tag, Bookmark } from 'lucide-react';
+import { Sparkles, Copy, Calendar, Tag, Bookmark, Flag } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
-export default function PromptHeader({ prompt, promptId }) {
+export default function PromptHeader({ prompt, promptId, onReportClick }) {
   const [bookmarked, setBookmarked] = useState(false);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -57,15 +57,25 @@ export default function PromptHeader({ prompt, promptId }) {
           </span>
         </div>
         
-        <button 
-          onClick={handleBookmark}
-          className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors ${
-            bookmarked ? 'bg-primary/10 text-primary' : 'bg-surface border border-foreground/10 text-foreground/50 hover:bg-foreground/5 hover:text-foreground'
-          }`}
-          title="Bookmark Prompt"
-        >
-          <Bookmark size={20} className={bookmarked ? 'fill-current' : ''} />
-        </button>
+        <div className="flex items-center">
+          <button 
+            onClick={handleBookmark}
+            className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors ${
+              bookmarked ? 'bg-primary/10 text-primary' : 'bg-surface border border-foreground/10 text-foreground/50 hover:bg-foreground/5 hover:text-foreground'
+            }`}
+            title="Bookmark Prompt"
+          >
+            <Bookmark size={20} className={bookmarked ? 'fill-current' : ''} />
+          </button>
+          
+          <button 
+            onClick={onReportClick}
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-surface border border-foreground/10 text-foreground/50 hover:bg-red-500/10 hover:text-red-500 transition-colors ml-2"
+            title="Report Prompt"
+          >
+            <Flag size={18} />
+          </button>
+        </div>
       </div>
 
       <h1 className="text-4xl md:text-5xl font-black text-foreground mb-4 leading-tight">

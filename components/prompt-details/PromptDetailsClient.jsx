@@ -5,6 +5,7 @@ import PromptContentBlock from './PromptContentBlock';
 import PromptInstructions from './PromptInstructions';
 import CreatorProfileSnippet from './CreatorProfileSnippet';
 import PromptReviews from './PromptReviews';
+import ReportModal from './ReportModal';
 import { useAuth } from '@/components/AuthProvider';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -13,6 +14,7 @@ export default function PromptDetailsClient({ promptId }) {
   const [prompt, setPrompt] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -46,8 +48,8 @@ export default function PromptDetailsClient({ promptId }) {
             isVerified: true
           },
           reviews: [
-            { user: { name: 'David B.' }, rating: 5, text: 'This saved me hours of writing. Ranked on page 1 within a week!', date: '2023-11-01' },
-            { user: { name: 'Sarah L.' }, rating: 4, text: 'Great structure, just needed a little human editing at the end.', date: '2023-11-05' }
+            { user: { name: 'David B.', email: 'david@example.com' }, rating: 5, text: 'This saved me hours of writing. Ranked on page 1 within a week!', date: '2023-11-01' },
+            { user: { name: 'Sarah L.', email: 'sarah.l@example.com' }, rating: 4, text: 'Great structure, just needed a little human editing at the end.', date: '2023-11-05' }
           ]
         });
       } finally {
@@ -79,11 +81,17 @@ export default function PromptDetailsClient({ promptId }) {
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <PromptHeader prompt={prompt} promptId={prompt.id} />
+      <PromptHeader prompt={prompt} promptId={prompt.id} onReportClick={() => setIsReportModalOpen(true)} />
       <PromptContentBlock promptId={prompt.id} content={prompt.content} isLocked={isLocked} />
       <PromptInstructions instructions={prompt.instructions} />
       <CreatorProfileSnippet creator={prompt.creator} />
-      <PromptReviews reviews={prompt.reviews} isLocked={isLocked} />
+      <PromptReviews reviews={prompt.reviews} isLocked={isLocked} promptId={prompt.id} />
+      
+      <ReportModal 
+        isOpen={isReportModalOpen} 
+        onClose={() => setIsReportModalOpen(false)} 
+        promptId={prompt.id} 
+      />
     </div>
   );
 }
