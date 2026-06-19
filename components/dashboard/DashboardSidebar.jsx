@@ -6,7 +6,7 @@ import {
   User, Bookmark, Copy, 
   PenTool, PlusCircle, DollarSign, 
   Users, Settings, BarChart2,
-  X, Sparkles, LogOut
+  X, Sparkles, LogOut, Star
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,6 +15,7 @@ const NAV_LINKS = {
     { label: 'My Profile', href: '/dashboard/profile', icon: User },
     { label: 'Bookmarks', href: '/dashboard/bookmarks', icon: Bookmark },
     { label: 'Copied Prompts', href: '/dashboard/copied', icon: Copy },
+    { label: 'My Reviews', href: '/dashboard/reviews', icon: Star },
   ],
   creator: [
     { label: 'My Profile', href: '/dashboard/profile', icon: User },
