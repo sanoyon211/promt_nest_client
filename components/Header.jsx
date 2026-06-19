@@ -1,0 +1,102 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { useAuth } from '@/components/AuthProvider';
+
+export default function Header() {
+  const { user, isLoading, logout } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMenu = () => setMobileMenuOpen(!mobileMenuOpen);
+
+  return (
+    <header className="w-full border-b border-foreground/10 bg-background/80 backdrop-blur-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <Link href="/" className="font-bold text-2xl tracking-tight text-foreground">
+          PromtNest
+        </Link>
+        
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-8">
+          <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">Home</Link>
+          <Link href="/prompts" className="text-sm font-medium hover:text-primary transition-colors">All Prompts</Link>
+          
+          {isLoading ? (
+            <div className="w-20 h-6 bg-foreground/10 animate-pulse rounded"></div>
+          ) : user ? (
+            <>
+              <Link href="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">Dashboard</Link>
+              <button 
+                onClick={logout}
+                className="text-sm font-medium hover:text-primary transition-colors"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <div className="flex items-center space-x-4">
+              <Link href="/login" className="text-sm font-medium hover:text-primary transition-colors">
+                Login
+              </Link>
+              <Link 
+                href="/register" 
+                className="text-sm font-medium bg-accent text-white px-5 py-2 rounded-full hover:scale-105 transition-transform shadow-lg shadow-accent/20"
+              >
+                Register
+              </Link>
+            </div>
+          )}
+        </nav>
+        
+        {/* Mobile menu button */}
+        <button className="md:hidden opacity-80 hover:opacity-100" onClick={toggleMenu}>
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            {mobileMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
+      </div>
+
+      {/* Mobile Navigation */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-surface border-b border-foreground/10 absolute w-full shadow-lg">
+          <div className="px-4 pt-2 pb-6 space-y-4 flex flex-col">
+            <Link href="/" onClick={toggleMenu} className="text-base font-medium hover:text-primary">Home</Link>
+            <Link href="/prompts" onClick={toggleMenu} className="text-base font-medium hover:text-primary">All Prompts</Link>
+            
+            {isLoading ? (
+              <div className="w-20 h-6 bg-foreground/10 animate-pulse rounded"></div>
+            ) : user ? (
+              <>
+                <Link href="/dashboard" onClick={toggleMenu} className="text-base font-medium hover:text-primary">Dashboard</Link>
+                <button 
+                  onClick={() => { logout(); toggleMenu(); }}
+                  className="text-base font-medium text-left hover:text-primary"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <div className="flex flex-col space-y-4 pt-2 border-t border-foreground/10">
+                <Link href="/login" onClick={toggleMenu} className="text-base font-medium hover:text-primary">
+                  Login
+                </Link>
+                <Link 
+                  href="/register" 
+                  onClick={toggleMenu}
+                  className="text-center text-base font-medium bg-accent text-white px-4 py-2 rounded-full hover:opacity-90 shadow-lg shadow-accent/20"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}
