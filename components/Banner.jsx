@@ -116,7 +116,7 @@ export default function Banner() {
             Start Creating for Free
           </Link>
           <Link 
-            href="/prompts" 
+            href="/all-prompts" 
             className="w-full sm:w-auto px-8 py-4 bg-surface text-foreground font-bold text-lg rounded-full border-2 border-foreground/10 hover:border-foreground/30 hover:bg-foreground/5 transition-all text-center"
           >
             Explore Library

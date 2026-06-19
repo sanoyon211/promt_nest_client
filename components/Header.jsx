@@ -41,7 +41,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">Home</Link>
-            <Link href="/prompts" className="text-sm font-medium hover:text-primary transition-colors">All Prompts</Link>
+            <Link href="/all-prompts" className="text-sm font-medium hover:text-primary transition-colors">All Prompts</Link>
             
             {isLoading ? (
               <div className="w-20 h-6 bg-foreground/10 animate-pulse rounded"></div>
@@ -84,7 +84,7 @@ export default function Header() {
         <div className="md:hidden bg-surface border-b border-foreground/10 absolute w-full shadow-lg">
           <div className="px-4 pt-2 pb-6 space-y-4 flex flex-col">
             <Link href="/" onClick={toggleMenu} className="text-base font-medium hover:text-primary">Home</Link>
-            <Link href="/prompts" onClick={toggleMenu} className="text-base font-medium hover:text-primary">All Prompts</Link>
+            <Link href="/all-prompts" onClick={toggleMenu} className="text-base font-medium hover:text-primary">All Prompts</Link>
             
             {isLoading ? (
               <div className="w-20 h-6 bg-foreground/10 animate-pulse rounded"></div>
