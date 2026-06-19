@@ -25,6 +25,7 @@ const NAV_LINKS = {
   ],
   admin: [
     { label: 'Overview', href: '/dashboard', icon: BarChart2 },
+    { label: 'Prompt Moderation', href: '/dashboard/admin/prompts', icon: PenTool },
     { label: 'User Management', href: '/dashboard/admin/users', icon: Users },
     { label: 'System Settings', href: '/dashboard/settings', icon: Settings },
   ]
