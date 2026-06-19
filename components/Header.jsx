@@ -1,14 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
+import { useTheme } from 'next-themes';
+import { Sun, Moon, Menu, X } from 'lucide-react';
 
 export default function Header() {
   const { user, isLoading, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme, setTheme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const toggleMenu = () => setMobileMenuOpen(!mobileMenuOpen);
+
+  const renderThemeToggle = () => {
+    if (!mounted) return <div className="w-9 h-9 ml-4" />;
+    const currentTheme = theme === 'system' ? systemTheme : theme;
+    return (
+      <button
+        onClick={() => setTheme(currentTheme === 'dark' ? 'light' : 'dark')}
+        className="p-2 rounded-full bg-foreground/5 hover:bg-foreground/10 transition-colors text-foreground/70 hover:text-foreground ml-2 md:ml-4"
+        aria-label="Toggle Dark Mode"
+      >
+        {currentTheme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+      </button>
+    );
+  };
 
   return (
     <header className="w-full border-b border-foreground/10 bg-background/80 backdrop-blur-md sticky top-0 z-50">
@@ -17,48 +37,46 @@ export default function Header() {
           PromtNest
         </Link>
         
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">Home</Link>
-          <Link href="/prompts" className="text-sm font-medium hover:text-primary transition-colors">All Prompts</Link>
-          
-          {isLoading ? (
-            <div className="w-20 h-6 bg-foreground/10 animate-pulse rounded"></div>
-          ) : user ? (
-            <>
-              <Link href="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">Dashboard</Link>
-              <button 
-                onClick={logout}
-                className="text-sm font-medium hover:text-primary transition-colors"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <div className="flex items-center space-x-4">
-              <Link href="/login" className="text-sm font-medium hover:text-primary transition-colors">
-                Login
-              </Link>
-              <Link 
-                href="/register" 
-                className="text-sm font-medium bg-accent text-white px-5 py-2 rounded-full hover:scale-105 transition-transform shadow-lg shadow-accent/20"
-              >
-                Register
-              </Link>
-            </div>
-          )}
-        </nav>
-        
-        {/* Mobile menu button */}
-        <button className="md:hidden opacity-80 hover:opacity-100" onClick={toggleMenu}>
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            {mobileMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <div className="flex items-center">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">Home</Link>
+            <Link href="/prompts" className="text-sm font-medium hover:text-primary transition-colors">All Prompts</Link>
+            
+            {isLoading ? (
+              <div className="w-20 h-6 bg-foreground/10 animate-pulse rounded"></div>
+            ) : user ? (
+              <>
+                <Link href="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">Dashboard</Link>
+                <button 
+                  onClick={logout}
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
+                  Logout
+                </button>
+              </>
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <div className="flex items-center space-x-4">
+                <Link href="/login" className="text-sm font-medium hover:text-primary transition-colors">
+                  Login
+                </Link>
+                <Link 
+                  href="/register" 
+                  className="text-sm font-medium bg-accent text-white px-5 py-2 rounded-full hover:scale-105 transition-transform shadow-lg shadow-accent/20"
+                >
+                  Register
+                </Link>
+              </div>
             )}
-          </svg>
-        </button>
+          </nav>
+          
+          {renderThemeToggle()}
+
+          {/* Mobile menu button */}
+          <button className="md:hidden ml-4 opacity-80 hover:opacity-100 p-2" onClick={toggleMenu}>
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}

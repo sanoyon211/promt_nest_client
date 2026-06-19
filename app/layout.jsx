@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,8 +25,10 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <AuthProvider>
 
         <Header />
@@ -36,6 +39,7 @@ export default function RootLayout({ children }) {
 
         <Footer />
         </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
