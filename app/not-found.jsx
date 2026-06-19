@@ -1,18 +1,28 @@
 import Link from 'next/link';
+import { SearchX, Home } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center flex-1 text-center px-4 min-h-[60vh] animate-in fade-in zoom-in duration-500">
-      <h1 className="text-9xl font-black tracking-tighter opacity-10">404</h1>
-      <h2 className="text-3xl font-bold mt-4 mb-2">Page Not Found</h2>
-      <p className="text-foreground/70 max-w-md mb-8">
-        We couldn't find the page you were looking for. It might have been moved, deleted, or perhaps never existed.
+    <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+      <div className="text-[12rem] font-black text-foreground/5 leading-none absolute select-none pointer-events-none">
+        404
+      </div>
+      
+      <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8 relative z-10">
+        <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
+        <SearchX size={48} className="text-primary relative z-10" />
+      </div>
+      
+      <h1 className="text-4xl md:text-5xl font-black text-foreground mb-4 relative z-10">Page Not Found</h1>
+      <p className="text-lg text-foreground/60 max-w-lg mb-8 relative z-10">
+        Oops! The page or prompt you are looking for doesn't exist, has been removed, or is temporarily unavailable.
       </p>
+      
       <Link 
-        href="/" 
-        className="px-8 py-3 bg-foreground text-background font-medium rounded-full hover:scale-105 transition-transform active:scale-95 shadow-lg"
+        href="/"
+        className="px-8 py-4 bg-primary text-background font-bold rounded-xl hover:scale-105 transition-transform flex items-center justify-center shadow-xl shadow-primary/20 relative z-10"
       >
-        Return to Home
+        <Home size={20} className="mr-2" /> Back to Homepage
       </Link>
     </div>
   );
