@@ -19,6 +19,11 @@ export default function PromptCard({ prompt }) {
 
   return (
     <div className="bg-surface rounded-2xl p-6 border border-foreground/10 hover:border-primary/50 transition-colors shadow-sm flex flex-col h-full group">
+      {prompt.thumbnailImage && (
+        <div className="w-full h-40 mb-4 rounded-xl overflow-hidden flex-shrink-0 relative border border-foreground/10">
+          <img src={prompt.thumbnailImage} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </div>
+      )}
       <div className="flex justify-between items-start mb-4">
         <span className={`px-3 py-1 text-xs font-bold rounded-full ${badgeClass}`}>
           {prompt.level || prompt.tag || 'Public'}

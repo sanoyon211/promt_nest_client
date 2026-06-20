@@ -14,7 +14,7 @@ export default function LayoutWrapper({ children }) {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
       <Header />
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
+      <main className="flex-1 w-full flex flex-col">
         {children}
       </main>
       <Footer />

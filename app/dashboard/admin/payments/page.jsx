@@ -11,7 +11,10 @@ export default function AdminPaymentsPage() {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const res = await fetch(`${API_URL}/admin/payments`);
+        const token = localStorage.getItem('access-token');
+        const res = await fetch(`${API_URL}/admin/payments`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (res.ok) {
           const data = await res.json();
           setPayments(data);

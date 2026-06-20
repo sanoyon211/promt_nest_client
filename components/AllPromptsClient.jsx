@@ -174,7 +174,7 @@ export default function AllPromptsClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 min-h-[400px]">
             {prompts.map((prompt, idx) => (
               <motion.div
-                key={prompt.id}
+                key={prompt._id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: idx * 0.05 }}

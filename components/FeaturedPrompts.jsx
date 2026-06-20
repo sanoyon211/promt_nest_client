@@ -60,7 +60,7 @@ export default function FeaturedPrompts() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8">
           {prompts.map((prompt, idx) => (
             <motion.div
-              key={prompt.id}
+              key={prompt._id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}

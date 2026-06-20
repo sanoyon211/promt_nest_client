@@ -28,14 +28,24 @@ function PromptsTable() {
     fetchPrompts(page);
   }, [searchParams]);
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('access-token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
+
   const fetchPrompts = async (page) => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/admin/prompts?page=${page}&limit=10`);
+      const res = await fetch(`${API_URL}/admin/prompts?page=${page}&limit=10`, {
+        headers: getAuthHeaders()
+      });
       if (res.ok) {
         const data = await res.json();
-        setPrompts(data.prompts);
-        setPagination({ currentPage: data.currentPage, totalPages: data.totalPages });
+        setPrompts(data.data || []);
+        setPagination({ currentPage: data.page || 1, totalPages: data.totalPages || 1 });
       } else {
         throw new Error('Failed to fetch');
       }
@@ -57,8 +67,8 @@ function PromptsTable() {
     try {
       setPrompts(prompts.map(p => p._id === id ? { ...p, status } : p));
       await fetch(`${API_URL}/admin/prompts/${id}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'PATCH',
+        headers: getAuthHeaders(),
         body: JSON.stringify({ status })
       });
       toast.success(`Prompt marked as ${status.toUpperCase()}`);
@@ -81,8 +91,8 @@ function PromptsTable() {
     try {
       setPrompts(prompts.map(p => p._id === rejectPromptId ? { ...p, status: 'rejected' } : p));
       await fetch(`${API_URL}/admin/prompts/${rejectPromptId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'PATCH',
+        headers: getAuthHeaders(),
         body: JSON.stringify({ status: 'rejected', feedback: rejectReason })
       });
       toast.success('Prompt rejected with feedback');
@@ -97,8 +107,8 @@ function PromptsTable() {
     try {
       setPrompts(prompts.map(p => p._id === id ? { ...p, featured: newFeatured } : p));
       await fetch(`${API_URL}/admin/prompts/${id}/feature`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        headers: getAuthHeaders(),
         body: JSON.stringify({ featured: newFeatured })
       });
       toast.success(newFeatured ? 'Prompt featured!' : 'Prompt unfeatured');
@@ -111,7 +121,10 @@ function PromptsTable() {
     if (!confirm('CRITICAL WARNING: Are you sure you want to permanently delete this prompt?')) return;
     try {
       setPrompts(prompts.filter(p => p._id !== id));
-      await fetch(`${API_URL}/admin/prompts/${id}`, { method: 'DELETE' });
+      await fetch(`${API_URL}/admin/prompts/${id}`, { 
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
       toast.success('Prompt deleted permanently');
     } catch (err) {
       toast.error('Failed to delete prompt');

@@ -14,7 +14,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (user) {
-      setEditData({ name: user.name || '', photo: user.photo || '' });
+      setEditData({ name: user.name || '', photo: user.photo || user.photoURL || '' });
     }
   }, [user]);
   
@@ -73,9 +73,9 @@ export default function ProfilePage() {
           <div className="flex-shrink-0 relative group">
             {isEditing && editData.photo ? (
                <img src={editData.photo} alt="Profile" className="w-32 h-32 rounded-full object-cover border-4 border-background shadow-lg" />
-            ) : user.photo ? (
+            ) : (user.photo || user.photoURL) ? (
               <img 
-                src={user.photo} 
+                src={user.photo || user.photoURL} 
                 alt="Profile" 
                 className="w-32 h-32 rounded-full object-cover border-4 border-background shadow-lg" 
               />

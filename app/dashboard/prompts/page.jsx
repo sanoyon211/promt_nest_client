@@ -15,7 +15,12 @@ export default function MyPromptsPage() {
   useEffect(() => {
     const fetchPrompts = async () => {
       try {
-        const res = await fetch(`${API_URL}/prompts/my-prompts`);
+        const token = localStorage.getItem('access-token');
+        const res = await fetch(`${API_URL}/prompts/my-prompts`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         if (res.ok) {
           const data = await res.json();
           setPrompts(data);
@@ -34,7 +39,11 @@ export default function MyPromptsPage() {
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this prompt?')) return;
     try {
-      await fetch(`${API_URL}/prompts/${id}`, { method: 'DELETE' });
+      const token = localStorage.getItem('access-token');
+      await fetch(`${API_URL}/prompts/${id}`, { 
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       setPrompts(prompts.filter(p => p._id !== id));
       toast.success('Prompt deleted successfully');
     } catch (err) {

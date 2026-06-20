@@ -49,32 +49,54 @@ export default function AdminReportedPage() {
     fetchReports();
   }, []);
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('access-token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
+
   const handleDismiss = async (reportId) => {
     try {
       setReports(reports.filter(r => r._id !== reportId));
-      await fetch(`${API_URL}/admin/reports/${reportId}/dismiss`, { method: 'PUT' });
+      await fetch(`${API_URL}/admin/reports/${reportId}/manage`, { 
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ action: 'dismiss' })
+      });
       toast.info('Report dismissed');
     } catch (err) {
       toast.error('Failed to dismiss report');
     }
   };
 
-  const handleWarn = async (userId) => {
+  const handleWarn = async (reportId) => {
     if (!confirm('Are you sure you want to issue an official warning to this creator?')) return;
     try {
-      await fetch(`${API_URL}/admin/users/${userId}/warn`, { method: 'POST' });
+      await fetch(`${API_URL}/admin/reports/${reportId}/manage`, { 
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ action: 'warn' })
+      });
+      // Removing from list since report is resolved
+      setReports(reports.filter(r => r._id !== reportId));
       toast.success('Warning sent to creator');
     } catch (err) {
       toast.error('Failed to warn creator');
     }
   };
 
-  const handleRemovePrompt = async (promptId, reportId) => {
+  const handleRemovePrompt = async (reportId, promptId) => {
     if (!confirm('CRITICAL WARNING: Are you sure you want to permanently delete this reported prompt?')) return;
     try {
       // Optimistically remove all reports related to this prompt
-      setReports(reports.filter(r => r.prompt._id !== promptId));
-      await fetch(`${API_URL}/admin/prompts/${promptId}`, { method: 'DELETE' });
+      setReports(reports.filter(r => r.prompt?._id !== promptId));
+      await fetch(`${API_URL}/admin/reports/${reportId}/manage`, { 
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ action: 'remove' })
+      });
       toast.success('Prompt removed successfully');
     } catch (err) {
       toast.error('Failed to remove prompt');
@@ -128,10 +150,10 @@ export default function AdminReportedPage() {
                       <button onClick={() => handleDismiss(report._id)} title="Dismiss Report" className="px-3 py-1.5 bg-background border border-foreground/10 rounded-lg text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors font-bold text-xs">
                         Dismiss
                       </button>
-                      <button onClick={() => handleWarn(report.prompt?.creator?._id)} title="Warn Creator" className="px-3 py-1.5 bg-orange-500/10 text-orange-500 border border-orange-500/20 rounded-lg hover:bg-orange-500 hover:text-white transition-colors font-bold text-xs flex items-center">
+                      <button onClick={() => handleWarn(report._id)} title="Warn Creator" className="px-3 py-1.5 bg-orange-500/10 text-orange-500 border border-orange-500/20 rounded-lg hover:bg-orange-500 hover:text-white transition-colors font-bold text-xs flex items-center">
                         <AlertTriangle size={14} className="mr-1" /> Warn
                       </button>
-                      <button onClick={() => handleRemovePrompt(report.prompt?._id, report._id)} title="Delete Prompt" className="px-3 py-1.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg hover:bg-red-500 hover:text-white transition-colors font-bold text-xs flex items-center">
+                      <button onClick={() => handleRemovePrompt(report._id, report.prompt?._id)} title="Delete Prompt" className="px-3 py-1.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg hover:bg-red-500 hover:text-white transition-colors font-bold text-xs flex items-center">
                         <Trash2 size={14} className="mr-1" /> Remove
                       </button>
                     </div>

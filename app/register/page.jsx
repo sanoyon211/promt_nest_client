@@ -15,9 +15,8 @@ export default function Register() {
     setLoading(true);
     try {
       await registerWithEmail(formData.name, formData.email, formData.photoURL, formData.password);
-      toast.success('Registration successful!');
     } catch (err) {
-      toast.error('Registration failed. Please try again.');
+      // Error is handled and toasted in AuthProvider
     } finally {
       setLoading(false);
     }

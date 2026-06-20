@@ -73,20 +73,23 @@ export function AuthProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
-  const loginWithGoogle = async () => {
+  const loginWithGoogle = async (redirectPath = '/dashboard') => {
     try {
       setIsLoading(true);
       await signInWithPopup(auth, googleProvider);
       toast.success('Logged in with Google!');
-      router.push('/dashboard');
+      router.push(redirectPath);
     } catch (err) {
-      console.error("Google Login Error", err);
-      toast.error(err.message || 'Google login failed.');
+      if (err.code !== 'auth/popup-closed-by-user') {
+        console.error("Google Login Error", err);
+        toast.error(err.message || 'Google login failed.');
+      }
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const registerWithEmail = async (name, email, photoURL, password) => {
+  const registerWithEmail = async (name, email, photoURL, password, redirectPath = '/dashboard') => {
     try {
       setIsLoading(true);
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -94,25 +97,45 @@ export function AuthProvider({ children }) {
         displayName: name,
         photoURL: photoURL
       });
+      
+      await fetch(`${API_URL}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          photoURL: photoURL,
+          role: 'User',
+          subscription: 'Free'
+        })
+      });
+
+      setUser(prev => {
+        if (!prev) return prev;
+        return { ...prev, name, photoURL, displayName: name };
+      });
+
       toast.success('Registration successful!');
-      router.push('/dashboard');
+      router.push(redirectPath);
     } catch (err) {
       console.error("Registration Error", err);
       toast.error(err.message || 'Registration failed.');
       setIsLoading(false);
+      throw err;
     }
   };
 
-  const loginWithEmail = async (email, password) => {
+  const loginWithEmail = async (email, password, redirectPath = '/dashboard') => {
     try {
       setIsLoading(true);
       await signInWithEmailAndPassword(auth, email, password);
       toast.success('Welcome back!');
-      router.push('/dashboard');
+      router.push(redirectPath);
     } catch (err) {
       console.error("Login Error", err);
       toast.error('Invalid email or password.');
       setIsLoading(false);
+      throw err;
     }
   };
 

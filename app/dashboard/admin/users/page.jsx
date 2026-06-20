@@ -47,7 +47,7 @@ export default function AdminUsersPage() {
         },
         body: JSON.stringify({ role: newRole })
       });
-      // if (!res.ok) throw new Error('Failed to update role');
+      if (!res.ok) throw new Error('Failed to update role');
       toast.success(`User role updated to ${newRole.toUpperCase()}`);
     } catch (err) {
       toast.error('Failed to update role');

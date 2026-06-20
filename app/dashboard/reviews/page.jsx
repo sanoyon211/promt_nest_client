@@ -15,7 +15,12 @@ export default function MyReviewsPage() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch(`${API_URL}/user/reviews`);
+        const token = localStorage.getItem('access-token');
+        const res = await fetch(`${API_URL}/user/reviews`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         if (res.ok) {
           const data = await res.json();
           setReviews(data);
@@ -34,7 +39,11 @@ export default function MyReviewsPage() {
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this review?')) return;
     try {
-      await fetch(`${API_URL}/reviews/${id}`, { method: 'DELETE' });
+      const token = localStorage.getItem('access-token');
+      await fetch(`${API_URL}/reviews/${id}`, { 
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       setReviews(reviews.filter(r => r._id !== id));
       toast.success('Review deleted successfully');
     } catch (err) {

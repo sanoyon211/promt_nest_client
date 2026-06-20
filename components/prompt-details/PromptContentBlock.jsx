@@ -16,7 +16,13 @@ export default function PromptContentBlock({ promptId, content, isLocked }) {
     toast.success('Prompt copied to clipboard!');
     
     try {
-      await fetch(`${API_URL}/prompts/${promptId}/copy`, { method: 'POST' });
+      const token = localStorage.getItem('access-token');
+      await fetch(`${API_URL}/prompts/${promptId}/copy`, { 
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
     } catch (err) {
       console.error(err);
     }

@@ -4,9 +4,10 @@ import { useAuth } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
-import { Lock, Zap, Send, FileText } from 'lucide-react';
+import { Lock, Zap, Send, FileText, Upload, X } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY || 'dummy_imgbb_key';
 
 export default function AddPromptPage() {
   const { user } = useAuth();
@@ -22,6 +23,8 @@ export default function AddPromptPage() {
     difficulty: 'Beginner',
     visibility: 'Public'
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Still loading auth state
@@ -67,6 +70,23 @@ export default function AddPromptPage() {
     );
   }
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size must be less than 5MB");
+        return;
+      }
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview('');
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -76,24 +96,47 @@ export default function AddPromptPage() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Format payload with specific requested defaults
-    const payload = {
-      ...formData,
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
-      tier: formData.visibility, // Map UI terminology to Backend terminology
-      status: 'pending',
-      copyCount: 0
-    };
-
+    let uploadedImageUrl = '';
+    
     try {
+      if (imageFile) {
+        const formDataUpload = new FormData();
+        formDataUpload.append('image', imageFile);
+        
+        const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+          method: 'POST',
+          body: formDataUpload
+        });
+        
+        const imgbbData = await imgbbResponse.json();
+        if (imgbbData.success) {
+          uploadedImageUrl = imgbbData.data.display_url;
+        } else {
+          throw new Error('Image upload failed via ImgBB');
+        }
+      }
+
+      // Format payload with specific requested defaults
+      const payload = {
+        ...formData,
+        tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+        tier: formData.visibility, // Map UI terminology to Backend terminology
+        status: 'pending',
+        copyCount: 0,
+        thumbnailImage: uploadedImageUrl
+      };
+
+      const token = localStorage.getItem('access-token');
       const res = await fetch(`${API_URL}/prompts`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify(payload)
       });
       
-      // Even if backend fails, mock success for UI routing flow demonstration
-      // if (!res.ok) throw new Error('Failed to create prompt');
+      if (!res.ok) throw new Error('Failed to create prompt');
       
       toast.success('Prompt submitted successfully! Pending approval.');
       setTimeout(() => {
@@ -236,6 +279,35 @@ export default function AddPromptPage() {
             placeholder="e.g. javascript, react, frontend"
             className="w-full bg-background border border-foreground/10 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary text-foreground transition-colors shadow-inner"
           />
+        </div>
+
+        {/* Thumbnail Image Upload */}
+        <div>
+          <label className="block text-sm font-bold text-foreground mb-2">Thumbnail Image (Optional)</label>
+          {!imagePreview ? (
+            <div className="w-full bg-background border-2 border-dashed border-foreground/20 rounded-xl p-6 flex flex-col items-center justify-center hover:border-primary/50 transition-colors cursor-pointer relative">
+              <input 
+                type="file" 
+                accept="image/*"
+                onChange={handleImageChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              <Upload size={24} className="text-foreground/40 mb-2" />
+              <p className="text-sm text-foreground/60">Click or drag image to upload</p>
+              <p className="text-xs text-foreground/40 mt-1">Max size: 5MB</p>
+            </div>
+          ) : (
+            <div className="relative inline-block">
+              <img src={imagePreview} alt="Preview" className="h-48 rounded-xl object-cover border border-foreground/10 shadow-sm" />
+              <button 
+                type="button"
+                onClick={removeImage}
+                className="absolute -top-3 -right-3 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 shadow-lg transition-transform hover:scale-110"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Submit */}

@@ -25,6 +25,7 @@ export default function CreatorAnalyticsPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState({ totalPrompts: 0, totalCopies: 0, totalBookmarks: 0, chartData: [] });
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);

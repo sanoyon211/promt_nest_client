@@ -86,6 +86,12 @@ export default function PromptHeader({ prompt, promptId, onReportClick }) {
         {prompt.description}
       </p>
 
+      {prompt.thumbnailImage && (
+        <div className="w-full h-64 sm:h-96 mb-8 rounded-3xl overflow-hidden relative shadow-lg border border-foreground/10">
+          <img src={prompt.thumbnailImage} alt={prompt.title} className="w-full h-full object-cover" />
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-foreground/60">
         <div className="flex items-center bg-primary/5 text-primary px-4 py-2 rounded-xl border border-primary/10">
           <Sparkles size={16} className="mr-2" />

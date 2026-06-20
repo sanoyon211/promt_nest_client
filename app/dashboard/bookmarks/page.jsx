@@ -15,7 +15,10 @@ export default function BookmarksPage() {
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
-        const res = await fetch(`${API_URL}/user/bookmarks`);
+        const token = localStorage.getItem('access-token');
+        const res = await fetch(`${API_URL}/user/bookmarks`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (res.ok) {
           const data = await res.json();
           setBookmarks(data);
@@ -33,8 +36,12 @@ export default function BookmarksPage() {
 
   const handleRemove = async (bookmarkId, promptId) => {
     try {
+      const token = localStorage.getItem('access-token');
       setBookmarks(bookmarks.filter(b => b._id !== bookmarkId));
-      await fetch(`${API_URL}/prompts/${promptId}/bookmark`, { method: 'POST' });
+      await fetch(`${API_URL}/prompts/${promptId}/bookmark`, { 
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       toast.info('Bookmark removed successfully');
     } catch (err) {
       toast.error('Failed to remove bookmark');
