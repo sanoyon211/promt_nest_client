@@ -2,7 +2,7 @@ import PrivateRoute from '@/components/PrivateRoute';
 import PaymentClient from '@/components/PaymentClient';
 
 export const metadata = {
-  title: 'Upgrade to Premium | PromtNest',
+  title: 'Upgrade to Premium | PromptNest',
   description: 'Unlock lifetime access to all premium private prompts.',
 };
 

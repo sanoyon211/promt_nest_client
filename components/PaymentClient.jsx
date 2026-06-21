@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from './CheckoutForm';
-import { ShieldCheck, Zap, Unlock, Copy } from 'lucide-react';
+import { ShieldCheck, Zap, Unlock, Copy, Lock, CheckCircle2, Star } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // For local testing, we use the standard Stripe Test Key. 
 // Replace with your real environment variable: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -46,88 +47,161 @@ export default function PaymentClient() {
     fetchIntent();
   }, []);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.2 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }
+  };
+
   if (loading) {
     return (
-      <div className="w-full min-h-[60vh] flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="w-full min-h-[70vh] flex flex-col justify-center items-center">
+        <div className="relative w-16 h-16 flex items-center justify-center">
+          <div className="absolute inset-0 border-t-2 border-primary rounded-full animate-spin"></div>
+          <Lock size={24} className="text-primary animate-pulse" />
+        </div>
+        <p className="mt-4 text-text-secondary font-bold text-[14px] uppercase tracking-widest animate-pulse">Securing Checkout...</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-16">
-      <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-black text-foreground mb-4">Unlock Premium Access</h1>
-        <p className="text-lg text-foreground/60 max-w-2xl mx-auto leading-relaxed">
-          Get lifetime access to our exclusive vault of master prompts and take your AI game to the absolute next level.
+    <div className="w-full max-w-6xl mx-auto px-4 py-16 lg:py-24 relative">
+      
+      {/* Background ambient light */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-tr from-primary/5 to-accent/5 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-16"
+      >
+        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-surface border border-border text-text-secondary text-[11px] font-black uppercase tracking-widest mb-6 shadow-sm">
+          <Star size={14} className="mr-2 text-accent fill-accent" />
+          Pro Creator Tier
+        </div>
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-text-primary mb-6 tracking-tight">
+          Unlock <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent pb-2">Premium Access</span>
+        </h1>
+        <p className="text-lg text-text-secondary max-w-2xl mx-auto font-medium leading-relaxed">
+          Get lifetime access to our exclusive vault of master prompts and take your AI generation game to the absolute next level.
         </p>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20 items-start"
+      >
         {/* Left Side: Benefits Presentation */}
-        <div className="bg-surface rounded-3xl p-8 lg:p-10 border border-foreground/10 shadow-sm relative overflow-hidden">
-          {/* Subtle glow effect behind benefits */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10"></div>
-
-          <div className="flex items-center mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mr-4 shadow-inner">
-              <ShieldCheck size={28} />
+        <motion.div variants={itemVariants} className="flex flex-col justify-center">
+          <div className="flex items-center mb-10">
+            <div className="w-16 h-16 rounded-[20px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
+              <ShieldCheck size={32} strokeWidth={2} />
             </div>
-            <h2 className="text-3xl font-bold text-foreground">Plan Benefits</h2>
+            <div>
+              <h2 className="text-3xl font-black text-text-primary tracking-tight">Plan Benefits</h2>
+              <p className="text-text-secondary font-medium mt-1">Everything you need to prompt like a pro.</p>
+            </div>
           </div>
           
           <ul className="space-y-8">
-            <li className="flex items-start">
-              <div className="bg-accent/10 p-2 rounded-xl mr-4 flex-shrink-0">
-                <Unlock className="text-accent" size={24} />
+            <li className="flex items-start group">
+              <div className="w-12 h-12 rounded-xl bg-surface border border-border flex items-center justify-center mr-5 flex-shrink-0 group-hover:bg-accent/10 group-hover:border-accent/30 transition-all shadow-sm">
+                <Unlock className="text-text-secondary group-hover:text-accent transition-colors" size={22} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-foreground mb-1">Unlimited Private Prompts</h3>
-                <p className="text-sm text-foreground/60 leading-relaxed">Bypass the blur lock and view all highly-optimized, private prompts crafted exclusively by Top Creators.</p>
+                <h3 className="text-[17px] font-bold text-text-primary mb-1.5">Unlimited Private Prompts</h3>
+                <p className="text-[15px] text-text-secondary font-medium leading-relaxed">Bypass the blur lock and view all highly-optimized, private prompts crafted exclusively by Top Creators.</p>
               </div>
             </li>
-            <li className="flex items-start">
-              <div className="bg-accent/10 p-2 rounded-xl mr-4 flex-shrink-0">
-                <Copy className="text-accent" size={24} />
+            
+            <li className="flex items-start group">
+              <div className="w-12 h-12 rounded-xl bg-surface border border-border flex items-center justify-center mr-5 flex-shrink-0 group-hover:bg-primary/10 group-hover:border-primary/30 transition-all shadow-sm">
+                <Copy className="text-text-secondary group-hover:text-primary transition-colors" size={22} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-foreground mb-1">1-Click Copy Access</h3>
-                <p className="text-sm text-foreground/60 leading-relaxed">Instantly copy full prompt code blocks securely to your clipboard for rapid workflow integration.</p>
+                <h3 className="text-[17px] font-bold text-text-primary mb-1.5">1-Click Copy Access</h3>
+                <p className="text-[15px] text-text-secondary font-medium leading-relaxed">Instantly copy full prompt code blocks securely to your clipboard for rapid workflow integration.</p>
               </div>
             </li>
-            <li className="flex items-start">
-              <div className="bg-accent/10 p-2 rounded-xl mr-4 flex-shrink-0">
-                <Zap className="text-accent" size={24} />
+            
+            <li className="flex items-start group">
+              <div className="w-12 h-12 rounded-xl bg-surface border border-border flex items-center justify-center mr-5 flex-shrink-0 group-hover:bg-green-500/10 group-hover:border-green-500/30 transition-all shadow-sm">
+                <CheckCircle2 className="text-text-secondary group-hover:text-green-500 transition-colors" size={22} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-foreground mb-1">Community Engagement</h3>
-                <p className="text-sm text-foreground/60 leading-relaxed">Unlock the ability to rate, review, and bookmark premium prompts to curate your own dashboard.</p>
+                <h3 className="text-[17px] font-bold text-text-primary mb-1.5">Community Engagement</h3>
+                <p className="text-[15px] text-text-secondary font-medium leading-relaxed">Unlock the ability to rate, review, and bookmark premium workflows to curate your personal dashboard.</p>
               </div>
             </li>
           </ul>
-        </div>
+
+          <div className="mt-12 p-6 bg-surface border border-border rounded-2xl flex items-center">
+            <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center mr-4 border border-border shadow-sm flex-shrink-0">
+              <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" className="w-10 h-10 rounded-full" />
+            </div>
+            <div>
+              <p className="text-[14px] italic text-text-secondary font-medium leading-relaxed">"Upgrading to Premium was a no-brainer. The private SEO prompts saved me 10+ hours a week."</p>
+              <p className="text-[12px] font-black text-text-primary mt-2 uppercase tracking-widest">— Sarah Jenkins, Marketer</p>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Right Side: Stripe Checkout Form */}
-        <div className="bg-surface rounded-3xl p-8 lg:p-10 border border-primary/20 shadow-2xl relative overflow-hidden">
-          {/* Decorative pink blur blob */}
-          <div className="absolute -top-20 -right-20 w-48 h-48 bg-accent/20 rounded-full blur-3xl pointer-events-none"></div>
+        <motion.div variants={itemVariants} className="relative">
+          {/* Glowing border effect */}
+          <div className="absolute -inset-[1px] bg-gradient-to-b from-primary via-accent to-background rounded-[32px] opacity-30 blur-[2px]"></div>
           
-          <div className="relative z-10">
-            <h2 className="text-2xl font-bold text-foreground mb-1">Lifetime Premium</h2>
-            <div className="flex items-baseline mb-8 pb-8 border-b border-foreground/10">
-              <span className="text-6xl font-black text-foreground">$5</span>
-              <span className="text-foreground/50 ml-2 font-medium tracking-wide uppercase text-sm">/ one-time</span>
+          <div className="bg-surface rounded-[32px] p-8 lg:p-10 border border-border/50 shadow-2xl relative overflow-hidden z-10 flex flex-col h-full">
+            
+            {/* Top decorative badge */}
+            <div className="absolute top-0 right-0 bg-gradient-to-bl from-accent to-primary text-white text-[10px] font-black uppercase tracking-widest px-6 py-2 rounded-bl-2xl shadow-md">
+              Most Popular
+            </div>
+
+            <h2 className="text-2xl font-black text-text-primary mb-2 mt-2">Lifetime Access</h2>
+            <p className="text-text-secondary font-medium text-[14px] mb-6">Pay once, use forever. No hidden fees.</p>
+            
+            <div className="flex items-end mb-8 pb-8 border-b border-border">
+              <span className="text-6xl font-black text-text-primary leading-none">$5</span>
+              <span className="text-text-secondary ml-2 font-bold tracking-wider uppercase text-[12px] mb-1.5">/ One-time</span>
             </div>
 
             {/* We initialize Stripe Elements with the Client Secret */}
-            {clientSecret && (
-              <Elements stripe={stripePromise} options={{ clientSecret }}>
-                <CheckoutForm clientSecret={clientSecret} />
-              </Elements>
-            )}
+            <div className="flex-1">
+              {clientSecret && (
+                <Elements stripe={stripePromise} options={{ 
+                  clientSecret,
+                  appearance: {
+                    theme: 'night', // Change to 'stripe' or 'flat' based on exact light/dark mode needs, but 'night' looks premium on dark themes
+                    variables: {
+                      colorPrimary: '#4F46E5', // Matches your primary
+                      colorBackground: 'transparent',
+                      colorText: '#ffffff',
+                    }
+                  }
+                }}>
+                  <CheckoutForm clientSecret={clientSecret} />
+                </Elements>
+              )}
+            </div>
+
+            {/* Security Badge */}
+            <div className="mt-8 pt-6 border-t border-border flex items-center justify-center text-text-secondary/70">
+              <Lock size={14} className="mr-2" />
+              <span className="text-[12px] font-bold uppercase tracking-widest">Guaranteed Safe & Secure Checkout</span>
+            </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+
+      </motion.div>
     </div>
   );
 }

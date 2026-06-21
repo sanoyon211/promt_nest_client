@@ -16,16 +16,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// app/layout.jsx
 export const metadata = {
-  title: "PromtNest - AI Prompt Marketplace",
-  description: "Discover, share, and manage AI prompts for ChatGPT, Gemini, Claude, and more.",
+  title: {
+    default: "PromptNest - Premium AI Prompt Marketplace",
+    template: "%s | PromptNest",
+  },
+  description: "Discover, share, and manage highly-optimized AI workflows for ChatGPT, Claude, Midjourney, and more.",
+  keywords: ["AI Prompts", "Prompt Engineering", "ChatGPT Prompts", "Claude Prompts", "AI Marketplace"],
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-text-primary selection:bg-primary/20 selection:text-primary min-h-screen flex flex-col`}
       >
         <ThemeProvider
           attribute="class"
@@ -33,13 +38,27 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-        <AuthProvider>
-          <LayoutWrapper>
-            {children}
-          </LayoutWrapper>
-        </AuthProvider>
+          <AuthProvider>
+            <LayoutWrapper>
+              {children}
+            </LayoutWrapper>
+          </AuthProvider>
         </ThemeProvider>
-        <ToastContainer position="bottom-right" theme="colored" />
+        
+        {/* Premium Toast Configuration */}
+        <ToastContainer 
+          position="bottom-right" 
+          autoClose={4000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark" // Provides a sleek, universal SaaS look
+          toastClassName="!bg-[#1E1B2E] !text-[#F1F0F8] !rounded-2xl !border !border-white/10 !shadow-2xl font-sans"
+        />
       </body>
     </html>
   );
