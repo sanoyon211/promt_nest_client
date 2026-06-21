@@ -44,25 +44,30 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
   const links = NAV_LINKS[role] || NAV_LINKS.user;
 
   const SidebarContent = () => (
-    <div className="h-full flex flex-col bg-surface border-r border-foreground/10 w-64 pt-6 pb-4">
+    <div className="h-full flex flex-col bg-surface border-r border-border/60 w-64 pt-6 pb-6 relative z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-none">
+      
       {/* Brand */}
-      <div className="px-6 mb-8 flex justify-between items-center">
-        <Link href="/" className="flex items-center text-2xl font-black group">
-          <Sparkles className="w-6 h-6 mr-2 text-accent group-hover:scale-110 transition-transform" />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-            PromtNest
+      <div className="px-6 mb-8 flex justify-between items-center relative">
+        <Link href="/" className="flex items-center text-2xl font-black group relative z-10">
+          <div className="absolute -inset-2 bg-primary/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <Sparkles className="w-6 h-6 mr-2 text-accent group-hover:scale-110 transition-transform duration-300" />
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent tracking-tight pb-1">
+            PromptNest
           </span>
         </Link>
         {isOpen && (
-          <button onClick={() => setIsOpen(false)} className="md:hidden text-foreground/50 hover:text-foreground">
-            <X size={24} />
+          <button 
+            onClick={() => setIsOpen(false)} 
+            className="md:hidden w-8 h-8 flex items-center justify-center rounded-full text-text-secondary hover:bg-foreground/5 hover:text-text-primary transition-colors focus:outline-none"
+          >
+            <X size={20} strokeWidth={2.5} />
           </button>
         )}
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
-        <p className="px-2 text-xs font-bold text-foreground/40 uppercase tracking-wider mb-4 mt-4">
+      <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto hide-scrollbar">
+        <p className="px-3 text-[10px] font-black text-text-secondary/50 uppercase tracking-[0.2em] mb-4 mt-2">
           {role} Menu
         </p>
         
@@ -75,29 +80,53 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
               key={link.href} 
               href={link.href}
               onClick={() => setIsOpen && setIsOpen(false)}
-              className={`flex items-center px-4 py-3 rounded-xl font-bold transition-all ${
+              className={`flex items-center px-3 py-3 rounded-xl font-bold transition-all duration-300 group relative ${
                 isActive 
-                  ? 'bg-accent/10 text-accent' 
-                  : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'
+                  ? 'text-primary bg-gradient-to-r from-primary/10 to-transparent' 
+                  : 'text-text-secondary hover:bg-foreground/5 hover:text-text-primary'
               }`}
             >
-              <Icon size={20} className="mr-3" />
-              {link.label}
+              {/* Active Indicator Bar */}
+              {isActive && (
+                <motion.div 
+                  layoutId="activeSidebarIndicator"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"
+                />
+              )}
+              
+              <Icon 
+                size={20} 
+                className={`mr-3 transition-transform duration-300 ${isActive ? 'text-primary' : 'text-text-secondary/70 group-hover:text-primary group-hover:scale-110'}`} 
+              />
+              <span className={`transition-transform duration-300 ${!isActive && 'group-hover:translate-x-1'}`}>
+                {link.label}
+              </span>
             </Link>
           );
         })}
       </nav>
 
       {/* Footer / Logout */}
-      <div className="px-4 mt-auto border-t border-foreground/10 pt-4">
+      <div className="px-4 mt-auto border-t border-border/60 pt-4">
         <button 
           onClick={logout}
-          className="flex items-center w-full px-4 py-3 rounded-xl font-bold text-red-500 hover:bg-red-500/10 transition-all"
+          className="flex items-center w-full px-4 py-3.5 rounded-xl font-bold text-red-500 hover:bg-red-500/10 transition-all duration-300 group active:scale-95"
         >
-          <LogOut size={20} className="mr-3" />
+          <LogOut size={20} className="mr-3 text-red-500/70 group-hover:text-red-500 group-hover:-translate-x-1 transition-all duration-300" />
           Sign Out
         </button>
       </div>
+
+      {/* Internal Style for Scrollbar Hiding */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}} />
     </div>
   );
 
@@ -116,15 +145,16 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
               onClick={() => setIsOpen(false)}
-              className="md:hidden fixed inset-0 z-40 bg-background/80 backdrop-blur-sm"
+              className="md:hidden fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm"
             />
             <motion.div 
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
-              className="md:hidden fixed inset-y-0 left-0 z-50 w-64 shadow-2xl"
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="md:hidden fixed inset-y-0 left-0 z-[70] w-64 shadow-2xl"
             >
               <SidebarContent />
             </motion.div>

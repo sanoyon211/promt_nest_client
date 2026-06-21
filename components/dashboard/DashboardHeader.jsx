@@ -1,50 +1,71 @@
 'use client';
 import { Menu, Search, Bell } from 'lucide-react';
 import { useAuth } from '@/components/AuthProvider';
+import { motion } from 'framer-motion';
 
 export default function DashboardHeader({ setIsSidebarOpen }) {
   const { user } = useAuth();
 
   return (
-    <header className="h-20 bg-surface/80 backdrop-blur-md border-b border-foreground/10 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
-      <div className="flex items-center">
+    <header className="h-20 bg-surface/80 backdrop-blur-md border-b border-border flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
+      
+      {/* Left Area: Mobile Controls & Dashboard Search */}
+      <div className="flex items-center gap-2">
         <button 
           onClick={() => setIsSidebarOpen(true)}
-          className="md:hidden p-2 text-foreground/60 hover:text-foreground mr-2"
+          className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl text-text-secondary hover:bg-foreground/5 hover:text-text-primary transition-colors focus:outline-none"
         >
-          <Menu size={24} />
+          <Menu size={22} strokeWidth={2.5} />
         </button>
         
-        {/* Optional Dashboard Search */}
-        <div className="hidden sm:flex items-center bg-background border border-foreground/10 rounded-full px-4 py-2 ml-2">
-          <Search size={18} className="text-foreground/40 mr-2" />
+        {/* Sleek Command Center Search */}
+        <div className="hidden sm:flex items-center bg-background border border-border rounded-xl px-4 py-2.5 transition-all duration-300 focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5 w-60 lg:w-72">
+          <Search size={18} className="text-text-secondary/60 mr-2.5 flex-shrink-0" />
           <input 
             type="text" 
-            placeholder="Search dashboard..." 
-            className="bg-transparent border-none focus:outline-none text-sm text-foreground w-48 lg:w-64"
+            placeholder="Search workspace..." 
+            className="bg-transparent border-none focus:outline-none text-sm font-medium text-text-primary placeholder:text-text-secondary/40 w-full"
           />
         </div>
       </div>
 
+      {/* Right Area: Actions & Identity Metadata */}
       <div className="flex items-center space-x-4">
-        <button className="relative p-2 text-foreground/60 hover:text-foreground transition-colors">
-          <Bell size={20} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full animate-pulse"></span>
-        </button>
         
-        <div className="flex items-center space-x-3 border-l border-foreground/10 pl-4">
+        {/* Notification Hub Trigger */}
+        <motion.button 
+          whileTap={{ scale: 0.95 }}
+          className="relative w-10 h-10 flex items-center justify-center rounded-xl text-text-secondary hover:bg-foreground/5 hover:text-text-primary transition-all focus:outline-none"
+        >
+          <Bell size={20} />
+          <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-accent rounded-full ring-2 ring-surface animate-pulse"></span>
+        </motion.button>
+        
+        {/* Identity Context Segment */}
+        <div className="flex items-center space-x-3.5 border-l border-border pl-4 h-8">
           <div className="text-right hidden sm:block">
-            <p className="text-sm font-bold text-foreground leading-none">{user?.name || 'User'}</p>
-            <p className="text-xs text-foreground/50 mt-1 uppercase tracking-wider">{user?.role || 'user'}</p>
+            <p className="text-sm font-bold text-text-primary leading-none truncate max-w-[120px]">
+              {user?.name || 'User Member'}
+            </p>
+            <span className="inline-block text-[9px] font-black text-primary uppercase tracking-wider mt-1.5 bg-primary/10 px-1.5 py-0.5 rounded">
+              {user?.role || 'User'}
+            </span>
           </div>
-          <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold border border-accent/20 overflow-hidden">
+
+          {/* User Display Picture Profile Link */}
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary font-black border border-primary/20 overflow-hidden shadow-inner flex-shrink-0">
             {(user?.photo || user?.photoURL) ? (
-              <img src={user.photo || user.photoURL} alt={user?.name || 'User'} className="w-full h-full object-cover" />
+              <img 
+                src={user.photo || user.photoURL} 
+                alt={user?.name || 'User Profile Image'} 
+                className="w-full h-full object-cover" 
+              />
             ) : (
               user?.name?.charAt(0).toUpperCase() || 'U'
             )}
           </div>
         </div>
+
       </div>
     </header>
   );
