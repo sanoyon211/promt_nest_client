@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, Menu, X, ChevronRight, Sparkles } from 'lucide-react';
+import { Sun, Moon, Menu, X, ChevronRight, Sparkles, LogOut } from 'lucide-react';
 
 export default function Header() {
   const { user, isLoading, logout } = useAuth();
@@ -19,9 +19,9 @@ export default function Header() {
   useEffect(() => {
     setMounted(true);
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 10);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -48,7 +48,7 @@ export default function Header() {
     return (
       <button
         onClick={() => setTheme(currentTheme === 'dark' ? 'light' : 'dark')}
-        className="p-2 rounded-full bg-foreground/5 hover:bg-foreground/10 transition-colors text-text-secondary hover:text-text-primary flex items-center justify-center"
+        className="p-2 rounded-full bg-transparent hover:bg-foreground/5 transition-all duration-300 text-text-secondary hover:text-text-primary flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/20"
         aria-label="Toggle Dark Mode"
       >
         {currentTheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
@@ -57,139 +57,154 @@ export default function Header() {
   };
 
   return (
-    <header className={`w-full sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-background/80 backdrop-blur-xl border-b border-border shadow-sm' : 'bg-transparent border-transparent'}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 md:h-20 flex items-center justify-between">
-        
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="relative w-9 h-9 flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl border border-primary/20 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-primary/20">
+    <header
+      className={`w-full sticky top-0 z-50 transition-all duration-300 ease-in-out ${scrolled
+          ? 'bg-background/70 backdrop-blur-lg border-b border-border shadow-[0_4px_30px_rgba(0,0,0,0.03)]'
+          : 'bg-transparent border-transparent'
+        }`}
+    >
+      {/* Navbar Height ekhane adjust kora hoyeche: h-14 md:h-16 */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 md:h-16 flex items-center justify-between">
+
+        {/* Logo Section */}
+        <Link href="/" className="flex items-center gap-2 group focus:outline-none rounded-lg focus:ring-2 focus:ring-primary/20 p-1 -ml-1">
+          <div className="relative w-8 h-8 flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl border border-primary/20 group-hover:scale-105 transition-transform duration-300 shadow-sm shadow-primary/10">
             <svg style={{ position: 'absolute', width: 0, height: 0 }}>
               <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop stopColor="var(--color-primary)" offset="0%" />
                 <stop stopColor="var(--color-accent)" offset="100%" />
               </linearGradient>
             </svg>
-            <Sparkles size={20} strokeWidth={2.5} stroke="url(#logo-gradient)" />
+            <Sparkles size={18} strokeWidth={2.5} stroke="url(#logo-gradient)" />
           </div>
-          <span className="font-black text-2xl tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-            PromtNest
+          <span className="font-black text-xl md:text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+            PromptNest
           </span>
         </Link>
-        
+
         <div className="flex items-center">
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            
-            {/* Grouped Nav Links */}
-            <div className="flex items-center space-x-1 mr-2">
+          <nav className="hidden md:flex items-center">
+            <div className="flex items-center space-x-1 mr-4">
               {navLinks.map((link) => (
-                <Link 
+                <Link
                   key={link.href}
-                  href={link.href} 
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-                    isActive(link.href) 
-                      ? 'text-primary bg-primary/10' 
+                  href={link.href}
+                  className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 ${isActive(link.href)
+                      ? 'text-primary bg-primary/10 shadow-inner'
                       : 'text-text-secondary hover:text-text-primary hover:bg-foreground/5'
-                  }`}
+                    }`}
                 >
                   {link.name}
                 </Link>
               ))}
             </div>
 
-            <div className="w-px h-6 bg-border mx-2"></div>
+            <div className="w-[1px] h-5 bg-border mx-2"></div>
 
             {isLoading ? (
               <div className="w-32 h-8 bg-foreground/5 animate-pulse rounded-full ml-4"></div>
             ) : user ? (
-              <div className="flex items-center space-x-4 ml-4">
-                <div className="flex items-center space-x-3 bg-surface border border-border px-3 py-1.5 rounded-full shadow-sm">
+              <div className="flex items-center space-x-3 ml-4">
+                <div className="flex items-center space-x-2 bg-surface/50 border border-border pl-1.5 pr-3 py-1 rounded-full shadow-sm hover:shadow-md transition-shadow duration-200">
                   {user.photoURL ? (
-                    <Image 
-                      src={user.photoURL} 
-                      alt={user.displayName || "Profile"} 
-                      width={28} 
-                      height={28} 
-                      className="rounded-full object-cover ring-2 ring-primary/20" 
+                    <Image
+                      src={user.photoURL}
+                      alt={user.displayName || "Profile"}
+                      width={24}
+                      height={24}
+                      className="rounded-full object-cover ring-2 ring-primary/20"
                     />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                    <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
                       {user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}
                     </div>
                   )}
-                  <span className="text-sm font-semibold text-text-primary max-w-[100px] truncate hidden lg:block">
+                  <span className="text-sm font-medium text-text-primary max-w-[100px] truncate hidden lg:block">
                     {user.displayName || "User"}
                   </span>
                 </div>
-                <button 
+                <button
                   onClick={logout}
-                  className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-accent rounded-lg hover:bg-accent/5 transition-all"
+                  className="p-1.5 text-text-secondary hover:text-accent rounded-full hover:bg-accent/10 transition-all focus:outline-none focus:ring-2 focus:ring-accent/20"
+                  aria-label="Logout"
+                  title="Logout"
                 >
-                  Logout
+                  <LogOut size={18} />
                 </button>
               </div>
             ) : (
-              <div className="flex items-center space-x-3 ml-2">
-                <Link href="/login" className="px-4 py-2 text-sm font-medium text-text-primary hover:text-primary transition-colors">
+              <div className="flex items-center space-x-2 ml-4">
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-sm font-semibold text-text-secondary hover:text-text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-border rounded-full"
+                >
                   Log in
                 </Link>
-                <Link 
-                  href="/register" 
-                  className="group flex items-center gap-1 text-sm font-medium bg-primary text-white px-5 py-2.5 rounded-full hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5"
+                <Link
+                  href="/register"
+                  className="group flex items-center gap-1 text-sm font-semibold bg-primary text-white px-4 py-2 rounded-full hover:bg-primary/90 transition-all duration-300 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
                 >
                   Get Started
-                  <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform duration-300 opacity-80 group-hover:opacity-100" />
                 </Link>
               </div>
             )}
           </nav>
-          
-          <div className="ml-4 flex items-center border-l border-border pl-4">
+
+          <div className="ml-2 md:ml-4 flex items-center md:border-l md:border-border md:pl-4">
             {renderThemeToggle()}
           </div>
 
           {/* Mobile menu button */}
-          <button className="md:hidden ml-4 p-2 text-text-secondary hover:text-text-primary bg-foreground/5 rounded-full transition-colors" onClick={toggleMenu}>
+          <button
+            className="md:hidden ml-2 p-2 text-text-secondary hover:text-text-primary hover:bg-foreground/5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-border"
+            onClick={toggleMenu}
+            aria-expanded={mobileMenuOpen}
+            aria-label="Toggle Navigation"
+          >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      <div className={`md:hidden absolute top-full left-0 w-full bg-surface border-b border-border shadow-2xl transition-all duration-300 origin-top ${mobileMenuOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 pointer-events-none'}`}>
+      {/* Mobile Navigation Dropdown */}
+      <div
+        className={`md:hidden absolute top-full left-0 w-full bg-surface/95 backdrop-blur-xl border-b border-border shadow-2xl transition-all duration-300 origin-top overflow-hidden ${mobileMenuOpen ? 'opacity-100 max-h-[500px]' : 'opacity-0 max-h-0'
+          }`}
+      >
         <div className="px-4 py-6 flex flex-col space-y-2">
           {navLinks.map((link) => (
-            <Link 
+            <Link
               key={link.href}
-              href={link.href} 
-              onClick={toggleMenu} 
-              className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                isActive(link.href)
+              href={link.href}
+              onClick={toggleMenu}
+              className={`px-4 py-3 rounded-xl text-base font-semibold transition-colors ${isActive(link.href)
                   ? 'text-primary bg-primary/10'
                   : 'text-text-secondary hover:text-text-primary hover:bg-foreground/5'
-              }`}
+                }`}
             >
               {link.name}
             </Link>
           ))}
-          
-          <div className="h-px bg-border my-2 mx-4"></div>
+
+          <div className="h-[1px] bg-border my-4 mx-4"></div>
 
           {isLoading ? (
-            <div className="w-32 h-8 bg-foreground/5 animate-pulse rounded-full ml-4"></div>
+            <div className="w-32 h-10 bg-foreground/5 animate-pulse rounded-full mx-4"></div>
           ) : user ? (
-            <div className="flex flex-col space-y-3">
-              <div className="flex items-center space-x-3 px-4 py-2">
+            <div className="flex flex-col space-y-4 px-2">
+              <div className="flex items-center space-x-3 px-2">
                 {user.photoURL ? (
-                  <Image 
-                    src={user.photoURL} 
-                    alt={user.displayName || "Profile"} 
-                    width={32} 
-                    height={32} 
-                    className="rounded-full object-cover ring-2 ring-primary/20" 
+                  <Image
+                    src={user.photoURL}
+                    alt={user.displayName || "Profile"}
+                    width={36}
+                    height={36}
+                    className="rounded-full object-cover ring-2 ring-primary/20"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
                     {user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}
                   </div>
                 )}
@@ -197,22 +212,27 @@ export default function Header() {
                   {user.displayName || "User"}
                 </span>
               </div>
-              <button 
+              <button
                 onClick={() => { logout(); toggleMenu(); }}
-                className="px-4 py-3 text-left rounded-xl text-base font-medium text-accent hover:bg-accent/5 transition-colors"
+                className="flex items-center gap-2 px-4 py-3 text-left rounded-xl text-base font-semibold text-accent hover:bg-accent/10 transition-colors w-full"
               >
+                <LogOut size={18} />
                 Logout
               </button>
             </div>
           ) : (
             <div className="flex flex-col space-y-3 pt-2 px-2">
-              <Link href="/login" onClick={toggleMenu} className="w-full py-3 text-center rounded-xl text-base font-medium text-text-primary border border-border hover:bg-foreground/5 transition-colors">
+              <Link
+                href="/login"
+                onClick={toggleMenu}
+                className="w-full py-3 text-center rounded-xl text-base font-semibold text-text-primary border border-border hover:bg-foreground/5 transition-colors focus:outline-none focus:ring-2 focus:ring-border"
+              >
                 Log in
               </Link>
-              <Link 
-                href="/register" 
+              <Link
+                href="/register"
                 onClick={toggleMenu}
-                className="w-full py-3 text-center rounded-xl text-base font-medium bg-primary text-white hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+                className="w-full py-3 text-center rounded-xl text-base font-semibold bg-primary text-white hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface"
               >
                 Get Started
               </Link>

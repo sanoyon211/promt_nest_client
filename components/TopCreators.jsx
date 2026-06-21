@@ -1,8 +1,21 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Trophy, Crown, Layers, Award, Medal } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+// Premium Skeleton Loader for Creators
+const SkeletonCreator = () => (
+  <div className="bg-surface rounded-3xl p-6 border border-border flex items-center space-x-5 shadow-sm animate-pulse">
+    <div className="w-16 h-16 rounded-full bg-foreground/5 flex-shrink-0"></div>
+    <div className="flex-1">
+      <div className="w-32 h-6 bg-foreground/5 rounded-md mb-3"></div>
+      <div className="w-24 h-5 bg-foreground/5 rounded-full mb-3"></div>
+      <div className="w-20 h-4 bg-foreground/5 rounded-md"></div>
+    </div>
+  </div>
+);
 
 export default function TopCreators() {
   const [creators, setCreators] = useState([]);
@@ -14,15 +27,20 @@ export default function TopCreators() {
         const res = await fetch(`${API_URL}/creators/top`);
         if (res.ok) {
           const data = await res.json();
-          setCreators(data);
+          // Assuming we want top 6 for a balanced grid
+          setCreators(data.slice(0, 6));
         } else {
           throw new Error('API down');
         }
       } catch (error) {
+        // Fallback dummy data if API is not ready
         setCreators([
           { id: 1, name: 'Alice Smith', role: 'Pro Creator', prompts: 120 },
-          { id: 2, name: 'Bob Jones', role: 'Creator', prompts: 85 },
-          { id: 3, name: 'Charlie Day', role: 'Creator', prompts: 42 },
+          { id: 2, name: 'David Chen', role: 'Pro Creator', prompts: 95 },
+          { id: 3, name: 'Sarah Wilson', role: 'Creator', prompts: 85 },
+          { id: 4, name: 'Bob Jones', role: 'Creator', prompts: 64 },
+          { id: 5, name: 'Emma Davis', role: 'Creator', prompts: 42 },
+          { id: 6, name: 'Charlie Day', role: 'Creator', prompts: 38 },
         ]);
       } finally {
         setLoading(false);
@@ -31,44 +49,89 @@ export default function TopCreators() {
     fetchCreators();
   }, []);
 
+  // Function to render rank medals for top 3
+  const renderRank = (index) => {
+    switch(index) {
+      case 0: return <Trophy size={18} className="text-yellow-500 absolute -top-2 -right-2 bg-yellow-500/10 p-1 rounded-full box-content" />;
+      case 1: return <Medal size={18} className="text-gray-400 absolute -top-2 -right-2 bg-gray-400/10 p-1 rounded-full box-content" />;
+      case 2: return <Award size={18} className="text-amber-700 dark:text-amber-600 absolute -top-2 -right-2 bg-amber-700/10 p-1 rounded-full box-content" />;
+      default: return null;
+    }
+  };
+
   return (
-    <section className="py-24 bg-foreground/5 w-full">
+    <section className="py-24 bg-background w-full relative">
+      {/* Subtle background separation */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Header Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col items-center text-center mb-16"
         >
-          <h2 className="text-3xl md:text-5xl font-bold text-foreground text-center mb-16">Top Creators</h2>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface border border-border shadow-sm mb-6">
+            <Trophy size={14} className="text-accent" />
+            <span className="text-xs font-bold text-text-secondary uppercase tracking-widest">Hall of Fame</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black text-text-primary tracking-tight">
+            Top <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Creators</span>
+          </h2>
+          <p className="mt-5 text-lg text-text-secondary max-w-2xl mx-auto font-medium">
+            Meet the masterminds behind the most effective and popular AI prompts in our community.
+          </p>
         </motion.div>
         
         {loading ? (
-          <div className="flex justify-center py-10">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {[1, 2, 3, 4, 5, 6].map((key) => <SkeletonCreator key={key} />)}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {creators.map((creator, idx) => (
               <motion.div 
                 key={creator.id} 
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="bg-surface rounded-3xl p-6 border border-foreground/10 flex items-center space-x-5 shadow-sm hover:border-primary/30 hover:shadow-md transition-all group"
+                transition={{ duration: 0.5, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="bg-surface rounded-3xl p-6 border border-border flex items-center space-x-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none hover:border-primary/40 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative"
               >
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-2xl font-black text-primary flex-shrink-0 group-hover:bg-primary group-hover:text-background transition-colors">
-                  {creator.name.charAt(0)}
+                {/* Avatar with Rank */}
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-2xl font-black text-primary flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300 ring-2 ring-transparent group-hover:ring-primary/20">
+                    {creator.name.charAt(0)}
+                  </div>
+                  {renderRank(idx)}
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold text-foreground mb-1">{creator.name}</h3>
-                  {creator.role === 'Pro Creator' ? (
-                     <span className="text-xs font-bold text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">Pro Creator</span>
-                  ) : (
-                     <span className="text-xs font-bold text-primary bg-[#ECEBF3] dark:bg-[#232040] dark:text-[#818CF8] px-3 py-1 rounded-full">Creator</span>
-                  )}
-                  <p className="text-sm text-foreground/60 mt-2 font-medium">{creator.prompts} Prompts</p>
+
+                {/* Creator Details */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-bold text-text-primary mb-1 truncate group-hover:text-primary transition-colors">
+                    {creator.name}
+                  </h3>
+                  
+                  <div className="flex items-center gap-2 mb-2">
+                    {creator.role === 'Pro Creator' ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-accent bg-accent/10 px-2.5 py-1 rounded-md border border-accent/20 uppercase tracking-wider">
+                        <Crown size={10} strokeWidth={3} />
+                        Pro
+                      </span>
+                    ) : (
+                      <span className="inline-flex text-[10px] font-bold text-text-secondary bg-foreground/5 px-2.5 py-1 rounded-md border border-border uppercase tracking-wider">
+                        Creator
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-text-secondary font-semibold flex items-center gap-1.5">
+                    <Layers size={12} />
+                    {creator.prompts} Prompts Published
+                  </p>
                 </div>
               </motion.div>
             ))}
