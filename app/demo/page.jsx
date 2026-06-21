@@ -47,7 +47,7 @@ export default function DemoAccountsPage() {
         hoverBorder: 'hover:border-emerald-500/50'
       },
       desc: 'Search prompts, copy workflows to clipboard, save items to personal library, leave reviews, and upgrade to premium.',
-      email: 'user@promtnest.com',
+      email: 'user@promptnest.com',
       password: 'userpassword123'
     }
   ];
