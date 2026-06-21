@@ -3,11 +3,32 @@ import { useState, useEffect } from 'react';
 import { DollarSign, CreditCard, SearchX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { toast } from 'react-toastify';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function AdminPaymentsPage() {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const handleDownloadLog = () => {
+    if (payments.length === 0) {
+      toast.error('No payments available to download', { position: "bottom-right" });
+      return;
+    }
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + "Transaction ID,Email,Amount,Status,Date\n"
+      + payments.map(p => `${p.transactionId || p._id},${p.email || 'Unknown'},${(p.amount || 0).toFixed(2)},${p.status || 'succeeded'},${new Date(p.date || p.createdAt).toISOString()}`).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `revenue_log_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Revenue log downloaded successfully', { position: "bottom-right", theme: "dark" });
+  };
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -85,9 +106,12 @@ export default function AdminPaymentsPage() {
             <p className="text-text-secondary font-medium mt-1">Review global transactions and premium upgrades.</p>
           </div>
         </div>
-        <div className="bg-green-500/10 text-green-600 dark:text-green-400 px-5 py-2.5 rounded-xl font-bold flex items-center shadow-sm border border-green-500/20 whitespace-nowrap">
+        <button 
+          onClick={handleDownloadLog}
+          className="bg-green-500/10 text-green-600 dark:text-green-400 px-5 py-2.5 rounded-xl font-bold flex items-center shadow-sm border border-green-500/20 whitespace-nowrap hover:bg-green-500/20 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500/30"
+        >
           <DollarSign size={18} className="mr-1.5" /> Revenue Log
-        </div>
+        </button>
       </div>
 
       <div className="bg-surface border border-border rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden relative">
@@ -128,22 +152,22 @@ export default function AdminPaymentsPage() {
                     >
                       <td className="p-5 pl-8">
                         <span className="font-mono text-[12px] bg-background border border-border/60 px-2.5 py-1.5 rounded-md text-text-secondary group-hover:text-text-primary transition-colors">
-                          {p._id}
+                          {p.transactionId || p._id}
                         </span>
                       </td>
                       <td className="p-5 text-text-secondary font-medium">
-                        {p.user?.email || <span className="italic opacity-50">Unknown User</span>}
+                        {p.email || <span className="italic opacity-50">Unknown User</span>}
                       </td>
                       <td className="p-5 font-mono text-[15px] font-black text-text-primary">
                         ${(p.amount || 0).toFixed(2)}
                       </td>
                       <td className="p-5">
-                        <span className={`px-3 py-1.5 rounded-md text-[10px] font-black border ${getStatusStyle(p.status)} uppercase tracking-widest shadow-sm`}>
-                          {p.status || 'Unknown'}
+                        <span className={`px-3 py-1.5 rounded-md text-[10px] font-black border ${getStatusStyle(p.status || 'succeeded')} uppercase tracking-widest shadow-sm`}>
+                          {p.status || 'succeeded'}
                         </span>
                       </td>
                       <td className="p-5 pr-8 text-text-secondary font-medium text-[13px]">
-                        {new Date(p.createdAt).toLocaleString('en-US', { 
+                        {new Date(p.date || p.createdAt).toLocaleString('en-US', { 
                           month: 'short', 
                           day: 'numeric', 
                           year: 'numeric',

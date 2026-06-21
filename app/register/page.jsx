@@ -15,7 +15,7 @@ function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const redirectPath = searchParams.get('redirect') || '/dashboard';
+  const redirectPath = searchParams.get('redirect') || '/';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -163,7 +163,7 @@ function RegisterForm() {
         </div>
 
         <p className="text-center text-[15px] text-text-secondary mt-8 font-medium">
-          Already have an account? <Link href={`/login${redirectPath !== '/dashboard' ? `?redirect=${redirectPath}` : ''}`} className="text-primary font-bold hover:text-accent transition-colors">Log in</Link>
+          Already have an account? <Link href={`/login${redirectPath !== '/' ? `?redirect=${redirectPath}` : ''}`} className="text-primary font-bold hover:text-accent transition-colors">Log in</Link>
         </p>
       </motion.div>
     </div>

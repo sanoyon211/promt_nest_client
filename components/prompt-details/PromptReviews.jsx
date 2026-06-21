@@ -131,7 +131,7 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
                     <p className="text-sm font-medium text-text-secondary">Log in to leave a review, bookmark, and copy prompts.</p>
                   </div>
                   <Link 
-                    href="/login"
+                    href={`/login?redirect=/prompt/${promptId}`}
                     className="flex items-center px-6 py-3 bg-surface border border-border text-text-primary font-bold rounded-xl hover:bg-foreground/5 hover:border-text-secondary transition-all active:scale-95 w-full sm:w-auto justify-center whitespace-nowrap"
                   >
                     <LogIn size={16} className="mr-2" />

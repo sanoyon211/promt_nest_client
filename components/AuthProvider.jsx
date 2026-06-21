@@ -30,6 +30,8 @@ export function AuthProvider({ children }) {
             if (token) {
               // Save token securely in localStorage for API calls
               localStorage.setItem('access-token', token);
+              // Save in cookie for Next.js Middleware (expires in 1 day)
+              document.cookie = `access-token=${token}; path=/; max-age=86400; SameSite=Lax`;
               
               // 2. Save/Sync user in MongoDB
               await fetch(`${API_URL}/users`, {
@@ -65,6 +67,7 @@ export function AuthProvider({ children }) {
         }
       } else {
         localStorage.removeItem('access-token');
+        document.cookie = "access-token=; path=/; max-age=0; SameSite=Lax";
         setUser(null);
       }
       setIsLoading(false);
@@ -73,7 +76,7 @@ export function AuthProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
-  const loginWithGoogle = async (redirectPath = '/dashboard') => {
+  const loginWithGoogle = async (redirectPath = '/') => {
     try {
       setIsLoading(true);
       await signInWithPopup(auth, googleProvider);
@@ -89,7 +92,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const registerWithEmail = async (name, email, photoURL, password, redirectPath = '/dashboard') => {
+  const registerWithEmail = async (name, email, photoURL, password, redirectPath = '/') => {
     try {
       setIsLoading(true);
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -125,7 +128,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const loginWithEmail = async (email, password, redirectPath = '/dashboard') => {
+  const loginWithEmail = async (email, password, redirectPath = '/') => {
     try {
       setIsLoading(true);
       await signInWithEmailAndPassword(auth, email, password);
@@ -144,6 +147,7 @@ export function AuthProvider({ children }) {
       setIsLoading(true);
       await firebaseSignOut(auth);
       localStorage.removeItem('access-token');
+      document.cookie = "access-token=; path=/; max-age=0; SameSite=Lax";
       setUser(null);
       router.push('/login');
     } catch (err) {

@@ -33,6 +33,13 @@ export default function Header() {
     return pathname.startsWith(path);
   };
 
+  const getAuthHref = (basePath) => {
+    if (pathname.startsWith('/pricing') || pathname.startsWith('/prompt')) {
+      return `${basePath}?redirect=${encodeURIComponent(pathname)}`;
+    }
+    return basePath;
+  };
+
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Library', href: '/all-prompts' },
@@ -136,13 +143,13 @@ export default function Header() {
             ) : (
               <div className="flex items-center space-x-2 ml-4">
                 <Link
-                  href="/login"
+                  href={getAuthHref('/login')}
                   className="px-4 py-2 text-sm font-semibold text-text-secondary hover:text-text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-border rounded-full"
                 >
                   Log in
                 </Link>
                 <Link
-                  href="/register"
+                  href={getAuthHref('/register')}
                   className="group flex items-center gap-1 text-sm font-semibold bg-primary text-white px-4 py-2 rounded-full hover:bg-primary/90 transition-all duration-300 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
                 >
                   Get Started
@@ -223,14 +230,14 @@ export default function Header() {
           ) : (
             <div className="flex flex-col space-y-3 pt-2 px-2">
               <Link
-                href="/login"
+                href={getAuthHref('/login')}
                 onClick={toggleMenu}
                 className="w-full py-3 text-center rounded-xl text-base font-semibold text-text-primary border border-border hover:bg-foreground/5 transition-colors focus:outline-none focus:ring-2 focus:ring-border"
               >
                 Log in
               </Link>
               <Link
-                href="/register"
+                href={getAuthHref('/register')}
                 onClick={toggleMenu}
                 className="w-full py-3 text-center rounded-xl text-base font-semibold bg-primary text-white hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface"
               >

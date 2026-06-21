@@ -17,7 +17,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // Password visibility state
 
-  const redirectPath = searchParams.get('redirect') || '/dashboard';
+  const redirectPath = searchParams.get('redirect') || '/';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -134,7 +134,7 @@ function LoginForm() {
         </div>
 
         <p className="text-center text-[15px] text-text-secondary mt-8 font-medium">
-          Don't have an account? <Link href={`/register${redirectPath !== '/dashboard' ? `?redirect=${redirectPath}` : ''}`} className="text-primary font-bold hover:text-accent transition-colors">Sign up</Link>
+          Don't have an account? <Link href={`/register${redirectPath !== '/' ? `?redirect=${redirectPath}` : ''}`} className="text-primary font-bold hover:text-accent transition-colors">Sign up</Link>
         </p>
       </motion.div>
     </div>

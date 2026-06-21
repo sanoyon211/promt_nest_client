@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '@/components/AuthProvider';
 import { motion, AnimatePresence } from 'framer-motion';
 import ConfirmModal from '@/components/ConfirmModal';
+import Image from 'next/image';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -161,9 +162,19 @@ export default function AdminUsersPage() {
                     >
                       <td className="p-5 pl-8 font-bold text-text-primary">
                         <div className="flex items-center">
-                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary font-black text-[12px] mr-3 shadow-inner">
-                            {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
-                          </div>
+                          {u.photoURL ? (
+                            <Image 
+                              src={u.photoURL} 
+                              alt={u.name || "User"} 
+                              width={32}
+                              height={32}
+                              className="w-8 h-8 rounded-lg object-cover mr-3 shadow-inner shrink-0"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary font-black text-[12px] mr-3 shadow-inner shrink-0">
+                              {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                          )}
                           {u.name}
                         </div>
                       </td>
