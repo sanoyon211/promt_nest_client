@@ -59,7 +59,7 @@ export default function DashboardHome() {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="text-3xl md:text-4xl font-black text-text-primary mb-2 tracking-tight"
         >
-          Welcome back, {user?.name?.split(' ')[0] || 'Creator'}! 👋
+          Welcome back, {user?.name?.split(' ')[0] || 'Creator'}! 
         </motion.h1>
         <motion.p 
           initial={{ opacity: 0 }}
