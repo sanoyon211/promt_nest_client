@@ -1,8 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Trash2, Shield, Star, ShieldAlert } from 'lucide-react';
+import { Trash2, ShieldAlert, Star, Users, X, ChevronDown } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/components/AuthProvider';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -43,21 +44,21 @@ export default function AdminUsersPage() {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ role: newRole })
       });
       if (!res.ok) throw new Error('Failed to update role');
-      toast.success(`User role updated to ${newRole.toUpperCase()}`);
+      toast.success(`User role updated to ${newRole.toUpperCase()}`, { position: "bottom-right", theme: "dark" });
     } catch (err) {
-      toast.error('Failed to update role');
+      toast.error('Failed to update role', { position: "bottom-right" });
     }
   };
 
   const [userToDelete, setUserToDelete] = useState(null);
 
-  const handleDeleteClick = (user) => {
-    setUserToDelete(user);
+  const handleDeleteClick = (userObj) => {
+    setUserToDelete(userObj);
   };
 
   const confirmDelete = async () => {
@@ -69,139 +70,209 @@ export default function AdminUsersPage() {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success('User permanently deleted');
+      toast.success('User permanently deleted', { position: "bottom-right", theme: "dark" });
     } catch (err) {
-      toast.error('Failed to delete user');
+      toast.error('Failed to delete user', { position: "bottom-right" });
     } finally {
       setUserToDelete(null);
     }
   };
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;
-  }
-
   // Developer note: we allow the UI to render even if the mocked local user isn't 'admin' just so you can test it natively.
   const isAdmin = user?.role === 'admin';
 
+  // Premium Skeleton Table Loader
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto w-full pb-10">
+        <div className="mb-10 flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="w-14 h-14 rounded-xl bg-primary/10 mb-2 animate-pulse mr-5"></div>
+            <div>
+              <div className="w-48 h-8 bg-foreground/5 rounded-lg mb-2 animate-pulse"></div>
+              <div className="w-64 h-4 bg-foreground/5 rounded-md animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-surface border border-border rounded-[32px] shadow-sm overflow-hidden p-6">
+          <div className="w-full h-10 bg-foreground/5 rounded-lg mb-4 animate-pulse"></div>
+          {[1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="w-full h-16 bg-foreground/5 rounded-lg mb-2 animate-pulse"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-7xl mx-auto w-full">
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-foreground flex items-center">
-          User Management 
-          {!isAdmin && <ShieldAlert size={20} className="ml-3 text-red-500" title="You are viewing this as a non-admin via local mock." />}
-        </h1>
-        <p className="text-foreground/60">Admin panel for managing platform users and roles.</p>
+    <div className="max-w-7xl mx-auto w-full pb-10">
+      
+      {/* Header */}
+      <div className="mb-10 flex items-center">
+        <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
+          <Users size={26} strokeWidth={2} />
+        </div>
+        <div>
+          <h1 className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight flex items-center">
+            User Management
+            {!isAdmin && <ShieldAlert size={20} className="ml-3 text-red-500" title="You are viewing this as a non-admin via local mock." />}
+          </h1>
+          <p className="text-text-secondary font-medium mt-1">Admin panel for managing platform users, roles, and access.</p>
+        </div>
       </div>
 
-      <div className="bg-surface border border-foreground/10 rounded-3xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse whitespace-nowrap">
+      <div className="bg-surface border border-border rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden relative">
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
             <thead>
-              <tr className="bg-foreground/5 border-b border-foreground/10 text-xs uppercase tracking-wider text-foreground/60 font-bold">
-                <th className="p-4 pl-6">Name</th>
-                <th className="p-4">Email</th>
-                <th className="p-4">Subscription</th>
-                <th className="p-4">Registered</th>
-                <th className="p-4">Account Role</th>
-                <th className="p-4 pr-6 text-right">Actions</th>
+              <tr className="bg-foreground/5 border-b border-border text-[11px] uppercase tracking-widest text-text-secondary font-black">
+                <th className="p-5 pl-8">Name</th>
+                <th className="p-5">Email</th>
+                <th className="p-5">Subscription</th>
+                <th className="p-5">Registered</th>
+                <th className="p-5">Account Role</th>
+                <th className="p-5 pr-8 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-foreground/5 text-sm">
+            <tbody className="divide-y divide-border/50 text-[14px]">
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="p-8 text-center text-foreground/50">
+                  <td colSpan="6" className="p-16 text-center text-text-secondary">
                     <div className="flex flex-col items-center justify-center">
-                      <ShieldAlert size={48} className="mb-4 text-foreground/20" />
-                      <p className="text-lg font-bold">No users found</p>
-                      <p className="text-sm">Please ensure your backend server is running.</p>
+                      <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4 ring-1 ring-red-500/20">
+                        <ShieldAlert size={28} className="text-red-500" />
+                      </div>
+                      <p className="text-xl font-bold text-text-primary mb-1">No users found</p>
+                      <p className="text-[14px] font-medium max-w-sm">Please ensure your backend server is running and database is connected.</p>
                     </div>
                   </td>
                 </tr>
               ) : (
-                users.map((u) => (
-                  <tr key={u._id} className="hover:bg-foreground/[0.02] transition-colors group">
-                  <td className="p-4 pl-6 font-bold text-foreground">{u.name}</td>
-                  <td className="p-4 text-foreground/70">{u.email}</td>
-                  <td className="p-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                      u.subscription === 'Premium' 
-                        ? 'bg-[#CFFAFE] text-cyan-900 dark:bg-cyan-900 dark:text-[#CFFAFE]' 
-                        : 'bg-foreground/10 text-foreground'
-                    }`}>
-                      {u.subscription === 'Premium' ? <Star size={10} className="inline mr-1 mb-0.5 fill-current" /> : null}
-                      {u.subscription || 'Free'}
-                    </span>
-                  </td>
-                  <td className="p-4 text-foreground/60">{new Date(u.createdAt).toLocaleDateString()}</td>
-                  <td className="p-4">
-                    <select 
-                      value={u.role}
-                      onChange={(e) => handleRoleChange(u.email, e.target.value)}
-                      className={`px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
-                        u.role === 'admin' 
-                          ? 'bg-red-500/10 text-red-500 border-red-500/20' 
-                          : u.role === 'creator' 
-                            ? 'bg-primary/10 text-primary border-primary/20'
-                            : 'bg-surface text-foreground border-foreground/20'
-                      }`}
+                <AnimatePresence>
+                  {users.map((u, idx) => (
+                    <motion.tr 
+                      key={u._id} 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3, delay: idx * 0.05 }}
+                      className="hover:bg-foreground/5 transition-colors group"
                     >
-                      <option value="user" className="bg-background text-foreground font-bold">USER</option>
-                      <option value="creator" className="bg-background text-foreground font-bold">CREATOR</option>
-                      <option value="admin" className="bg-background text-foreground font-bold">ADMIN</option>
-                    </select>
-                  </td>
-                  <td className="p-4 pr-6 text-right">
-                    <button 
-                      onClick={() => handleDeleteClick(u)} 
-                      title="Permanently Delete User" 
-                      className="p-2 bg-background border border-foreground/10 rounded-lg text-foreground/60 hover:text-red-500 hover:border-red-500 hover:bg-red-500/10 transition-colors opacity-100 sm:opacity-0 group-hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                      disabled={u.email === user?.email} // Prevent admin from deleting themselves
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
+                      <td className="p-5 pl-8 font-bold text-text-primary">
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary font-black text-[12px] mr-3 shadow-inner">
+                            {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
+                          </div>
+                          {u.name}
+                        </div>
+                      </td>
+                      <td className="p-5 text-text-secondary font-medium">{u.email}</td>
+                      <td className="p-5">
+                        <span className={`px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest flex items-center w-max shadow-sm border ${
+                          u.subscription === 'Premium' 
+                            ? 'bg-gradient-to-r from-accent/10 to-primary/10 text-accent border-accent/20' 
+                            : 'bg-foreground/5 text-text-secondary border-border'
+                        }`}>
+                          {u.subscription === 'Premium' && <Star size={12} className="mr-1.5 fill-current" />}
+                          {u.subscription || 'Free'}
+                        </span>
+                      </td>
+                      <td className="p-5 text-text-secondary font-medium text-[13px]">{new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                      <td className="p-5">
+                        <div className="relative w-max">
+                          <select 
+                            value={u.role}
+                            onChange={(e) => handleRoleChange(u.email, e.target.value)}
+                            className={`appearance-none pl-3.5 pr-8 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest cursor-pointer focus:outline-none focus:ring-4 transition-all shadow-sm ${
+                              u.role === 'admin' 
+                                ? 'bg-red-500/10 text-red-500 border border-red-500/20 focus:ring-red-500/10' 
+                                : u.role === 'creator' 
+                                  ? 'bg-primary/10 text-primary border border-primary/20 focus:ring-primary/10'
+                                  : 'bg-surface text-text-primary border border-border focus:ring-primary/10'
+                            }`}
+                          >
+                            <option value="user" className="bg-background text-text-primary font-bold">USER</option>
+                            <option value="creator" className="bg-background text-text-primary font-bold">CREATOR</option>
+                            <option value="admin" className="bg-background text-text-primary font-bold">ADMIN</option>
+                          </select>
+                          <ChevronDown size={14} className={`absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none ${
+                            u.role === 'admin' ? 'text-red-500' : u.role === 'creator' ? 'text-primary' : 'text-text-secondary'
+                          }`} />
+                        </div>
+                      </td>
+                      <td className="p-5 pr-8 text-right">
+                        <div className="flex justify-end opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <button 
+                            onClick={() => handleDeleteClick(u)} 
+                            title="Permanently Delete User" 
+                            className="p-2.5 bg-background border border-border rounded-xl text-text-secondary hover:text-white hover:border-red-500 hover:bg-red-500 transition-all active:scale-95 shadow-sm disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-background disabled:hover:text-text-secondary disabled:hover:border-border"
+                            disabled={u.email === user?.email} // Prevent admin from deleting themselves
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Custom Delete Confirmation Modal */}
-      {userToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
-          <div className="bg-surface border border-foreground/10 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200">
-            {/* Background Blob */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-2xl -z-10 pointer-events-none"></div>
-            
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 text-red-500 mb-6 mx-auto">
-              <ShieldAlert size={32} />
-            </div>
-            
-            <h2 className="text-2xl font-black text-foreground text-center mb-2">Delete User?</h2>
-            <p className="text-foreground/60 text-center mb-8">
-              Are you sure you want to permanently delete <strong className="text-foreground">{userToDelete.name}</strong>? This action cannot be undone and all associated data will be removed.
-            </p>
-            
-            <div className="flex gap-4">
-              <button 
-                onClick={() => setUserToDelete(null)}
-                className="flex-1 py-3 px-4 rounded-xl border border-foreground/10 font-bold text-foreground hover:bg-foreground/5 transition-colors"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={confirmDelete}
-                className="flex-1 py-3 px-4 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20"
-              >
-                Delete User
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Custom Delete Confirmation Modal (Framer Motion) */}
+      <AnimatePresence>
+        {userToDelete && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-surface border border-border rounded-[32px] p-8 max-w-md w-full shadow-2xl relative overflow-hidden text-center"
+            >
+              {/* Background Blob */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-2xl -z-10 pointer-events-none"></div>
+              
+              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-red-500/10 to-red-500/5 text-red-500 mb-6 mx-auto ring-1 ring-red-500/20 shadow-inner">
+                <ShieldAlert size={28} />
+              </div>
+              
+              <h2 className="text-2xl font-black text-text-primary mb-2 tracking-tight">Delete User?</h2>
+              <p className="text-text-secondary font-medium mb-8">
+                Are you sure you want to permanently delete <strong className="text-text-primary">{userToDelete.name}</strong>? This action cannot be undone and all associated data will be wiped.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button 
+                  onClick={() => setUserToDelete(null)}
+                  className="flex-1 py-3.5 px-4 rounded-xl border border-border font-bold text-text-primary hover:bg-foreground/5 transition-all active:scale-95"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={confirmDelete}
+                  className="flex-1 py-3.5 px-4 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-all shadow-[0_4px_14px_0_rgba(239,68,68,0.39)] hover:shadow-[0_6px_20px_rgba(239,68,68,0.23)] active:scale-95"
+                >
+                  Delete User
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .custom-scrollbar::-webkit-scrollbar { height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.02); border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.2); border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(150, 150, 150, 0.4); }
+      `}} />
     </div>
   );
 }
