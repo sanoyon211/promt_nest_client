@@ -1,9 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Edit, Trash2, BarChart, MoreVertical } from 'lucide-react';
+import { Edit, Trash2, BarChart, Plus, FolderKanban, PenTool } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/components/AuthProvider';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -37,93 +38,192 @@ export default function MyPromptsPage() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this prompt?')) return;
+    if (!confirm('Are you sure you want to delete this prompt? This action cannot be undone.')) return;
     try {
       const token = localStorage.getItem('access-token');
+      // Optimistic delete
+      setPrompts(prompts.filter(p => p._id !== id));
+      
       await fetch(`${API_URL}/prompts/${id}`, { 
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      setPrompts(prompts.filter(p => p._id !== id));
-      toast.success('Prompt deleted successfully');
+      toast.success('Prompt deleted successfully', { position: "bottom-right", theme: "dark" });
     } catch (err) {
-      toast.error('Failed to delete prompt');
+      toast.error('Failed to delete prompt', { position: "bottom-right" });
     }
   };
 
   const getStatusStyle = (status) => {
     switch(status?.toLowerCase()) {
-      case 'approved': return 'bg-green-500/10 text-green-500';
-      case 'pending': return 'bg-yellow-500/10 text-yellow-500';
-      case 'rejected': return 'bg-red-500/10 text-red-500';
-      default: return 'bg-foreground/10 text-foreground';
+      case 'approved': return 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20';
+      case 'pending': return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
+      case 'rejected': return 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20';
+      default: return 'bg-foreground/5 text-text-secondary border-border';
     }
   };
 
+  // Premium Skeleton Table Loader
   if (loading) {
-    return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;
+    return (
+      <div className="max-w-6xl mx-auto w-full pb-10">
+        <div className="mb-10 flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 mb-2 animate-pulse mr-4"></div>
+            <div>
+              <div className="w-48 h-8 bg-foreground/5 rounded-lg mb-2 animate-pulse"></div>
+              <div className="w-64 h-4 bg-foreground/5 rounded-md animate-pulse"></div>
+            </div>
+          </div>
+          <div className="w-32 h-10 bg-primary/20 rounded-xl animate-pulse"></div>
+        </div>
+        <div className="bg-surface border border-border rounded-[24px] shadow-sm overflow-hidden p-6">
+          <div className="w-full h-10 bg-foreground/5 rounded-lg mb-4 animate-pulse"></div>
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="w-full h-16 bg-foreground/5 rounded-lg mb-2 animate-pulse"></div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-6xl mx-auto w-full">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <h1 className="text-3xl font-black text-foreground">My Prompts</h1>
-        <Link href="/dashboard/add-prompt" className="px-6 py-2.5 bg-primary text-background font-bold rounded-xl hover:scale-105 transition-transform shadow-md whitespace-nowrap">
+    <div className="max-w-6xl mx-auto w-full pb-10">
+      
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-6">
+        <div className="flex items-center">
+          <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
+            <FolderKanban size={26} strokeWidth={2} />
+          </div>
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight">My Prompts</h1>
+            <p className="text-text-secondary font-medium mt-1">Manage and track the performance of your published workflows.</p>
+          </div>
+        </div>
+        <Link 
+          href="/dashboard/add-prompt" 
+          className="flex items-center px-6 py-3.5 bg-primary text-white font-bold rounded-xl active:scale-95 transition-all shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] whitespace-nowrap"
+        >
+          <Plus size={18} className="mr-2" />
           Create New
         </Link>
       </div>
 
-      <div className="bg-surface border border-foreground/10 rounded-3xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse whitespace-nowrap">
-            <thead>
-              <tr className="bg-foreground/5 border-b border-foreground/10 text-xs uppercase tracking-wider text-foreground/60 font-bold">
-                <th className="p-4 pl-6">Title</th>
-                <th className="p-4">Category</th>
-                <th className="p-4">Status</th>
-                <th className="p-4">Copies</th>
-                <th className="p-4">Date</th>
-                <th className="p-4 pr-6 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-foreground/5 text-sm">
-              {prompts.map((prompt) => (
-                <tr key={prompt._id} className="hover:bg-foreground/[0.02] transition-colors group">
-                  <td className="p-4 pl-6 font-bold text-foreground">
-                    <div className="truncate max-w-[200px] sm:max-w-xs">{prompt.title}</div>
-                  </td>
-                  <td className="p-4 text-foreground/70">{prompt.category}</td>
-                  <td className="p-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusStyle(prompt.status)}`}>
-                      {prompt.status || 'Pending'}
-                    </span>
-                  </td>
-                  <td className="p-4 font-mono text-foreground/80">{prompt.copyCount || 0}</td>
-                  <td className="p-4 text-foreground/60">{new Date(prompt.createdAt).toLocaleDateString()}</td>
-                  <td className="p-4 pr-6 text-right">
-                    <div className="flex justify-end space-x-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button title="Analytics" className="p-2 bg-background border border-foreground/10 rounded-lg text-foreground/60 hover:text-primary hover:border-primary transition-colors">
-                        <BarChart size={16} />
-                      </button>
-                      <Link href={`/dashboard/prompts/${prompt._id}/edit`} title="Edit" className="p-2 bg-background border border-foreground/10 rounded-lg text-foreground/60 hover:text-accent hover:border-accent transition-colors flex items-center justify-center">
-                        <Edit size={16} />
-                      </Link>
-                      <button onClick={() => handleDelete(prompt._id)} title="Delete" className="p-2 bg-background border border-foreground/10 rounded-lg text-foreground/60 hover:text-red-500 hover:border-red-500 transition-colors">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+      <div className="bg-surface border border-border rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden relative">
+        <div className="overflow-x-auto custom-scrollbar">
+          
+          {prompts.length === 0 ? (
+            /* Premium Empty State */
+            <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+              <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mb-6 ring-1 ring-border">
+                <PenTool size={32} className="text-text-secondary/50" />
+              </div>
+              <h3 className="text-2xl font-bold text-text-primary mb-2">No prompts created</h3>
+              <p className="text-text-secondary font-medium max-w-sm mb-8">
+                You haven't published any prompts yet. Create your first workflow and share it with the community.
+              </p>
+              <Link 
+                href="/dashboard/add-prompt"
+                className="flex items-center px-6 py-3 bg-primary text-white font-bold rounded-xl active:scale-95 transition-all shadow-md hover:shadow-lg"
+              >
+                <Plus size={18} className="mr-2" />
+                Create First Prompt
+              </Link>
+            </div>
+          ) : (
+            /* Data Table */
+            <table className="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
+              <thead>
+                <tr className="bg-foreground/5 border-b border-border text-[11px] uppercase tracking-widest text-text-secondary font-black">
+                  <th className="p-5 pl-8">Title</th>
+                  <th className="p-5">Category</th>
+                  <th className="p-5">Status</th>
+                  <th className="p-5">Copies</th>
+                  <th className="p-5">Date Published</th>
+                  <th className="p-5 pr-8 text-right">Actions</th>
                 </tr>
-              ))}
-              {prompts.length === 0 && (
-                <tr>
-                  <td colSpan="6" className="p-8 text-center text-foreground/50 italic">No prompts found. Create your first one!</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border/50 text-[14px]">
+                <AnimatePresence>
+                  {prompts.map((prompt, idx) => (
+                    <motion.tr 
+                      key={prompt._id} 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3, delay: idx * 0.05 }}
+                      className="hover:bg-foreground/5 transition-colors group"
+                    >
+                      <td className="p-5 pl-8 font-bold text-text-primary">
+                        <div className="truncate max-w-[200px] sm:max-w-[250px] group-hover:text-primary transition-colors">
+                          {prompt.title}
+                        </div>
+                      </td>
+                      <td className="p-5 text-text-secondary font-medium">
+                        {prompt.category}
+                      </td>
+                      <td className="p-5">
+                        <span className={`px-3 py-1.5 rounded-md text-[10px] font-black border ${getStatusStyle(prompt.status)} uppercase tracking-widest shadow-sm`}>
+                          {prompt.status || 'Pending'}
+                        </span>
+                      </td>
+                      <td className="p-5 font-mono text-text-secondary font-bold">
+                        {prompt.copyCount || 0}
+                      </td>
+                      <td className="p-5 text-text-secondary font-medium text-[13px]">
+                        {new Date(prompt.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </td>
+                      <td className="p-5 pr-8 text-right">
+                        <div className="flex justify-end space-x-2 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <button 
+                            title="View Analytics" 
+                            className="p-2.5 bg-background border border-border rounded-xl text-text-secondary hover:text-primary hover:border-primary/30 transition-all active:scale-95 shadow-sm"
+                          >
+                            <BarChart size={16} />
+                          </button>
+                          <Link 
+                            href={`/dashboard/prompts/${prompt._id}/edit`} 
+                            title="Edit Prompt" 
+                            className="p-2.5 bg-background border border-border rounded-xl text-text-secondary hover:text-accent hover:border-accent/30 transition-all flex items-center justify-center active:scale-95 shadow-sm"
+                          >
+                            <Edit size={16} />
+                          </Link>
+                          <button 
+                            onClick={() => handleDelete(prompt._id)} 
+                            title="Delete Prompt" 
+                            className="p-2.5 bg-background border border-border rounded-xl text-text-secondary hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-all active:scale-95 shadow-sm"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
+
+      {/* Global Style for Horizontal Scrollbar in Table */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .custom-scrollbar::-webkit-scrollbar {
+          height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.02); 
+          border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(150, 150, 150, 0.2); 
+          border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(150, 150, 150, 0.4); 
+        }
+      `}} />
     </div>
   );
 }

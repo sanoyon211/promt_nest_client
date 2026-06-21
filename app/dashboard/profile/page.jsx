@@ -2,12 +2,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import Link from 'next/link';
-import { User, Mail, Shield, Star, Zap, PenTool, Edit2, Save, X } from 'lucide-react';
+import { Mail, Shield, Star, Zap, PenTool, Edit2, Save, X, Loader2, CheckCircle2 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProfilePage() {
   const { user, updateUserProfile } = useAuth();
-  
+
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({ name: '', photo: '' });
   const [isSaving, setIsSaving] = useState(false);
@@ -17,11 +18,11 @@ export default function ProfilePage() {
       setEditData({ name: user.name || '', photo: user.photo || user.photoURL || '' });
     }
   }, [user]);
-  
+
   if (!user) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="flex justify-center items-center h-[60vh]">
+        <Loader2 size={40} className="animate-spin text-primary" />
       </div>
     );
   }
@@ -39,173 +40,223 @@ export default function ProfilePage() {
       } else {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
-      toast.success('Profile updated successfully!');
+      toast.success('Profile updated successfully!', { position: "bottom-right", theme: "dark" });
       setIsEditing(false);
     } catch (err) {
-      toast.error('Failed to update profile.');
+      toast.error('Failed to update profile.', { position: "bottom-right" });
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto w-full">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-black text-foreground">My Profile</h1>
+    <div className="max-w-4xl mx-auto w-full pb-10">
+
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
+        <div>
+          <h1 className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight">My Profile</h1>
+          <p className="text-text-secondary font-medium mt-1">Manage your account details and preferences.</p>
+        </div>
+
         {!isEditing && (
-          <button 
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
             onClick={() => setIsEditing(true)}
-            className="flex items-center px-4 py-2 bg-surface border border-foreground/10 hover:border-primary/50 text-sm font-bold rounded-xl transition-all"
+            className="flex items-center px-5 py-2.5 bg-surface border border-border hover:border-primary/50 text-text-primary text-[14px] font-bold rounded-xl transition-all shadow-sm active:scale-95"
           >
-            <Edit2 size={16} className="mr-2" />
+            <Edit2 size={16} className="mr-2 text-primary" />
             Edit Profile
-          </button>
+          </motion.button>
         )}
       </div>
-      
-      <div className="bg-surface border border-foreground/10 rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="bg-surface border border-border rounded-[32px] p-8 md:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none relative overflow-hidden"
+      >
         {/* Decorative Background Blob */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
-        
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-          
-          {/* Profile Photo */}
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
+
+          {/* Profile Photo Area */}
           <div className="flex-shrink-0 relative group">
-            {isEditing && editData.photo ? (
-               <img src={editData.photo} alt="Profile" className="w-32 h-32 rounded-full object-cover border-4 border-background shadow-lg" />
-            ) : (user.photo || user.photoURL) ? (
-              <img 
-                src={user.photo || user.photoURL} 
-                alt="Profile" 
-                className="w-32 h-32 rounded-full object-cover border-4 border-background shadow-lg" 
-              />
-            ) : (
-              <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center text-primary text-5xl font-black border-4 border-background shadow-lg">
-                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
-              </div>
-            )}
-            
-            {isEditing && (
-              <div className="absolute inset-0 bg-background/50 rounded-full flex flex-col justify-center items-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                <Edit2 size={24} className="text-foreground" />
-                <span className="text-xs font-bold mt-1 text-foreground">Change URL</span>
+            <div className="relative w-36 h-36 rounded-full p-1 bg-gradient-to-br from-primary/30 to-accent/30 shadow-lg">
+              {isEditing && editData.photo ? (
+                <img src={editData.photo} alt="Profile" className="w-full h-full rounded-full object-cover border-[6px] border-surface" />
+              ) : (user.photo || user.photoURL) ? (
+                <img
+                  src={user.photo || user.photoURL}
+                  alt="Profile"
+                  className="w-full h-full rounded-full object-cover border-[6px] border-surface"
+                />
+              ) : (
+                <div className="w-full h-full rounded-full bg-surface border-[6px] border-surface flex items-center justify-center text-primary text-5xl font-black">
+                  {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+              )}
+
+              {isEditing && (
+                <div className="absolute inset-1 bg-background/60 rounded-full flex flex-col justify-center items-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Edit2 size={24} className="text-text-primary mb-1" />
+                  <span className="text-[10px] font-black uppercase tracking-wider text-text-primary">Edit URL</span>
+                </div>
+              )}
+            </div>
+
+            {subscription === 'Premium' && !isEditing && (
+              <div className="absolute -bottom-2 -right-2 bg-background rounded-full p-1 shadow-sm">
+                <div className="bg-gradient-to-br from-accent to-primary w-10 h-10 rounded-full flex items-center justify-center text-white">
+                  <Star size={18} className="fill-current" />
+                </div>
               </div>
             )}
           </div>
-          
-          {/* User Details */}
-          <div className="flex-1 w-full text-center md:text-left">
-            {isEditing ? (
-              <div className="space-y-4 mb-8 bg-background p-6 rounded-2xl border border-foreground/10">
-                <div>
-                  <label className="text-xs font-bold text-foreground/50 uppercase mb-1 block text-left">Display Name</label>
-                  <input 
-                    type="text" 
-                    value={editData.name}
-                    onChange={(e) => setEditData({...editData, name: e.target.value})}
-                    className="w-full bg-surface border border-foreground/10 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-foreground/50 uppercase mb-1 block text-left">Photo URL</label>
-                  <input 
-                    type="url" 
-                    value={editData.photo}
-                    onChange={(e) => setEditData({...editData, photo: e.target.value})}
-                    placeholder="https://example.com/avatar.jpg"
-                    className="w-full bg-surface border border-foreground/10 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
-                  />
-                </div>
-                
-                <div className="flex justify-end gap-3 pt-4 border-t border-foreground/10">
-                  <button 
-                    onClick={() => setIsEditing(false)}
-                    className="flex items-center px-4 py-2 bg-surface text-foreground/70 hover:text-foreground font-bold rounded-xl transition-colors"
-                  >
-                    <X size={16} className="mr-2" /> Cancel
-                  </button>
-                  <button 
-                    onClick={handleSaveProfile}
-                    disabled={isSaving}
-                    className="flex items-center px-6 py-2 bg-primary text-background font-bold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50"
-                  >
-                    {isSaving ? (
-                      <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin mr-2"></div>
-                    ) : (
-                      <Save size={16} className="mr-2" /> 
-                    )}
-                    Save Changes
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8">
-                <div>
-                  <h2 className="text-3xl font-bold text-foreground mb-2">{user.name || 'Anonymous User'}</h2>
-                  <div className="flex items-center justify-center md:justify-start text-foreground/60 mb-4">
-                    <Mail size={16} className="mr-2" />
-                    <span>{user.email || 'No email provided'}</span>
+
+          {/* User Details / Form Area */}
+          <div className="flex-1 w-full text-center md:text-left z-10">
+            <AnimatePresence mode="wait">
+              {isEditing ? (
+                <motion.div
+                  key="edit-form"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-5 bg-background p-6 md:p-8 rounded-[24px] border border-border shadow-inner"
+                >
+                  <div>
+                    <label className="text-[12px] font-bold text-text-secondary uppercase tracking-wider mb-2 block text-left">Display Name</label>
+                    <input
+                      type="text"
+                      value={editData.name}
+                      onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                      className="w-full bg-surface border border-border rounded-xl px-5 py-3.5 text-[15px] font-medium text-text-primary focus:ring-4 focus:ring-primary/10 focus:border-primary/50 focus:outline-none transition-all"
+                    />
                   </div>
-                  
-                  {/* Badges */}
-                  <div className="flex flex-wrap justify-center md:justify-start gap-2">
-                    <span className="px-3 py-1 text-xs font-bold rounded-full bg-primary/10 text-primary uppercase tracking-wider flex items-center">
-                      <Shield size={12} className="mr-1.5" />
-                      {role}
-                    </span>
-                    
-                    <span className={`px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wider flex items-center ${
-                      subscription === 'Premium' 
-                        ? 'bg-[#CFFAFE] text-cyan-900 dark:bg-cyan-900 dark:text-[#CFFAFE]' 
-                        : 'bg-foreground/10 text-foreground/80'
-                    }`}>
-                      {subscription === 'Premium' ? <Star size={12} className="mr-1.5 fill-current" /> : null}
-                      {subscription} Plan
-                    </span>
+                  <div>
+                    <label className="text-[12px] font-bold text-text-secondary uppercase tracking-wider mb-2 block text-left">Profile Photo URL</label>
+                    <input
+                      type="url"
+                      value={editData.photo}
+                      onChange={(e) => setEditData({ ...editData, photo: e.target.value })}
+                      placeholder="https://example.com/avatar.jpg"
+                      className="w-full bg-surface border border-border rounded-xl px-5 py-3.5 text-[15px] font-medium text-text-primary focus:ring-4 focus:ring-primary/10 focus:border-primary/50 focus:outline-none transition-all placeholder:text-text-secondary/40"
+                    />
                   </div>
-                </div>
-                
-                {/* Conditional Upgrade Button */}
-                {subscription !== 'Premium' && (
-                  <div className="flex-shrink-0 mt-2 md:mt-0">
-                    <Link 
-                      href="/payment" 
-                      className="inline-flex items-center justify-center px-6 py-3.5 bg-accent text-white font-bold rounded-xl hover:scale-105 transition-transform shadow-lg shadow-accent/20 w-full md:w-auto"
+
+                  <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 mt-2 border-t border-border">
+                    <button
+                      onClick={() => setIsEditing(false)}
+                      className="flex items-center justify-center px-6 py-3.5 bg-surface text-text-primary border border-border font-bold rounded-xl hover:bg-foreground/5 transition-colors active:scale-95 w-full sm:w-auto"
                     >
-                      <Zap size={18} className="mr-2 fill-current" />
-                      Upgrade to Premium
-                    </Link>
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={isSaving}
+                      className="flex items-center justify-center px-8 py-3.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] disabled:opacity-50 disabled:shadow-none active:scale-95 w-full sm:w-auto"
+                    >
+                      {isSaving ? (
+                        <>
+                          <Loader2 size={18} className="animate-spin mr-2" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save size={18} className="mr-2" />
+                          Save Changes
+                        </>
+                      )}
+                    </button>
                   </div>
-                )}
-              </div>
-            )}
-            
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="read-mode"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col md:flex-row md:justify-between md:items-start gap-6 mb-8"
+                >
+                  <div>
+                    <h2 className="text-3xl font-black text-text-primary mb-2">{user.name || 'Anonymous Creator'}</h2>
+                    <div className="flex items-center justify-center md:justify-start text-text-secondary font-medium mb-6">
+                      <Mail size={18} className="mr-2 opacity-70" />
+                      <span>{user.email || 'No email provided'}</span>
+                    </div>
+
+                    {/* Badges */}
+                    <div className="flex flex-wrap justify-center md:justify-start gap-3">
+                      <span className="px-3.5 py-1.5 text-[11px] font-black rounded-md bg-primary/10 text-primary border border-primary/20 uppercase tracking-widest flex items-center shadow-sm">
+                        <Shield size={14} className="mr-1.5" />
+                        {role}
+                      </span>
+
+                      <span className={`px-3.5 py-1.5 text-[11px] font-black rounded-md uppercase tracking-widest flex items-center shadow-sm border ${subscription === 'Premium'
+                        ? 'bg-gradient-to-r from-accent/10 to-primary/10 text-accent border-accent/20'
+                        : 'bg-foreground/5 text-text-secondary border-border'
+                        }`}>
+                        {subscription === 'Premium' && <Star size={14} className="mr-1.5 fill-current" />}
+                        {subscription} Plan
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Conditional Upgrade Button */}
+                  {subscription !== 'Premium' && (
+                    <div className="flex-shrink-0 mt-4 md:mt-0">
+                      <Link
+                        href="/pricing"
+                        className="inline-flex items-center justify-center px-6 py-3 bg-text-primary text-background font-bold rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl w-full md:w-auto"
+                      >
+                        <Zap size={18} className="mr-2 text-accent fill-accent" />
+                        Upgrade to Premium
+                      </Link>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-8 border-t border-foreground/10">
-              <div className="bg-background rounded-2xl p-5 border border-foreground/5 flex items-center transition-transform hover:-translate-y-1">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4 flex-shrink-0">
-                  <PenTool size={20} />
+            {!isEditing && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-10 pt-10 border-t border-border"
+              >
+                <div className="bg-background rounded-[24px] p-6 border border-border flex items-center group hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-md">
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mr-5 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <PenTool size={24} strokeWidth={2} />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[11px] uppercase tracking-widest text-text-secondary font-black mb-1">Total Prompts</p>
+                    <p className="text-3xl font-black text-text-primary leading-none">{totalPrompts}</p>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="text-xs uppercase tracking-wider text-foreground/50 font-bold mb-1">Total Prompts</p>
-                  <p className="text-2xl font-black text-foreground leading-none">{totalPrompts}</p>
+
+                <div className="bg-background rounded-[24px] p-6 border border-border flex items-center group hover:border-green-500/30 transition-all duration-300 shadow-sm hover:shadow-md">
+                  <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 mr-5 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <CheckCircle2 size={24} strokeWidth={2} />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[11px] uppercase tracking-widest text-text-secondary font-black mb-1">Account Status</p>
+                    <p className="text-xl font-bold text-text-primary leading-none mt-1">Verified User</p>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="bg-background rounded-2xl p-5 border border-foreground/5 flex items-center transition-transform hover:-translate-y-1">
-                <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 mr-4 flex-shrink-0">
-                  <Shield size={20} />
-                </div>
-                <div className="text-left">
-                  <p className="text-xs uppercase tracking-wider text-foreground/50 font-bold mb-1">Account Status</p>
-                  <p className="text-xl font-bold text-foreground leading-none mt-1">Verified</p>
-                </div>
-              </div>
-            </div>
-            
+              </motion.div>
+            )}
+
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
