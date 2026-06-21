@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/components/AuthProvider';
 import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -12,6 +13,7 @@ export default function MyPromptsPage() {
   const { user } = useAuth();
   const [prompts, setPrompts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [promptToDelete, setPromptToDelete] = useState(null);
 
   useEffect(() => {
     const fetchPrompts = async () => {
@@ -37,20 +39,26 @@ export default function MyPromptsPage() {
     fetchPrompts();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this prompt? This action cannot be undone.')) return;
+  const handleDeleteClick = (id) => {
+    setPromptToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!promptToDelete) return;
     try {
       const token = localStorage.getItem('access-token');
       // Optimistic delete
-      setPrompts(prompts.filter(p => p._id !== id));
+      setPrompts(prompts.filter(p => p._id !== promptToDelete));
       
-      await fetch(`${API_URL}/prompts/${id}`, { 
+      await fetch(`${API_URL}/prompts/${promptToDelete}`, { 
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       toast.success('Prompt deleted successfully', { position: "bottom-right", theme: "dark" });
     } catch (err) {
       toast.error('Failed to delete prompt', { position: "bottom-right" });
+    } finally {
+      setPromptToDelete(null);
     }
   };
 
@@ -190,7 +198,7 @@ export default function MyPromptsPage() {
                             <Edit size={16} />
                           </Link>
                           <button 
-                            onClick={() => handleDelete(prompt._id)} 
+                            onClick={() => handleDeleteClick(prompt._id)} 
                             title="Delete Prompt" 
                             className="p-2.5 bg-background border border-border rounded-xl text-text-secondary hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-all active:scale-95 shadow-sm"
                           >
@@ -206,6 +214,15 @@ export default function MyPromptsPage() {
           )}
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={!!promptToDelete}
+        title="Delete Prompt?"
+        message="Are you sure you want to delete this prompt? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setPromptToDelete(null)}
+        confirmText="Delete Prompt"
+      />
 
       {/* Global Style for Horizontal Scrollbar in Table */}
       <style dangerouslySetInnerHTML={{__html: `

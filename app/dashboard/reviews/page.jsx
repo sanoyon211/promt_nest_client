@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/components/AuthProvider';
 import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -12,6 +13,7 @@ export default function MyReviewsPage() {
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reviewToDelete, setReviewToDelete] = useState(null);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -37,20 +39,26 @@ export default function MyReviewsPage() {
     fetchReviews();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this review?')) return;
+  const handleDeleteClick = (id) => {
+    setReviewToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!reviewToDelete) return;
     try {
       const token = localStorage.getItem('access-token');
       // Optimistic delete with animation
-      setReviews(reviews.filter(r => r._id !== id));
+      setReviews(reviews.filter(r => r._id !== reviewToDelete));
       
-      await fetch(`${API_URL}/reviews/${id}`, { 
+      await fetch(`${API_URL}/reviews/${reviewToDelete}`, { 
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       toast.success('Review deleted successfully', { position: "bottom-right", theme: "dark" });
     } catch (err) {
       toast.error('Failed to delete review', { position: "bottom-right" });
+    } finally {
+      setReviewToDelete(null);
     }
   };
 
@@ -167,7 +175,7 @@ export default function MyReviewsPage() {
                             <ExternalLink size={16} />
                           </Link>
                           <button 
-                            onClick={() => handleDelete(review._id)} 
+                            onClick={() => handleDeleteClick(review._id)} 
                             title="Delete Review" 
                             className="p-2.5 bg-background border border-border rounded-xl text-text-secondary hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-all active:scale-95 shadow-sm"
                           >
@@ -183,6 +191,15 @@ export default function MyReviewsPage() {
           )}
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={!!reviewToDelete}
+        title="Delete Review?"
+        message="Are you sure you want to delete this review? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setReviewToDelete(null)}
+        confirmText="Delete Review"
+      />
 
       {/* Global Style for Horizontal Scrollbar in Table */}
       <style dangerouslySetInnerHTML={{__html: `

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -27,6 +27,32 @@ export default function AddPromptPage() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Dynamic filter states
+  const [categories, setCategories] = useState(['Coding', 'Marketing', 'SEO', 'Copywriting', 'Design', 'Business']);
+  const [aiTools, setAiTools] = useState(['ChatGPT', 'Claude 3.5 Sonnet', 'Midjourney', 'Gemini']);
+  const [customCategory, setCustomCategory] = useState('');
+  const [customAiTool, setCustomAiTool] = useState('');
+
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const res = await fetch(`${API_URL}/prompts/filters`);
+        if (res.ok) {
+          const data = await res.json();
+          // Merge default ones with fetched ones, exclude 'All'
+          const mergedCategories = Array.from(new Set(['Coding', 'Marketing', 'SEO', 'Copywriting', 'Design', 'Business', ...data.categories.filter(c => c !== 'All')]));
+          const mergedTools = Array.from(new Set(['ChatGPT', 'Claude 3.5 Sonnet', 'Midjourney', 'Gemini', ...data.aiTools.filter(t => t !== 'All')]));
+          
+          setCategories(mergedCategories);
+          setAiTools(mergedTools);
+        }
+      } catch (error) {
+        console.error("Failed to fetch filters", error);
+      }
+    };
+    fetchFilters();
+  }, []);
 
   // Still loading auth state
   if (!user) {
@@ -125,8 +151,13 @@ export default function AddPromptPage() {
       }
 
       // Format payload with specific requested defaults
+      const finalCategory = formData.category === 'Other' ? customCategory : formData.category;
+      const finalAiTool = formData.aiTool === 'Other' ? customAiTool : formData.aiTool;
+
       const payload = {
         ...formData,
+        category: finalCategory,
+        aiTool: finalAiTool,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
         tier: formData.visibility, // Map UI terminology to Backend terminology
         status: 'pending',
@@ -233,7 +264,7 @@ export default function AddPromptPage() {
 
         {/* 4-Column Grid for Selects */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="relative">
+          <div className="relative flex flex-col">
             <label className="block text-[13px] font-bold text-text-primary uppercase tracking-wider mb-2">Category</label>
             <div className="relative">
               <select 
@@ -242,18 +273,24 @@ export default function AddPromptPage() {
                 onChange={handleChange}
                 className="w-full appearance-none bg-background border border-border rounded-xl pl-4 pr-10 py-3.5 focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 text-text-primary text-[14px] font-medium transition-all cursor-pointer"
               >
-                <option value="Coding">Coding</option>
-                <option value="Marketing">Marketing</option>
-                <option value="SEO">SEO</option>
-                <option value="Copywriting">Copywriting</option>
-                <option value="Design">Design</option>
-                <option value="Business">Business</option>
+                {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                <option value="Other">Other (Add Custom...)</option>
               </select>
               <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
             </div>
+            {formData.category === 'Other' && (
+              <input 
+                type="text" 
+                value={customCategory}
+                onChange={(e) => setCustomCategory(e.target.value)}
+                placeholder="Type new category..."
+                required
+                className="w-full mt-3 bg-background border border-primary/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 text-[14px] font-medium text-text-primary transition-all placeholder:text-text-secondary/50 shadow-[0_0_15px_rgba(79,70,229,0.1)]"
+              />
+            )}
           </div>
 
-          <div className="relative">
+          <div className="relative flex flex-col">
             <label className="block text-[13px] font-bold text-text-primary uppercase tracking-wider mb-2">AI Tool</label>
             <div className="relative">
               <select 
@@ -262,13 +299,21 @@ export default function AddPromptPage() {
                 onChange={handleChange}
                 className="w-full appearance-none bg-background border border-border rounded-xl pl-4 pr-10 py-3.5 focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 text-text-primary text-[14px] font-medium transition-all cursor-pointer"
               >
-                <option value="ChatGPT">ChatGPT</option>
-                <option value="Claude 3.5 Sonnet">Claude 3.5 Sonnet</option>
-                <option value="Midjourney">Midjourney</option>
-                <option value="Gemini">Gemini</option>
+                {aiTools.map(t => <option key={t} value={t}>{t}</option>)}
+                <option value="Other">Other (Add Custom...)</option>
               </select>
               <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
             </div>
+            {formData.aiTool === 'Other' && (
+              <input 
+                type="text" 
+                value={customAiTool}
+                onChange={(e) => setCustomAiTool(e.target.value)}
+                placeholder="Type new AI tool..."
+                required
+                className="w-full mt-3 bg-background border border-primary/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 text-[14px] font-medium text-text-primary transition-all placeholder:text-text-secondary/50 shadow-[0_0_15px_rgba(79,70,229,0.1)]"
+              />
+            )}
           </div>
 
           <div className="relative">

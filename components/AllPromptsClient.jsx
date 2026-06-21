@@ -7,8 +7,6 @@ import { Search, ChevronDown, SlidersHorizontal, Library, FileQuestion } from 'l
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-const CATEGORIES = ['All', 'Marketing', 'Coding', 'AI Art', 'Sales', 'Web Dev', 'Worldbuilding'];
-const AI_TOOLS = ['All', 'ChatGPT', 'Claude', 'Midjourney', 'Gemini'];
 const LEVELS = ['All', 'Beginner', 'Intermediate', 'Pro'];
 const SORTS = ['Latest', 'Most Popular', 'Most Copied'];
 
@@ -53,6 +51,28 @@ export default function AllPromptsClient() {
   const [prompts, setPrompts] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+
+  const [categories, setCategories] = useState(['All', 'Coding', 'Marketing', 'SEO', 'Copywriting', 'Design', 'Business']);
+  const [aiTools, setAiTools] = useState(['All', 'ChatGPT', 'Claude 3.5 Sonnet', 'Midjourney', 'Gemini']);
+
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const res = await fetch(`${API_URL}/prompts/filters`);
+        if (res.ok) {
+          const data = await res.json();
+          const mergedCategories = Array.from(new Set(['All', 'Coding', 'Marketing', 'SEO', 'Copywriting', 'Design', 'Business', ...data.categories]));
+          const mergedTools = Array.from(new Set(['All', 'ChatGPT', 'Claude 3.5 Sonnet', 'Midjourney', 'Gemini', ...data.aiTools]));
+          
+          setCategories(mergedCategories);
+          setAiTools(mergedTools);
+        }
+      } catch (error) {
+        console.error("Failed to fetch filters", error);
+      }
+    };
+    fetchFilters();
+  }, []);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -172,7 +192,7 @@ export default function AllPromptsClient() {
                   className="w-full appearance-none bg-surface text-text-primary border border-border rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm font-semibold cursor-pointer hover:border-text-secondary/30 transition-colors"
                 >
                   <option value="All">All Categories</option>
-                  {CATEGORIES.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
+                  {categories.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
                 <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
               </div>
@@ -185,7 +205,7 @@ export default function AllPromptsClient() {
                   className="w-full appearance-none bg-surface text-text-primary border border-border rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm font-semibold cursor-pointer hover:border-text-secondary/30 transition-colors"
                 >
                   <option value="All">All AI Tools</option>
-                  {AI_TOOLS.filter(t => t !== 'All').map(t => <option key={t} value={t}>{t}</option>)}
+                  {aiTools.filter(t => t !== 'All').map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
                 <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
               </div>

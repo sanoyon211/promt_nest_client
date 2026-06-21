@@ -5,6 +5,7 @@ import { Check, X, Trash2, Star, Eye, ShieldCheck, SearchX, AlertCircle, Loader2
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -24,6 +25,9 @@ function PromptsTable() {
   const [rejectPromptId, setRejectPromptId] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Deletion Modal State
+  const [promptToDelete, setPromptToDelete] = useState(null);
 
   useEffect(() => {
     const page = parseInt(searchParams.get('page') || '1', 10);
@@ -122,17 +126,23 @@ function PromptsTable() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('CRITICAL WARNING: Are you sure you want to permanently delete this prompt?')) return;
+  const handleDeleteClick = (id) => {
+    setPromptToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!promptToDelete) return;
     try {
-      setPrompts(prompts.filter(p => p._id !== id));
-      await fetch(`${API_URL}/admin/prompts/${id}`, { 
+      setPrompts(prompts.filter(p => p._id !== promptToDelete));
+      await fetch(`${API_URL}/admin/prompts/${promptToDelete}`, { 
         method: 'DELETE',
         headers: getAuthHeaders()
       });
       toast.success('Prompt deleted permanently', { position: "bottom-right", theme: "dark" });
     } catch (err) {
       toast.error('Failed to delete prompt', { position: "bottom-right" });
+    } finally {
+      setPromptToDelete(null);
     }
   };
 
@@ -250,7 +260,7 @@ function PromptsTable() {
                             </button>
                           )}
                           <button 
-                            onClick={() => handleDelete(p._id)} 
+                            onClick={() => handleDeleteClick(p._id)} 
                             title="Delete Permanently" 
                             className="p-2.5 bg-background border border-border rounded-xl text-text-secondary hover:text-red-500 hover:border-red-500/30 hover:bg-red-500/5 transition-all active:scale-95 shadow-sm"
                           >
@@ -352,6 +362,15 @@ function PromptsTable() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ConfirmModal 
+        isOpen={!!promptToDelete}
+        title="Delete Prompt?"
+        message="CRITICAL WARNING: Are you sure you want to permanently delete this prompt? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setPromptToDelete(null)}
+        confirmText="Delete Prompt"
+      />
 
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { height: 8px; }

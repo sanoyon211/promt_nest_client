@@ -4,6 +4,7 @@ import { Trash2, ShieldAlert, Star, Users, X, ChevronDown } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/components/AuthProvider';
 import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -222,50 +223,18 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Custom Delete Confirmation Modal (Framer Motion) */}
-      <AnimatePresence>
-        {userToDelete && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4"
-          >
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-surface border border-border rounded-[32px] p-8 max-w-md w-full shadow-2xl relative overflow-hidden text-center"
-            >
-              {/* Background Blob */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-2xl -z-10 pointer-events-none"></div>
-              
-              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-red-500/10 to-red-500/5 text-red-500 mb-6 mx-auto ring-1 ring-red-500/20 shadow-inner">
-                <ShieldAlert size={28} />
-              </div>
-              
-              <h2 className="text-2xl font-black text-text-primary mb-2 tracking-tight">Delete User?</h2>
-              <p className="text-text-secondary font-medium mb-8">
-                Are you sure you want to permanently delete <strong className="text-text-primary">{userToDelete.name}</strong>? This action cannot be undone and all associated data will be wiped.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button 
-                  onClick={() => setUserToDelete(null)}
-                  className="flex-1 py-3.5 px-4 rounded-xl border border-border font-bold text-text-primary hover:bg-foreground/5 transition-all active:scale-95"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={confirmDelete}
-                  className="flex-1 py-3.5 px-4 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-all shadow-[0_4px_14px_0_rgba(239,68,68,0.39)] hover:shadow-[0_6px_20px_rgba(239,68,68,0.23)] active:scale-95"
-                >
-                  Delete User
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ConfirmModal 
+        isOpen={!!userToDelete}
+        title="Delete User?"
+        message={
+          <>
+            Are you sure you want to permanently delete <strong className="text-text-primary">{userToDelete?.name}</strong>? This action cannot be undone and all associated data will be wiped.
+          </>
+        }
+        onConfirm={confirmDelete}
+        onCancel={() => setUserToDelete(null)}
+        confirmText="Delete User"
+      />
 
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { height: 8px; }

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/components/AuthProvider';
 import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -12,6 +13,8 @@ export default function AdminReportedPage() {
   const { user } = useAuth();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [warningReportId, setWarningReportId] = useState(null);
+  const [deleteReport, setDeleteReport] = useState(null);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -72,28 +75,38 @@ export default function AdminReportedPage() {
     }
   };
 
-  const handleWarn = async (reportId) => {
-    if (!confirm('Are you sure you want to issue an official warning to this creator?')) return;
+  const handleWarnClick = (reportId) => {
+    setWarningReportId(reportId);
+  };
+
+  const confirmWarn = async () => {
+    if (!warningReportId) return;
     try {
-      await fetch(`${API_URL}/admin/reports/${reportId}/manage`, { 
+      await fetch(`${API_URL}/admin/reports/${warningReportId}/manage`, { 
         method: 'PATCH',
         headers: getAuthHeaders(),
         body: JSON.stringify({ action: 'warn' })
       });
       // Removing from list since report is resolved
-      setReports(reports.filter(r => r._id !== reportId));
+      setReports(reports.filter(r => r._id !== warningReportId));
       toast.success('Warning sent to creator', { position: "bottom-right", theme: "dark" });
     } catch (err) {
       toast.error('Failed to warn creator', { position: "bottom-right" });
+    } finally {
+      setWarningReportId(null);
     }
   };
 
-  const handleRemovePrompt = async (reportId, promptId) => {
-    if (!confirm('CRITICAL WARNING: Are you sure you want to permanently delete this reported prompt?')) return;
+  const handleRemoveClick = (reportId, promptId) => {
+    setDeleteReport({ reportId, promptId });
+  };
+
+  const confirmRemove = async () => {
+    if (!deleteReport) return;
     try {
       // Optimistically remove all reports related to this prompt
-      setReports(reports.filter(r => r.prompt?._id !== promptId));
-      await fetch(`${API_URL}/admin/reports/${reportId}/manage`, { 
+      setReports(reports.filter(r => r.prompt?._id !== deleteReport.promptId));
+      await fetch(`${API_URL}/admin/reports/${deleteReport.reportId}/manage`, { 
         method: 'PATCH',
         headers: getAuthHeaders(),
         body: JSON.stringify({ action: 'remove' })
@@ -101,6 +114,8 @@ export default function AdminReportedPage() {
       toast.success('Prompt removed successfully', { position: "bottom-right", theme: "dark" });
     } catch (err) {
       toast.error('Failed to remove prompt', { position: "bottom-right" });
+    } finally {
+      setDeleteReport(null);
     }
   };
 
@@ -218,14 +233,14 @@ export default function AdminReportedPage() {
                             Dismiss
                           </button>
                           <button 
-                            onClick={() => handleWarn(report._id)} 
+                            onClick={() => handleWarnClick(report._id)} 
                             title="Issue Warning" 
                             className="px-3.5 py-2 bg-background border border-border rounded-xl text-text-secondary hover:text-orange-500 hover:border-orange-500/50 hover:bg-orange-500/5 transition-all font-bold text-[12px] flex items-center active:scale-95 shadow-sm"
                           >
                             <AlertTriangle size={14} className="mr-1.5" /> Warn
                           </button>
                           <button 
-                            onClick={() => handleRemovePrompt(report._id, report.prompt?._id)} 
+                            onClick={() => handleRemoveClick(report._id, report.prompt?._id)} 
                             title="Delete Prompt Permanently" 
                             className="px-3.5 py-2 bg-background border border-border rounded-xl text-text-secondary hover:text-white hover:border-red-500 hover:bg-red-500 transition-all font-bold text-[12px] flex items-center active:scale-95 shadow-sm"
                           >
@@ -241,6 +256,25 @@ export default function AdminReportedPage() {
           )}
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={!!warningReportId}
+        title="Issue Warning?"
+        message="Are you sure you want to issue an official warning to this creator? This action will resolve the report."
+        onConfirm={confirmWarn}
+        onCancel={() => setWarningReportId(null)}
+        confirmText="Warn Creator"
+        isDestructive={false}
+      />
+
+      <ConfirmModal 
+        isOpen={!!deleteReport}
+        title="Delete Prompt?"
+        message="CRITICAL WARNING: Are you sure you want to permanently delete this reported prompt? This action cannot be undone."
+        onConfirm={confirmRemove}
+        onCancel={() => setDeleteReport(null)}
+        confirmText="Remove Prompt"
+      />
 
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { height: 8px; }
