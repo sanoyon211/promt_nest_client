@@ -19,7 +19,7 @@ export default function DemoAccountsPage() {
         hoverBorder: 'hover:border-fuchsia-500/50'
       },
       desc: 'Access system analytics, manage users, moderate prompts, review payment history, and configure system settings.',
-      email: 'admin@promptnest.com',
+      email: 'admin@promtnest.com',
       password: 'adminpassword123'
     },
     {
@@ -33,7 +33,7 @@ export default function DemoAccountsPage() {
         hoverBorder: 'hover:border-cyan-500/50'
       },
       desc: 'Access creator analytics, publish new AI workflows, edit owned listings, and track engagement metrics.',
-      email: 'creator@promptnest.com',
+      email: 'creator@promtnest.com',
       password: 'creatorpassword123'
     },
     {
@@ -47,7 +47,7 @@ export default function DemoAccountsPage() {
         hoverBorder: 'hover:border-emerald-500/50'
       },
       desc: 'Search prompts, copy workflows to clipboard, save items to personal library, leave reviews, and upgrade to premium.',
-      email: 'user@promptnest.com',
+      email: 'user@promtnest.com',
       password: 'userpassword123'
     }
   ];
