@@ -1,11 +1,15 @@
-import { Star, Lock, Send } from 'lucide-react';
+'use client';
+import { Star, Lock, Send, Loader2, MessageSquare, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/components/AuthProvider';
+import Link from 'next/link';
 
 export default function PromptReviews({ reviews, isLocked, promptId }) {
   const { user } = useAuth();
   const [rating, setRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localReviews, setLocalReviews] = useState(reviews || []);
@@ -18,13 +22,17 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
     
     setIsSubmitting(true);
     try {
+      const token = localStorage.getItem('access-token');
       await fetch(`${API_URL}/prompts/${promptId}/reviews`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ rating, text: comment })
       });
       
-      toast.success('Review submitted successfully!');
+      toast.success('Review submitted successfully!', { position: "bottom-right", theme: "dark" });
       
       // Optimistic update
       setLocalReviews([
@@ -35,97 +43,180 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
       setRating(5);
     } catch (err) {
       console.error(err);
-      toast.error('Failed to submit review.');
+      toast.error('Failed to submit review.', { position: "bottom-right" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="mt-12 pt-10 border-t border-foreground/10">
-      <h2 className="text-2xl font-bold text-foreground mb-8">User Reviews</h2>
+    <div className="pb-12">
+      <div className="flex items-center gap-3 mb-8">
+        <MessageSquare size={24} className="text-primary" />
+        <h2 className="text-2xl font-bold text-text-primary">User Reviews</h2>
+        <span className="bg-foreground/5 text-text-secondary px-3 py-1 rounded-full text-sm font-bold ml-2">
+          {localReviews.length}
+        </span>
+      </div>
       
       <div className="relative">
-        <div className={`${isLocked ? 'blur-sm select-none opacity-50' : ''}`}>
+        <div className={`transition-all duration-500 ${isLocked ? 'blur-[8px] select-none opacity-40 pointer-events-none' : ''}`}>
           
-          {/* Review Submission Form */}
-          {user && !isLocked && (
-            <div className="bg-surface p-6 rounded-2xl border border-primary/20 shadow-sm mb-8">
-              <h3 className="font-bold text-foreground mb-4">Leave a Review</h3>
-              <form onSubmit={handleSubmitReview}>
-                <div className="flex items-center mb-4 space-x-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button 
-                      key={star} 
-                      type="button" 
-                      onClick={() => setRating(star)}
-                      className="focus:outline-none transition-transform hover:scale-110"
-                    >
-                      <Star size={24} className={star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-foreground/20'} />
-                    </button>
-                  ))}
+          {/* Review Submission Form / Login Prompt */}
+          {!isLocked && (
+            <div className="mb-10">
+              {user ? (
+                <div className="bg-surface p-6 md:p-8 rounded-[24px] border border-border shadow-sm relative overflow-hidden">
+                  <h3 className="font-bold text-text-primary mb-4 text-lg">Leave a Review</h3>
+                  <form onSubmit={handleSubmitReview}>
+                    
+                    {/* Interactive Star Rating */}
+                    <div className="flex items-center mb-6 space-x-1" onMouseLeave={() => setHoverRating(0)}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <motion.button 
+                          key={star} 
+                          type="button" 
+                          whileHover={{ scale: 1.2 }}
+                          whileTap={{ scale: 0.9 }}
+                          onMouseEnter={() => setHoverRating(star)}
+                          onClick={() => setRating(star)}
+                          className="focus:outline-none p-1"
+                        >
+                          <Star 
+                            size={28} 
+                            className={`transition-colors duration-200 ${
+                              star <= (hoverRating || rating) 
+                                ? 'fill-amber-400 text-amber-400 drop-shadow-sm' 
+                                : 'fill-transparent text-text-secondary/30'
+                            }`} 
+                          />
+                        </motion.button>
+                      ))}
+                    </div>
+
+                    <textarea 
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      placeholder="How did this prompt work for you? Did you change any variables?"
+                      className="w-full bg-background border border-border rounded-xl px-5 py-4 min-h-[120px] focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 text-text-primary text-[15px] mb-5 resize-none transition-all placeholder:text-text-secondary/50"
+                      required
+                    />
+                    
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-medium text-text-secondary hidden sm:block">
+                        Your review helps other creators.
+                      </p>
+                      <button 
+                        type="submit"
+                        disabled={isSubmitting || !comment.trim()}
+                        className="flex items-center justify-center px-6 py-3 bg-primary text-white font-bold rounded-xl active:scale-95 transition-all shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] disabled:opacity-50 disabled:shadow-none disabled:active:scale-100 w-full sm:w-auto"
+                      >
+                        {isSubmitting ? (
+                          <Loader2 size={18} className="animate-spin" />
+                        ) : (
+                          <>
+                            <Send size={16} className="mr-2" />
+                            Post Review
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
                 </div>
-                <textarea 
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="What did you think of this prompt?"
-                  className="w-full bg-background border border-foreground/10 rounded-xl px-4 py-3 min-h-[100px] focus:outline-none focus:border-primary text-foreground mb-4 resize-none"
-                  required
-                />
-                <div className="flex justify-end">
-                  <button 
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex items-center px-6 py-2.5 bg-primary text-background font-bold rounded-xl hover:scale-105 transition-all shadow-md shadow-primary/20 disabled:opacity-50"
+              ) : (
+                // Not Logged In Call-to-Action
+                <div className="bg-gradient-to-r from-surface to-background p-6 md:p-8 rounded-[24px] border border-border shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <div>
+                    <h3 className="font-bold text-text-primary text-lg mb-1">Join the conversation</h3>
+                    <p className="text-sm font-medium text-text-secondary">Log in to leave a review, bookmark, and copy prompts.</p>
+                  </div>
+                  <Link 
+                    href="/login"
+                    className="flex items-center px-6 py-3 bg-surface border border-border text-text-primary font-bold rounded-xl hover:bg-foreground/5 hover:border-text-secondary transition-all active:scale-95 w-full sm:w-auto justify-center whitespace-nowrap"
                   >
-                    <Send size={16} className="mr-2" />
-                    {isSubmitting ? 'Submitting...' : 'Post Review'}
-                  </button>
+                    <LogIn size={16} className="mr-2" />
+                    Log In to Review
+                  </Link>
                 </div>
-              </form>
+              )}
             </div>
           )}
 
           {/* Review List */}
           {localReviews.length === 0 ? (
-            <p className="text-foreground/50 italic">No reviews yet for this prompt.</p>
+            <div className="text-center py-12 bg-surface/50 border border-dashed border-border rounded-[24px]">
+              <MessageSquare size={32} className="mx-auto text-text-secondary/50 mb-3" />
+              <p className="text-text-primary font-bold text-lg mb-1">No reviews yet</p>
+              <p className="text-text-secondary font-medium text-sm">Be the first to share your experience with this prompt.</p>
+            </div>
           ) : (
-            <div className="space-y-6">
-              {localReviews.map((review, idx) => (
-                <div key={idx} className="bg-surface p-6 rounded-2xl border border-foreground/5 shadow-sm">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent font-bold">
-                        {review.user?.name?.charAt(0) || 'U'}
+            <div className="space-y-4">
+              <AnimatePresence>
+                {localReviews.map((review, idx) => (
+                  <motion.div 
+                    key={idx} 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: idx * 0.05 }}
+                    className="bg-surface p-6 rounded-[24px] border border-border shadow-sm hover:border-primary/20 transition-colors"
+                  >
+                    <div className="flex items-start sm:items-center justify-between mb-4 flex-col sm:flex-row gap-3">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary font-black text-lg ring-1 ring-primary/20 shadow-inner flex-shrink-0">
+                          {review.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                        </div>
+                        <div>
+                          <p className="font-bold text-text-primary text-base leading-tight">
+                            {review.user?.name || 'Anonymous User'}
+                          </p>
+                          <p className="text-[12px] font-medium text-text-secondary mt-0.5">
+                            {new Date(review.date || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} 
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-bold text-foreground">{review.user?.name || 'Anonymous'}</p>
-                        <p className="text-xs text-foreground/50">
-                          {new Date(review.date || Date.now()).toLocaleDateString()} 
-                          {review.user?.email && ` • ${review.user.email}`}
-                        </p>
+                      
+                      {/* Read-only Stars */}
+                      <div className="flex gap-0.5">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            size={16} 
+                            className={i < (review.rating || 5) ? 'fill-amber-400 text-amber-400' : 'fill-transparent text-text-secondary/30'} 
+                          />
+                        ))}
                       </div>
                     </div>
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} className={i < (review.rating || 5) ? 'fill-current' : 'text-foreground/20'} />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-foreground/80 leading-relaxed text-sm">{review.text}</p>
-                </div>
-              ))}
+                    
+                    <p className="text-text-secondary leading-relaxed text-[15px] font-medium pl-0 sm:pl-16">
+                      {review.text}
+                    </p>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           )}
         </div>
         
+        {/* Premium Overlay */}
         {isLocked && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/30 backdrop-blur-[1px] rounded-2xl">
-             <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center mb-3">
-              <Lock size={24} className="text-accent" />
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/30 backdrop-blur-md rounded-[24px] border border-white/5"
+          >
+            <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-4 ring-1 ring-white/10 shadow-lg">
+              <Lock size={28} className="text-accent" />
             </div>
-             <p className="font-bold text-foreground text-lg">Subscribe to Premium to view and write reviews.</p>
-          </div>
+            <p className="font-bold text-text-primary text-xl md:text-2xl text-center px-4 max-w-md mb-6">
+              Subscribe to <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Premium</span> to view and write reviews.
+            </p>
+            <Link 
+              href="/pricing"
+              className="px-6 py-3 bg-text-primary text-background font-bold rounded-xl active:scale-95 transition-transform"
+            >
+              Upgrade Now
+            </Link>
+          </motion.div>
         )}
       </div>
     </div>

@@ -1,22 +1,40 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import PromptCard from '@/components/PromptCard';
+import PromptCard from './PromptCard';
 import { motion } from 'framer-motion';
+import { Search, ChevronDown, SlidersHorizontal, Library, FileQuestion } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 const CATEGORIES = ['All', 'Marketing', 'Coding', 'AI Art', 'Sales', 'Web Dev', 'Worldbuilding'];
-const AI_TOOLS = ['All', 'ChatGPT', 'Claude 3.5 Sonnet', 'Midjourney v6'];
-const LEVELS = ['All', 'Beginner', 'Pro', 'Public'];
+const AI_TOOLS = ['All', 'ChatGPT', 'Claude', 'Midjourney', 'Gemini'];
+const LEVELS = ['All', 'Beginner', 'Intermediate', 'Pro'];
 const SORTS = ['Latest', 'Most Popular', 'Most Copied'];
+
+// Premium Skeleton Loader for Grid
+const SkeletonCard = () => (
+  <div className="w-full h-[320px] bg-surface rounded-[24px] border border-border p-5 flex flex-col animate-pulse shadow-sm">
+    <div className="w-full h-40 bg-foreground/5 rounded-[16px] mb-5"></div>
+    <div className="flex justify-between items-start mb-4">
+      <div className="w-16 h-5 bg-foreground/5 rounded-md"></div>
+      <div className="w-20 h-5 bg-foreground/5 rounded-md"></div>
+    </div>
+    <div className="w-3/4 h-6 bg-foreground/5 rounded-md mb-3"></div>
+    <div className="w-full h-4 bg-foreground/5 rounded-md mb-2"></div>
+    <div className="w-5/6 h-4 bg-foreground/5 rounded-md mb-auto"></div>
+    <div className="flex justify-between items-center mt-5 pt-4 border-t border-border/50">
+      <div className="w-24 h-8 bg-foreground/5 rounded-full"></div>
+      <div className="w-9 h-9 bg-foreground/5 rounded-full"></div>
+    </div>
+  </div>
+);
 
 export default function AllPromptsClient() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Initialize state strictly from URL params on mount
   const initialSearch = searchParams.get('q') || '';
   const initialCategory = searchParams.get('category') || 'All';
   const initialTool = searchParams.get('tool') || 'All';
@@ -36,7 +54,6 @@ export default function AllPromptsClient() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // Debounce Search Logic (500ms)
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
@@ -44,12 +61,10 @@ export default function AllPromptsClient() {
     return () => clearTimeout(handler);
   }, [search]);
 
-  // Reset page to 1 if any filter (besides page) changes
   useEffect(() => {
     setPage(1);
   }, [debouncedSearch, category, tool, level, sort]);
 
-  // Sync state to Next.js URL
   const updateUrl = useCallback(() => {
     const params = new URLSearchParams();
     if (debouncedSearch) params.set('q', debouncedSearch);
@@ -60,34 +75,32 @@ export default function AllPromptsClient() {
     if (page > 1) params.set('page', page);
 
     const newUrl = `${pathname}?${params.toString()}`;
-    // Use replace to avoid stacking infinite history states when typing search
     router.replace(newUrl, { scroll: false });
   }, [debouncedSearch, category, tool, level, sort, page, pathname, router]);
 
-  // Trigger URL sync whenever state changes
   useEffect(() => {
     updateUrl();
   }, [updateUrl]);
 
-  // Fetch Data tracking searchParams (Server-side mapping)
   useEffect(() => {
     const fetchPrompts = async () => {
       setLoading(true);
       try {
         const queryParams = new URLSearchParams(searchParams.toString());
-        // Call Express Backend with full query string map
+
+        // 🚀 Adding Strict Limit of 12 items per page for the backend
+        queryParams.set('limit', '12');
+
         const res = await fetch(`${API_URL}/prompts?${queryParams.toString()}`);
-        
+
         if (res.ok) {
           const data = await res.json();
-          // Map backend format safely
           setPrompts(data.data || data);
           setTotalPages(data.totalPages || 1);
         } else {
           throw new Error('API down');
         }
       } catch (error) {
-        // Fallback to empty state if backend is down or empty
         setPrompts([]);
         setTotalPages(1);
       } finally {
@@ -105,139 +118,193 @@ export default function AllPromptsClient() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 text-primary text-[10px] font-bold uppercase tracking-widest mb-4 border border-primary/10">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-            Library
-          </div>
-          <h1 className="text-4xl md:text-5xl font-black text-text-primary tracking-tight mb-3">All Prompts</h1>
-          <p className="text-lg text-text-secondary max-w-xl">Explore our extensive library of high-quality AI prompts.</p>
-        </div>
-        
-        <div className="w-full md:w-[400px] relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-accent/30 rounded-full blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search titles, tools, tags..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-14 pr-4 py-3.5 bg-surface/80 backdrop-blur-md border border-border rounded-full focus:outline-none text-text-primary placeholder-text-secondary/50 shadow-sm"
-            />
-            <svg className="w-5 h-5 absolute left-5 top-4 text-text-secondary/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-        </div>
-      </div>
+    <div className="w-full min-h-screen bg-background pb-20">
 
-      {/* Filter and Sort UI */}
-      <div className="flex flex-col sm:flex-row flex-wrap gap-4 mb-12 bg-surface/80 backdrop-blur-md p-6 rounded-3xl border border-border shadow-sm">
-        <select 
-          value={category} 
-          onChange={(e) => setCategory(e.target.value)}
-          className="bg-transparent text-text-primary border border-border rounded-xl px-5 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm font-semibold w-full sm:w-auto hover:bg-foreground/5 cursor-pointer transition-colors"
-        >
-          <option value="All">All Categories</option>
-          {CATEGORIES.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
+      {/* Page Header Area */}
+      <div className="bg-surface border-b border-border pt-12 pb-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
 
-        <select 
-          value={tool} 
-          onChange={(e) => setTool(e.target.value)}
-          className="bg-transparent text-text-primary border border-border rounded-xl px-5 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm font-semibold w-full sm:w-auto hover:bg-foreground/5 cursor-pointer transition-colors"
-        >
-          <option value="All">All AI Tools</option>
-          {AI_TOOLS.filter(t => t !== 'All').map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
-
-        <select 
-          value={level} 
-          onChange={(e) => setLevel(e.target.value)}
-          className="bg-transparent text-text-primary border border-border rounded-xl px-5 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm font-semibold w-full sm:w-auto hover:bg-foreground/5 cursor-pointer transition-colors"
-        >
-          <option value="All">All Difficulties</option>
-          {LEVELS.filter(l => l !== 'All').map(l => <option key={l} value={l}>{l}</option>)}
-        </select>
-
-        <select 
-          value={sort} 
-          onChange={(e) => setSort(e.target.value)}
-          className="bg-transparent text-text-primary border border-border rounded-xl px-5 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm font-semibold w-full sm:w-auto sm:ml-auto hover:bg-foreground/5 cursor-pointer transition-colors"
-        >
-          {SORTS.map(s => <option key={s} value={s}>Sort: {s}</option>)}
-        </select>
-      </div>
-
-      {/* Grid */}
-      {loading ? (
-        <div className="flex justify-center items-center py-32">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 min-h-[400px]">
-            {prompts.map((prompt, idx) => (
-              <motion.div
-                key={prompt._id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: idx * 0.05 }}
-                className="h-full"
-              >
-                <PromptCard prompt={prompt} />
-              </motion.div>
-            ))}
-            {prompts.length === 0 && (
-              <div className="col-span-full py-20 text-center text-foreground/50 text-lg flex flex-col items-center">
-                <svg className="w-16 h-16 mb-4 text-foreground/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                No prompts found matching your exact criteria.
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-4">
+                <Library size={14} />
+                Explore Library
               </div>
-            )}
+              {/* 🎨 Updated Title with Gradient */}
+              <h1 className="text-4xl md:text-5xl font-black text-text-primary tracking-tight mb-3">
+                All <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Prompts</span>
+              </h1>
+              <p className="text-lg text-text-secondary max-w-xl font-medium">Discover, filter, and find the perfect AI prompts for your next big project.</p>
+            </div>
+
+            {/* Search Bar */}
+            <div className="w-full md:w-[400px] relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-accent/30 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+              <div className="relative flex items-center bg-background border border-border rounded-2xl overflow-hidden shadow-sm transition-all focus-within:border-primary/50">
+                <div className="pl-4 pr-2 text-text-secondary">
+                  <Search size={20} />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search titles, tags..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full py-3.5 bg-transparent focus:outline-none text-text-primary text-base placeholder:text-text-secondary/50 font-medium"
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Pagination UI */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center space-x-2 mt-8 pt-8 border-t border-foreground/5">
-              <button 
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1}
-                className="px-5 py-2.5 rounded-xl border border-foreground/10 bg-surface text-foreground font-medium disabled:opacity-50 hover:bg-foreground/5 transition-colors"
-              >
-                Previous
-              </button>
-              
-              <div className="flex space-x-2 mx-4 overflow-x-auto px-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => handlePageChange(p)}
-                    className={`w-10 h-10 rounded-xl font-bold flex items-center justify-center transition-all flex-shrink-0 ${
-                      page === p 
-                        ? 'bg-primary text-background shadow-lg shadow-primary/20 scale-110' 
-                        : 'bg-surface text-foreground border border-foreground/10 hover:bg-foreground/10'
-                    }`}
+          {/* Premium Filter and Sort UI */}
+          <div className="flex flex-col lg:flex-row gap-4 items-center bg-background/50 p-2 rounded-2xl border border-border/50">
+            <div className="flex items-center gap-2 px-3 text-text-secondary hidden lg:flex">
+              <SlidersHorizontal size={18} />
+              <span className="text-sm font-bold uppercase tracking-wider">Filters</span>
+            </div>
+
+            <div className="flex flex-wrap flex-1 gap-3 w-full">
+              {/* Category Dropdown */}
+              <div className="relative flex-1 min-w-[140px]">
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full appearance-none bg-surface text-text-primary border border-border rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm font-semibold cursor-pointer hover:border-text-secondary/30 transition-colors"
+                >
+                  <option value="All">All Categories</option>
+                  {CATEGORIES.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
+              </div>
+
+              {/* Tool Dropdown */}
+              <div className="relative flex-1 min-w-[140px]">
+                <select
+                  value={tool}
+                  onChange={(e) => setTool(e.target.value)}
+                  className="w-full appearance-none bg-surface text-text-primary border border-border rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm font-semibold cursor-pointer hover:border-text-secondary/30 transition-colors"
+                >
+                  <option value="All">All AI Tools</option>
+                  {AI_TOOLS.filter(t => t !== 'All').map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
+              </div>
+
+              {/* Difficulty Dropdown */}
+              <div className="relative flex-1 min-w-[140px]">
+                <select
+                  value={level}
+                  onChange={(e) => setLevel(e.target.value)}
+                  className="w-full appearance-none bg-surface text-text-primary border border-border rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm font-semibold cursor-pointer hover:border-text-secondary/30 transition-colors"
+                >
+                  <option value="All">All Difficulties</option>
+                  {LEVELS.filter(l => l !== 'All').map(l => <option key={l} value={l}>{l}</option>)}
+                </select>
+                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
+              </div>
+
+              {/* Sort Dropdown */}
+              <div className="relative flex-1 min-w-[140px] lg:ml-auto lg:flex-none lg:w-48">
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                  className="w-full appearance-none bg-surface text-text-primary border border-border rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm font-bold cursor-pointer hover:border-primary/50 transition-colors"
+                >
+                  {SORTS.map(s => <option key={s} value={s}>Sort: {s}</option>)}
+                </select>
+                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {/* Show up to 12 Skeletons perfectly aligned */}
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(key => <SkeletonCard key={key} />)}
+          </div>
+        ) : (
+          <>
+            {prompts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[400px]">
+                {prompts.map((prompt, idx) => (
+                  <motion.div
+                    key={prompt._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: idx * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full"
                   >
-                    {p}
-                  </button>
+                    <PromptCard prompt={prompt} />
+                  </motion.div>
                 ))}
               </div>
-
-              <button 
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page === totalPages}
-                className="px-5 py-2.5 rounded-xl border border-foreground/10 bg-surface text-foreground font-medium disabled:opacity-50 hover:bg-foreground/5 transition-colors"
+            ) : (
+              // Empty State
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex flex-col items-center justify-center py-32 text-center bg-surface/50 border border-dashed border-border rounded-3xl"
               >
-                Next
-              </button>
-            </div>
-          )}
-        </>
-      )}
+                <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mb-6 text-text-secondary">
+                  <FileQuestion size={40} strokeWidth={1.5} />
+                </div>
+                <h3 className="text-2xl font-bold text-text-primary mb-2">No Prompts Found</h3>
+                <p className="text-text-secondary max-w-md font-medium">
+                  We couldn't find any prompts matching your exact filters. Try adjusting your search criteria or categories.
+                </p>
+                <button
+                  onClick={() => {
+                    setSearch(''); setCategory('All'); setTool('All'); setLevel('All');
+                  }}
+                  className="mt-6 px-6 py-2.5 bg-surface border border-border rounded-full text-sm font-bold text-text-primary hover:border-primary/50 transition-colors"
+                >
+                  Clear All Filters
+                </button>
+              </motion.div>
+            )}
+
+            {/* Premium Pagination UI */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-16 pt-8 border-t border-border">
+                <button
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1}
+                  className="px-4 py-2 rounded-xl border border-border bg-surface text-text-primary text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-foreground/5 transition-colors"
+                >
+                  Prev
+                </button>
+
+                <div className="flex gap-2 mx-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => handlePageChange(p)}
+                      className={`w-10 h-10 rounded-xl text-sm font-bold flex items-center justify-center transition-all ${page === p
+                        ? 'bg-primary text-white shadow-md shadow-primary/20'
+                        : 'bg-surface text-text-secondary border border-border hover:border-primary/50 hover:text-primary'
+                        }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page === totalPages}
+                  className="px-4 py-2 rounded-xl border border-border bg-surface text-text-primary text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-foreground/5 transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,8 @@
+'use client';
 import { Sparkles, Copy, Calendar, Tag, Bookmark, Flag } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { motion } from 'framer-motion';
 
 export default function PromptHeader({ prompt, promptId, onReportClick }) {
   const [bookmarked, setBookmarked] = useState(false);
@@ -11,15 +13,15 @@ export default function PromptHeader({ prompt, promptId, onReportClick }) {
       // Simulate optimistic UI update
       setBookmarked(!bookmarked);
       if (!bookmarked) {
-        toast.success('Prompt bookmarked successfully!');
+        toast.success('Prompt bookmarked successfully!', { position: "bottom-right" });
       } else {
-        toast.info('Prompt removed from bookmarks.');
+        toast.info('Prompt removed from bookmarks.', { position: "bottom-right" });
       }
-      
+
       await fetch(`${API_URL}/prompts/${promptId}/bookmark`, { method: 'POST' });
     } catch (err) {
       console.error(err);
-      toast.error('Failed to update bookmark.');
+      toast.error('Failed to update bookmark.', { position: "bottom-right" });
       setBookmarked(false); // revert on error
     }
   };
@@ -27,83 +29,100 @@ export default function PromptHeader({ prompt, promptId, onReportClick }) {
   const getBadgeStyle = (type, value) => {
     const val = value?.toLowerCase();
     if (type === 'tier') {
-      if (val === 'premium') return 'bg-[#CFFAFE] text-cyan-900 dark:bg-cyan-900 dark:text-[#CFFAFE]';
-      if (val === 'private') return 'bg-[#E5E3F0] text-[#1E1B2E] dark:bg-[#18162B] dark:text-[#E5E3F0]';
+      if (val === 'premium') return 'bg-accent/10 text-accent border-accent/20';
+      if (val === 'private') return 'bg-foreground/5 text-text-primary border-border';
     }
     if (type === 'level') {
-      if (val === 'beginner') return 'bg-[#DCFCE7] text-[#14291C] dark:bg-[#14291C] dark:text-[#DCFCE7]';
-      if (val === 'pro') return 'bg-[#FCE7F3] text-[#3D1530] dark:bg-[#3D1530] dark:text-[#FCE7F3]';
+      if (val === 'beginner') return 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20';
+      if (val === 'intermediate') return 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20';
+      if (val === 'pro') return 'bg-primary/10 text-primary border-primary/20';
     }
-    return 'bg-[#ECEBF3] text-[#232040] dark:bg-[#232040] dark:text-[#ECEBF3]'; // Public/Default
+    return 'bg-foreground/5 text-text-secondary border-border'; // Public/Default
   };
 
   return (
-    <div className="mb-10 border-b border-foreground/10 pb-10">
-      <div className="flex justify-between items-start mb-4">
+    <div className="mb-12 border-b border-border/60 pb-12">
+      {/* Top Meta Row & Actions */}
+      <div className="flex justify-between items-start mb-6">
         <div className="flex flex-wrap gap-2">
           {prompt.tier && (
-            <span className={`px-3 py-1 text-xs font-bold rounded-full ${getBadgeStyle('tier', prompt.tier)} uppercase tracking-wider`}>
+            <span className={`px-3 py-1 text-[11px] font-bold rounded-full border ${getBadgeStyle('tier', prompt.tier)} uppercase tracking-widest shadow-sm`}>
               {prompt.tier}
             </span>
           )}
           {prompt.level && (
-            <span className={`px-3 py-1 text-xs font-bold rounded-full ${getBadgeStyle('level', prompt.level)} uppercase tracking-wider`}>
+            <span className={`px-3 py-1 text-[11px] font-bold rounded-full border ${getBadgeStyle('level', prompt.level)} uppercase tracking-widest shadow-sm`}>
               {prompt.level}
             </span>
           )}
-          <span className="flex items-center px-3 py-1 text-xs font-bold rounded-full bg-surface border border-foreground/10 text-foreground/80 uppercase tracking-wider">
-            <Tag size={12} className="mr-1" />
+          <span className="flex items-center px-3 py-1 text-[11px] font-bold rounded-full bg-surface border border-border text-text-secondary uppercase tracking-widest shadow-sm">
+            <Tag size={12} className="mr-1.5" />
             {prompt.category || 'General'}
           </span>
         </div>
-        
-        <div className="flex items-center">
-          <button 
+
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={handleBookmark}
-            className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors ${
-              bookmarked ? 'bg-primary/10 text-primary' : 'bg-surface border border-foreground/10 text-foreground/50 hover:bg-foreground/5 hover:text-foreground'
-            }`}
-            title="Bookmark Prompt"
+            className={`flex items-center justify-center w-11 h-11 rounded-full transition-all duration-300 shadow-sm border ${bookmarked
+              ? 'bg-primary/10 border-primary/20 text-primary'
+              : 'bg-surface border-border text-text-secondary hover:bg-foreground/5 hover:border-primary/30 hover:text-primary'
+              }`}
+            title={bookmarked ? "Remove Bookmark" : "Bookmark Prompt"}
           >
             <Bookmark size={20} className={bookmarked ? 'fill-current' : ''} />
-          </button>
-          
-          <button 
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={onReportClick}
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-surface border border-foreground/10 text-foreground/50 hover:bg-red-500/10 hover:text-red-500 transition-colors ml-2"
+            className="flex items-center justify-center w-11 h-11 rounded-full bg-surface border border-border text-text-secondary shadow-sm hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all duration-300"
             title="Report Prompt"
           >
             <Flag size={18} />
-          </button>
+          </motion.button>
         </div>
       </div>
 
-      <h1 className="text-4xl md:text-5xl font-black text-foreground mb-4 leading-tight">
+      {/* Title & Description */}
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent mb-5 leading-tight tracking-tight pb-2">
         {prompt.title}
       </h1>
-      
-      <p className="text-xl text-foreground/70 mb-8 leading-relaxed max-w-4xl">
+
+      <p className="text-lg md:text-xl text-text-secondary mb-10 leading-relaxed max-w-3xl font-medium">
         {prompt.description}
       </p>
 
+      {/* Thumbnail Image */}
       {prompt.thumbnailImage && (
-        <div className="w-full h-64 sm:h-96 mb-8 rounded-3xl overflow-hidden relative shadow-lg border border-foreground/10">
-          <img src={prompt.thumbnailImage} alt={prompt.title} className="w-full h-full object-cover" />
+        <div className="w-full h-64 sm:h-[400px] mb-10 rounded-[24px] overflow-hidden relative border border-border shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-none bg-foreground/5 group">
+          {/* Black Overlay: Hover korle halka clear hobe */}
+          <div className="absolute inset-0 bg-black/50 group-hover:bg-black/20 transition-colors duration-700 z-10 pointer-events-none"></div>
+
+          <img
+            src={prompt.thumbnailImage}
+            alt={prompt.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+          />
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-foreground/60">
-        <div className="flex items-center bg-primary/5 text-primary px-4 py-2 rounded-xl border border-primary/10">
+      {/* Bottom Meta Stats */}
+      <div className="flex flex-wrap items-center gap-4 md:gap-6 text-sm font-semibold text-text-secondary">
+        <div className="flex items-center bg-gradient-to-r from-primary/10 to-accent/10 text-primary px-4 py-2.5 rounded-xl border border-primary/20 shadow-sm">
           <Sparkles size={16} className="mr-2" />
-          Optimized for: <strong className="ml-1">{prompt.aiTool || 'Any'}</strong>
+          Optimized for: <strong className="ml-1.5 text-text-primary">{prompt.aiTool || 'Any Model'}</strong>
         </div>
-        <div className="flex items-center">
-          <Copy size={16} className="mr-2 text-foreground/40" />
-          {prompt.copyCount || 0} Copies
+
+        <div className="flex items-center bg-surface px-4 py-2.5 rounded-xl border border-border shadow-sm">
+          <Copy size={16} className="mr-2 text-text-secondary/70" />
+          <span className="text-text-primary mr-1">{prompt.copyCount || 0}</span> Copies
         </div>
-        <div className="flex items-center">
-          <Calendar size={16} className="mr-2 text-foreground/40" />
-          Updated {new Date(prompt.updatedAt || Date.now()).toLocaleDateString()}
+
+        <div className="flex items-center bg-surface px-4 py-2.5 rounded-xl border border-border shadow-sm">
+          <Calendar size={16} className="mr-2 text-text-secondary/70" />
+          Updated <span className="text-text-primary ml-1.5">{new Date(prompt.updatedAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
         </div>
       </div>
     </div>
