@@ -66,7 +66,7 @@ export default function AdminAnalyticsPage() {
               <Users size={20} />
             </div>
           </div>
-          <p className="text-4xl font-black text-foreground">{loading ? '...' : stats.totalUsers.toLocaleString()}</p>
+          <p className="text-4xl font-black text-foreground">{loading ? '...' : (stats.totalUsers || 0).toLocaleString()}</p>
           <p className="text-xs text-green-500 font-bold mt-2 flex items-center">
             <TrendingUp size={14} className="mr-1" /> +12% this month
           </p>
@@ -80,7 +80,7 @@ export default function AdminAnalyticsPage() {
               <FileText size={20} />
             </div>
           </div>
-          <p className="text-4xl font-black text-foreground">{loading ? '...' : stats.totalPrompts.toLocaleString()}</p>
+          <p className="text-4xl font-black text-foreground">{loading ? '...' : (stats.totalPrompts || 0).toLocaleString()}</p>
           <p className="text-xs text-green-500 font-bold mt-2 flex items-center">
             <TrendingUp size={14} className="mr-1" /> +24% this month
           </p>
@@ -93,7 +93,7 @@ export default function AdminAnalyticsPage() {
               <Star size={20} className="fill-current" />
             </div>
           </div>
-          <p className="text-4xl font-black text-foreground">{loading ? '...' : stats.totalReviews.toLocaleString()}</p>
+          <p className="text-4xl font-black text-foreground">{loading ? '...' : (stats.totalReviews || 0).toLocaleString()}</p>
         </div>
 
         <div className="bg-surface p-6 rounded-3xl border border-foreground/10 shadow-sm transition-transform hover:-translate-y-1">
@@ -103,7 +103,7 @@ export default function AdminAnalyticsPage() {
               <Copy size={20} />
             </div>
           </div>
-          <p className="text-4xl font-black text-foreground">{loading ? '...' : stats.totalCopies.toLocaleString()}</p>
+          <p className="text-4xl font-black text-foreground">{loading ? '...' : (stats.totalCopies || 0).toLocaleString()}</p>
         </div>
       </div>
 
@@ -111,7 +111,7 @@ export default function AdminAnalyticsPage() {
         <h2 className="text-xl font-bold text-foreground mb-6">Platform Growth (6 Mo)</h2>
         <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={stats.chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart data={stats.chartData || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.3}/>

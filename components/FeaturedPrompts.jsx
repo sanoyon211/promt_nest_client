@@ -44,12 +44,14 @@ export default function FeaturedPrompts() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.6 }}
-        className="flex justify-between items-end mb-12 px-4 sm:px-6 lg:px-8"
+        className="flex flex-col items-center text-center mb-16 px-4 sm:px-6 lg:px-8"
       >
-        <div>
-          <h2 className="text-3xl md:text-5xl font-bold text-foreground">Featured Prompts</h2>
-          <p className="text-foreground/60 mt-4 text-lg">Discover the most popular community creations.</p>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 text-primary text-[10px] font-bold uppercase tracking-widest mb-4 border border-primary/10">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          Handpicked
         </div>
+        <h2 className="text-3xl md:text-5xl font-black text-text-primary tracking-tight">Featured Prompts</h2>
+        <p className="text-text-secondary mt-4 text-lg max-w-2xl">Discover the most popular and highly-rated community creations.</p>
       </motion.div>
       
       {loading ? (

@@ -106,32 +106,39 @@ export default function AllPromptsClient() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8">
         <div>
-          <h1 className="text-4xl font-black text-foreground mb-3">All Prompts</h1>
-          <p className="text-lg text-foreground/60">Explore our extensive library of high-quality AI prompts.</p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 text-primary text-[10px] font-bold uppercase tracking-widest mb-4 border border-primary/10">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+            Library
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-text-primary tracking-tight mb-3">All Prompts</h1>
+          <p className="text-lg text-text-secondary max-w-xl">Explore our extensive library of high-quality AI prompts.</p>
         </div>
         
-        <div className="w-full md:w-96 relative">
-          <input
-            type="text"
-            placeholder="Search titles, tools, tags..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-surface border border-foreground/10 rounded-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-foreground shadow-sm"
-          />
-          <svg className="w-5 h-5 absolute left-4 top-3.5 text-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+        <div className="w-full md:w-[400px] relative group">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-accent/30 rounded-full blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search titles, tools, tags..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-14 pr-4 py-3.5 bg-surface/80 backdrop-blur-md border border-border rounded-full focus:outline-none text-text-primary placeholder-text-secondary/50 shadow-sm"
+            />
+            <svg className="w-5 h-5 absolute left-5 top-4 text-text-secondary/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
         </div>
       </div>
 
       {/* Filter and Sort UI */}
-      <div className="flex flex-col sm:flex-row flex-wrap gap-4 mb-10 bg-surface p-5 rounded-2xl border border-foreground/5 shadow-sm">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-4 mb-12 bg-surface/80 backdrop-blur-md p-6 rounded-3xl border border-border shadow-sm">
         <select 
           value={category} 
           onChange={(e) => setCategory(e.target.value)}
-          className="bg-background text-foreground border border-foreground/10 rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary text-sm font-medium w-full sm:w-auto"
+          className="bg-transparent text-text-primary border border-border rounded-xl px-5 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm font-semibold w-full sm:w-auto hover:bg-foreground/5 cursor-pointer transition-colors"
         >
           <option value="All">All Categories</option>
           {CATEGORIES.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
@@ -140,7 +147,7 @@ export default function AllPromptsClient() {
         <select 
           value={tool} 
           onChange={(e) => setTool(e.target.value)}
-          className="bg-background text-foreground border border-foreground/10 rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary text-sm font-medium w-full sm:w-auto"
+          className="bg-transparent text-text-primary border border-border rounded-xl px-5 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm font-semibold w-full sm:w-auto hover:bg-foreground/5 cursor-pointer transition-colors"
         >
           <option value="All">All AI Tools</option>
           {AI_TOOLS.filter(t => t !== 'All').map(t => <option key={t} value={t}>{t}</option>)}
@@ -149,7 +156,7 @@ export default function AllPromptsClient() {
         <select 
           value={level} 
           onChange={(e) => setLevel(e.target.value)}
-          className="bg-background text-foreground border border-foreground/10 rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary text-sm font-medium w-full sm:w-auto"
+          className="bg-transparent text-text-primary border border-border rounded-xl px-5 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm font-semibold w-full sm:w-auto hover:bg-foreground/5 cursor-pointer transition-colors"
         >
           <option value="All">All Difficulties</option>
           {LEVELS.filter(l => l !== 'All').map(l => <option key={l} value={l}>{l}</option>)}
@@ -158,7 +165,7 @@ export default function AllPromptsClient() {
         <select 
           value={sort} 
           onChange={(e) => setSort(e.target.value)}
-          className="bg-background text-foreground border border-foreground/10 rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary text-sm font-medium w-full sm:w-auto sm:ml-auto"
+          className="bg-transparent text-text-primary border border-border rounded-xl px-5 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm font-semibold w-full sm:w-auto sm:ml-auto hover:bg-foreground/5 cursor-pointer transition-colors"
         >
           {SORTS.map(s => <option key={s} value={s}>Sort: {s}</option>)}
         </select>
