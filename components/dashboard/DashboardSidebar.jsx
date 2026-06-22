@@ -2,9 +2,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
-import { 
-  User, Bookmark, Copy, 
-  PenTool, PlusCircle, DollarSign, 
+import {
+  User, Bookmark, Copy,
+  PenTool, PlusCircle, DollarSign,
   Users, Settings, BarChart2,
   X, Sparkles, LogOut, Star, ShieldAlert, CreditCard
 } from 'lucide-react';
@@ -30,7 +30,6 @@ const NAV_LINKS = {
   admin: [
     { label: 'My Profile', href: '/dashboard/profile', icon: User },
     { label: 'My Prompts', href: '/dashboard/prompts', icon: PenTool },
-    { label: 'Create Prompt', href: '/dashboard/add-prompt', icon: PlusCircle },
     { label: 'Bookmarks', href: '/dashboard/bookmarks', icon: Bookmark },
     { label: 'Platform Analytics', href: '/dashboard/admin/analytics', icon: BarChart2 },
     { label: 'All Payments', href: '/dashboard/admin/payments', icon: CreditCard },
@@ -44,14 +43,14 @@ const NAV_LINKS = {
 export default function DashboardSidebar({ isOpen, setIsOpen }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  
+
   // Default to user if no role is found, and ensure lowercase matching
   const role = user?.role?.toLowerCase() || 'user';
   const links = NAV_LINKS[role] || NAV_LINKS.user;
 
   const SidebarContent = () => (
     <div className="h-full flex flex-col bg-surface border-r border-border/60 w-64 pt-6 pb-6 relative z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-none">
-      
+
       {/* Brand */}
       <div className="px-6 mb-8 flex justify-between items-center relative">
         <Link href="/" className="flex items-center text-2xl font-black group relative z-10">
@@ -62,8 +61,8 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
           </span>
         </Link>
         {isOpen && (
-          <button 
-            onClick={() => setIsOpen(false)} 
+          <button
+            onClick={() => setIsOpen(false)}
             className="md:hidden w-8 h-8 flex items-center justify-center rounded-full text-text-secondary hover:bg-foreground/5 hover:text-text-primary transition-colors focus:outline-none"
           >
             <X size={20} strokeWidth={2.5} />
@@ -76,32 +75,32 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
         <p className="px-3 text-[10px] font-black text-text-secondary/50 uppercase tracking-[0.2em] mb-4 mt-2">
           {role} Menu
         </p>
-        
+
         {links.map((link) => {
           const Icon = link.icon;
           const isActive = pathname === link.href;
-          
+
           return (
-            <Link 
-              key={link.href} 
+            <Link
+              key={link.href}
               href={link.href}
               onClick={() => setIsOpen && setIsOpen(false)}
               className={`flex items-center px-3 py-3 rounded-xl font-bold transition-all duration-300 group relative ${isActive
-                  ? 'text-primary bg-gradient-to-r from-primary/10 to-transparent' 
+                  ? 'text-primary bg-gradient-to-r from-primary/10 to-transparent'
                   : 'text-text-secondary hover:bg-foreground/5 hover:text-text-primary'
-              }`}
+                }`}
             >
               {/* Active Indicator Bar */}
               {isActive && (
-                <motion.div 
+                <motion.div
                   layoutId="activeSidebarIndicator"
                   className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"
                 />
               )}
-              
-              <Icon 
-                size={20} 
-                className={`mr-3 transition-transform duration-300 ${isActive ? 'text-primary' : 'text-text-secondary/70 group-hover:text-primary group-hover:scale-110'}`} 
+
+              <Icon
+                size={20}
+                className={`mr-3 transition-transform duration-300 ${isActive ? 'text-primary' : 'text-text-secondary/70 group-hover:text-primary group-hover:scale-110'}`}
               />
               <span className={`transition-transform duration-300 ${!isActive && 'group-hover:translate-x-1'}`}>
                 {link.label}
@@ -113,7 +112,7 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
 
       {/* Footer / Logout */}
       <div className="px-4 mt-auto border-t border-border/60 pt-4">
-        <button 
+        <button
           onClick={logout}
           className="flex items-center w-full px-4 py-3.5 rounded-xl font-bold text-red-500 hover:bg-red-500/10 transition-all duration-300 group active:scale-95"
         >
@@ -123,7 +122,8 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
       </div>
 
       {/* Internal Style for Scrollbar Hiding */}
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }
@@ -146,7 +146,7 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
       <AnimatePresence>
         {isOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -154,7 +154,7 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
               onClick={() => setIsOpen(false)}
               className="md:hidden fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm"
             />
-            <motion.div 
+            <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
