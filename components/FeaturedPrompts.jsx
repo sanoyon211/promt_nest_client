@@ -33,7 +33,7 @@ export default function FeaturedPrompts() {
   useEffect(() => {
     const fetchPrompts = async () => {
       try {
-        const res = await fetch(`${API_URL}/prompts?featured=true&limit=6`);
+        const res = await fetch(`${API_URL}/prompts?limit=6`);
         if (res.ok) {
           const json = await res.json();
           const fetchedPrompts = json.data || json;
