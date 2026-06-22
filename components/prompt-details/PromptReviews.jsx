@@ -16,6 +16,21 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch(`${API_URL}/prompts/${promptId}/reviews`);
+        if (res.ok) {
+          const data = await res.json();
+          setLocalReviews(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch reviews', err);
+      }
+    };
+    fetchReviews();
+  }, [promptId]);
+
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!comment.trim()) return;
@@ -29,14 +44,14 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ rating, text: comment })
+        body: JSON.stringify({ rating, comment, name: user.name })
       });
       
       toast.success('Review submitted successfully!', { position: "bottom-right", theme: "dark" });
       
       // Optimistic update
       setLocalReviews([
-        { user: { name: user.name, email: user.email }, rating, text: comment, date: new Date().toISOString() },
+        { name: user.name, email: user.email, rating, comment, date: new Date().toISOString() },
         ...localReviews
       ]);
       setComment('');
@@ -167,7 +182,7 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
                         </div>
                         <div>
                           <p className="font-bold text-text-primary text-base leading-tight">
-                            {review.user?.name || 'Anonymous User'}
+                            {review.name || review.user?.name || 'Anonymous User'}
                           </p>
                           <p className="text-[12px] font-medium text-text-secondary mt-0.5">
                             {new Date(review.date || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} 
@@ -188,7 +203,7 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
                     </div>
                     
                     <p className="text-text-secondary leading-relaxed text-[15px] font-medium pl-0 sm:pl-16">
-                      {review.text}
+                      {review.comment || review.text}
                     </p>
                   </motion.div>
                 ))}
