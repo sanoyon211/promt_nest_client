@@ -5,7 +5,7 @@ import { MessageSquare, Star, Quote } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-// Premium Skeleton Loader for the Slider
+// Premium Skeleton Loader
 const SkeletonReview = () => (
   <div className="bg-surface p-5 sm:p-6 rounded-2xl border border-border shadow-sm flex flex-col min-h-[280px] md:min-h-[320px] w-[280px] sm:w-[350px] md:w-[400px] flex-shrink-0 animate-pulse">
     <div className="flex gap-1 mb-6">
@@ -26,8 +26,14 @@ const SkeletonReview = () => (
 export default function Reviews() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isInteracting, setIsInteracting] = useState(false);
+  
   const scrollRef = useRef(null);
+  const isInteracting = useRef(false);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const startScrollLeft = useRef(0);
+  const exactScrollX = useRef(0);
+  const interactionTimeout = useRef(null);
   
   useEffect(() => {
     const fetchReviews = async () => {
@@ -64,36 +70,73 @@ export default function Reviews() {
     fetchReviews();
   }, []);
 
-  // JS Auto-Scroll Logic with Infinite Loop
+  // 100% Smooth Auto-Scroll with DeltaTime & Momentum handling
   useEffect(() => {
     const container = scrollRef.current;
     if (!container || loading || reviews.length === 0) return;
 
     let animationFrameId;
+    let lastTime = performance.now();
+    const SPEED = 40; // Pixels per second (কতটুকু স্পিডে স্লাইড হবে)
 
-    const autoScroll = () => {
-      if (!isInteracting) {
-        container.scrollLeft += 0.8; // স্পিড কন্ট্রোল (বাড়াতে চাইলে 1 বা 1.5 দিন)
+    const playScroll = (currentTime) => {
+      const deltaTime = currentTime - lastTime;
+      lastTime = currentTime;
 
-        // ইনফিনিট লুপ তৈরি করার জন্য: কন্টেইনার অর্ধেক স্ক্রল হয়ে গেলে আবার 0 তে ব্যাক করবে
-        if (container.scrollLeft >= container.scrollWidth / 2) {
-          container.scrollLeft = 0;
+      if (!isInteracting.current && !isDragging.current) {
+        // Smoothly increment based on time, not frames (Fixes high refresh rate bugs)
+        exactScrollX.current += (SPEED * deltaTime) / 1000;
+        
+        // Infinite Loop Magic
+        if (exactScrollX.current >= container.scrollWidth / 2) {
+          exactScrollX.current -= container.scrollWidth / 2;
         }
+        container.scrollLeft = exactScrollX.current;
+      } else {
+        // Sync JS memory with user's manual scroll position
+        exactScrollX.current = container.scrollLeft;
       }
-      animationFrameId = requestAnimationFrame(autoScroll);
+      animationFrameId = requestAnimationFrame(playScroll);
     };
 
-    animationFrameId = requestAnimationFrame(autoScroll);
-
+    animationFrameId = requestAnimationFrame(playScroll);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isInteracting, loading, reviews]);
+  }, [loading, reviews]);
 
-  // ডাবল রিভিউ অ্যারে (যাতে লুপ করার সময় খালি জায়গা না থাকে)
+  // Interaction Handlers
+  const handleInteractionStart = (e) => {
+    isInteracting.current = true;
+    if (interactionTimeout.current) clearTimeout(interactionTimeout.current);
+
+    // Desktop Mouse Drag Initialization
+    if (e.type === 'mousedown') {
+      isDragging.current = true;
+      startX.current = e.pageX - scrollRef.current.offsetLeft;
+      startScrollLeft.current = scrollRef.current.scrollLeft;
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX.current) * 1.5; // Swipe sensitivity
+    scrollRef.current.scrollLeft = startScrollLeft.current - walk;
+  };
+
+  const handleInteractionEnd = () => {
+    isDragging.current = false;
+    // Wait 1.5 seconds after user stops touching/dragging before auto-scroll resumes
+    // This allows the browser's native swipe momentum to finish smoothly
+    interactionTimeout.current = setTimeout(() => {
+      isInteracting.current = false;
+    }, 1500);
+  };
+
   const duplicatedReviews = [...reviews, ...reviews];
 
   return (
     <section className="py-16 md:py-24 w-full bg-background relative overflow-hidden">
-      {/* CSS to hide scrollbar but keep swipe functionality */}
       <style dangerouslySetInnerHTML={{__html: `
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
@@ -105,7 +148,6 @@ export default function Reviews() {
       `}} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 md:mb-14">
-        {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -124,7 +166,6 @@ export default function Reviews() {
         </motion.div>
       </div>
 
-      {/* Auto-scroll + Swipeable Container */}
       <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent_0,black_32px,black_calc(100%-32px),transparent_100%)] md:[mask-image:linear-gradient(to_right,transparent_0,black_128px,black_calc(100%-128px),transparent_100%)]">
         
         {loading ? (
@@ -134,25 +175,26 @@ export default function Reviews() {
         ) : (
           <div 
             ref={scrollRef}
-            onMouseEnter={() => setIsInteracting(true)} // মাউস রাখলে থামবে
-            onMouseLeave={() => setIsInteracting(false)} // মাউস সরালে চলবে
-            onTouchStart={() => setIsInteracting(true)} // মোবাইলে টাচ করলে থামবে
-            onTouchEnd={() => setIsInteracting(false)} // টাচ ছেড়ে দিলে চলবে
-            className="flex gap-4 sm:gap-6 md:gap-8 overflow-x-auto hide-scrollbar px-4 sm:px-6 md:px-12 py-6 cursor-grab active:cursor-grabbing"
-            style={{ WebkitOverflowScrolling: 'touch' }} // iOS এ স্মুথ সোয়াইপের জন্য
+            onMouseEnter={handleInteractionStart}
+            onMouseLeave={handleInteractionEnd}
+            onMouseDown={handleInteractionStart}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleInteractionEnd}
+            onTouchStart={handleInteractionStart}
+            onTouchEnd={handleInteractionEnd}
+            className="flex gap-4 sm:gap-6 md:gap-8 overflow-x-auto hide-scrollbar px-4 sm:px-6 md:px-12 py-6 cursor-grab active:cursor-grabbing select-none"
+            style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {duplicatedReviews.map((review, idx) => (
               <div 
                 key={`${review.id}-${idx}`} 
                 className="bg-surface p-5 md:p-6 rounded-2xl border border-border relative flex flex-col min-h-[280px] md:min-h-[320px] w-[280px] sm:w-[350px] md:w-[400px] flex-shrink-0 group hover:border-primary/30 transition-all duration-500 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-none"
               >
-                {/* Watermark Quote Icon */}
                 <div className="absolute top-4 sm:top-6 right-4 sm:right-6 text-foreground/5 group-hover:text-primary/5 transition-colors duration-500 pointer-events-none">
                   <Quote size={60} className="sm:w-20 sm:h-20 rotate-12" strokeWidth={1} />
                 </div>
 
-                {/* 5-Star Rating */}
-                <div className="flex gap-1 mb-4 sm:mb-6 relative z-10">
+                <div className="flex gap-1 mb-4 sm:mb-6 relative z-10 pointer-events-none">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star 
                       key={star} 
@@ -162,27 +204,25 @@ export default function Reviews() {
                   ))}
                 </div>
 
-                {/* Review Text */}
-                <p className="text-[15px] sm:text-base md:text-lg text-text-secondary mb-6 sm:mb-8 italic relative z-10 leading-relaxed flex-grow select-none">
+                <p className="text-[15px] sm:text-base md:text-lg text-text-secondary mb-6 sm:mb-8 italic relative z-10 leading-relaxed flex-grow pointer-events-none">
                   "{review.text}"
                 </p>
 
-                {/* Author Info */}
-                <div className="flex items-center space-x-3 sm:space-x-4 relative z-10 mt-auto pt-5 sm:pt-6 border-t border-border/50">
+                <div className="flex items-center space-x-3 sm:space-x-4 relative z-10 mt-auto pt-5 sm:pt-6 border-t border-border/50 pointer-events-none">
                   {review.photoURL ? (
                     <img 
                       src={review.photoURL} 
                       alt={review.author} 
-                      className="w-10 sm:w-12 h-10 sm:h-12 rounded-full object-cover ring-1 ring-primary/20 shadow-inner flex-shrink-0 pointer-events-none"
+                      className="w-10 sm:w-12 h-10 sm:h-12 rounded-full object-cover ring-1 ring-primary/20 shadow-inner flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary font-bold text-base sm:text-lg ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300 flex-shrink-0 pointer-events-none">
+                    <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary font-bold text-base sm:text-lg ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300 flex-shrink-0">
                       {review.author.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <div>
-                    <p className="font-bold text-text-primary text-sm sm:text-base pointer-events-none">{review.author}</p>
-                    <p className="text-[10px] sm:text-xs font-bold text-text-secondary uppercase tracking-wider mt-0.5 sm:mt-1 pointer-events-none">{review.role}</p>
+                    <p className="font-bold text-text-primary text-sm sm:text-base">{review.author}</p>
+                    <p className="text-[10px] sm:text-xs font-bold text-text-secondary uppercase tracking-wider mt-0.5 sm:mt-1">{review.role}</p>
                   </div>
                 </div>
               </div>

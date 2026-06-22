@@ -79,3 +79,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
 }
+
+button {
+  cursor: pointer;
+}
