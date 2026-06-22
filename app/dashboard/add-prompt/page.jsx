@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { Lock, Zap, Send, FileText, Upload, X, ChevronDown, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY || 'dummy_imgbb_key';
@@ -27,6 +27,7 @@ export default function AddPromptPage() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // Dynamic filter states
   const [categories, setCategories] = useState(['Coding', 'Marketing', 'SEO', 'Copywriting', 'Design', 'Business']);
@@ -175,7 +176,15 @@ export default function AddPromptPage() {
         body: JSON.stringify(payload)
       });
       
-      if (!res.ok) throw new Error('Failed to create prompt');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        if (res.status === 403 || errorData.message?.includes('maximum of 3 prompts')) {
+          setShowUpgradeModal(true);
+          setIsSubmitting(false);
+          return;
+        }
+        throw new Error(errorData.message || 'Failed to create prompt');
+      }
       
       toast.success('Prompt submitted successfully! Pending approval.', { position: "bottom-right", theme: "dark" });
       setTimeout(() => {
@@ -438,6 +447,48 @@ export default function AddPromptPage() {
           background: rgba(255, 255, 255, 0.2); 
         }
       `}} />
+
+      {/* Upgrade Modal */}
+      <AnimatePresence>
+        {showUpgradeModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-surface border border-border p-8 rounded-[32px] w-full max-w-md shadow-2xl relative overflow-hidden text-center"
+            >
+              <button 
+                onClick={() => setShowUpgradeModal(false)}
+                className="absolute top-6 right-6 p-2 text-text-secondary hover:text-text-primary bg-background border border-border rounded-full transition-colors hover:bg-foreground/5 active:scale-95"
+              >
+                <X size={18} />
+              </button>
+              
+              <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 ring-1 ring-primary/20 shadow-inner">
+                <Zap size={32} className="text-accent fill-accent" />
+              </div>
+              
+              <h2 className="text-2xl font-black text-text-primary mb-3 tracking-tight">Upgrade to Premium</h2>
+              <p className="text-[14px] text-text-secondary font-medium mb-8">
+                You've reached the free tier limit of 3 prompts. Upgrade your account to unlock unlimited prompt creation!
+              </p>
+              
+              <Link 
+                href="/payment"
+                className="flex items-center justify-center px-6 py-4 bg-primary text-white text-[15px] font-bold rounded-xl hover:bg-primary/90 transition-all shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] active:scale-95"
+              >
+                Upgrade Now
+              </Link>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
