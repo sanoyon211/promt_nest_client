@@ -116,6 +116,8 @@ export default function EditPromptPage() {
     );
   }
 
+  const isPremium = user.subscription === 'Premium';
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -335,7 +337,11 @@ export default function EditPromptPage() {
               >
                 <option value="Beginner">Beginner</option>
                 <option value="Intermediate">Intermediate</option>
-                <option value="Pro">Pro</option>
+                {isPremium ? (
+                  <option value="Pro">Pro (Premium)</option>
+                ) : (
+                  <option value="Pro" disabled>Pro (Premium Only)</option>
+                )}
               </select>
               <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
             </div>
@@ -351,7 +357,11 @@ export default function EditPromptPage() {
                 className="w-full appearance-none bg-background border border-border rounded-xl pl-4 pr-10 py-3.5 focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 text-text-primary text-[14px] font-medium transition-all cursor-pointer"
               >
                 <option value="Public">Public (Free)</option>
-                <option value="Private">Private (Premium)</option>
+                {isPremium ? (
+                  <option value="Private">Private (Premium)</option>
+                ) : (
+                  <option value="Private" disabled>Private (Premium Only)</option>
+                )}
               </select>
               <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
             </div>
