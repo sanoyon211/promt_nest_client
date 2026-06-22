@@ -13,7 +13,7 @@ export default function PrivateRoute({ children }) {
   useEffect(() => {
     // CRUCIAL: Do not redirect if we are still verifying the session via the HttpOnly cookie
     if (!isLoading && !user) {
-      router.replace(`/login?callbackUrl=${pathname}`);
+      router.replace(`/login?redirect=${pathname}`);
     }
   }, [isLoading, user, router, pathname]);
 

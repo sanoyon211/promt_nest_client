@@ -19,7 +19,13 @@ export default function AdminReportedPage() {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const res = await fetch(`${API_URL}/admin/reports`);
+        const token = localStorage.getItem('access-token');
+        const res = await fetch(`${API_URL}/admin/reports`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
         if (res.ok) {
           const data = await res.json();
           setReports(data);

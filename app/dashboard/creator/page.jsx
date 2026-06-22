@@ -21,7 +21,13 @@ const defaultDailyCopies = [
 export default function CreatorAnalyticsPage() {
   const { theme, systemTheme } = useTheme();
   const { user } = useAuth();
-  const [stats, setStats] = useState({ totalPrompts: 0, totalCopies: 0, totalBookmarks: 0, chartData: [] });
+  const [stats, setStats] = useState({ 
+    totalPrompts: 0, 
+    totalCopies: 0, 
+    totalBookmarks: 0, 
+    chartData: [],
+    dailyCopiesData: defaultDailyCopies
+  });
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
@@ -119,7 +125,7 @@ export default function CreatorAnalyticsPage() {
               <h2 className="text-lg font-bold text-text-primary mb-6">Total Copies (This Week)</h2>
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={defaultDailyCopies} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <BarChart data={stats.dailyCopiesData || defaultDailyCopies} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={COLORS.grid} vertical={false} />
                     <XAxis dataKey="day" stroke={COLORS.grid} tick={{fill: COLORS.grid, fontSize: 11}} axisLine={false} tickLine={false} />
                     <YAxis stroke={COLORS.grid} tick={{fill: COLORS.grid, fontSize: 11}} axisLine={false} tickLine={false} />

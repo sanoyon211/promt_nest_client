@@ -1,11 +1,16 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Settings, Save, Shield, Key, Loader2, Info } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/components/AuthProvider';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function SettingsPage() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [settings, setSettings] = useState({
     siteName: 'PromptNest',
     contactEmail: 'admin@promptnest.com',
@@ -14,14 +19,50 @@ export default function SettingsPage() {
     maxPromptsPerUser: 3
   });
 
-  const handleSave = (e) => {
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const token = localStorage.getItem('access-token');
+        if (!token) return;
+        const res = await fetch(`${API_URL}/admin/settings`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setSettings(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch settings', error);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+    fetchSettings();
+  }, [user]);
+
+  const handleSave = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem('access-token');
+      const res = await fetch(`${API_URL}/admin/settings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(settings)
+      });
+      if (res.ok) {
+        toast.success('System settings saved successfully!', { position: "bottom-right", theme: "dark" });
+      } else {
+        throw new Error('Failed to save');
+      }
+    } catch (err) {
+      toast.error('Failed to save settings', { position: "bottom-right" });
+    } finally {
       setLoading(false);
-      toast.success('System settings saved successfully!', { position: "bottom-right", theme: "dark" });
-    }, 1000);
+    }
   };
 
   const containerVariants = {
@@ -56,7 +97,12 @@ export default function SettingsPage() {
       >
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
 
-        <form onSubmit={handleSave} className="space-y-10">
+        {initialLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <Loader2 size={40} className="animate-spin text-primary" />
+          </div>
+        ) : (
+          <form onSubmit={handleSave} className="space-y-10">
 
           {/* General Section */}
           <motion.section variants={itemVariants}>
@@ -189,6 +235,7 @@ export default function SettingsPage() {
           </motion.div>
 
         </form>
+        )}
       </motion.div>
     </div>
   );

@@ -34,7 +34,7 @@ export default function Header() {
   };
 
   const getAuthHref = (basePath) => {
-    if (pathname.startsWith('/pricing') || pathname.startsWith('/prompt')) {
+    if (pathname.startsWith('/pricing') || pathname.startsWith('/prompt') || pathname.startsWith('/all-prompts')) {
       return `${basePath}?redirect=${encodeURIComponent(pathname)}`;
     }
     return basePath;

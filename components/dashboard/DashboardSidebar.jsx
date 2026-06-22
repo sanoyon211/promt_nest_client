@@ -23,10 +23,13 @@ const NAV_LINKS = {
     { label: 'My Profile', href: '/dashboard/profile', icon: User },
     { label: 'My Prompts', href: '/dashboard/prompts', icon: PenTool },
     { label: 'Create Prompt', href: '/dashboard/add-prompt', icon: PlusCircle },
+    { label: 'Bookmarks', href: '/dashboard/bookmarks', icon: Bookmark },
+    { label: 'Copied Prompts', href: '/dashboard/copied', icon: Copy },
     { label: 'Analytics', href: '/dashboard/creator', icon: BarChart2 },
   ],
   admin: [
-    { label: 'My Profile', href: '/dashboard/profile', icon: User }, // ✅ Profile link added here
+    { label: 'My Profile', href: '/dashboard/profile', icon: User },
+    { label: 'Bookmarks', href: '/dashboard/bookmarks', icon: Bookmark },
     { label: 'Platform Analytics', href: '/dashboard/admin/analytics', icon: BarChart2 },
     { label: 'All Payments', href: '/dashboard/admin/payments', icon: CreditCard },
     { label: 'Prompt Moderation', href: '/dashboard/admin/prompts', icon: PenTool },

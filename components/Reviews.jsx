@@ -33,18 +33,28 @@ export default function Reviews() {
         const res = await fetch(`${API_URL}/reviews`);
         if (res.ok) {
           const data = await res.json();
-          setReviews(data);
-        } else {
-          throw new Error('API down');
+          if (data && data.length > 0) {
+            // Map backend fields to frontend expected fields
+            const formattedReviews = data.map((review, idx) => ({
+              id: review._id || idx,
+              text: review.comment,
+              author: review.name || review.email.split('@')[0],
+              role: "Community Member", // Default role since role isn't in DB
+              rating: review.rating || 5
+            }));
+            setReviews(formattedReviews);
+            return; // Successful fetch
+          }
         }
+        throw new Error('API down or no data');
       } catch (error) {
-        // Expanded dummy data for a better slider experience
+        // Fallback dummy data if API fails or is empty
         setReviews([
-          { id: 1, text: "PromptNest transformed my workflow. Finding high-quality prompts is effortless now. Highly recommended!", author: "Sarah W.", role: "Marketer" },
-          { id: 2, text: "The quality of AI art prompts here is unmatched. It's a literal goldmine for creators looking to scale.", author: "David L.", role: "Digital Artist" },
-          { id: 3, text: "We integrated their prompt API into our internal tools and it saved us hundreds of hours.", author: "Elena R.", role: "CTO @ TechFlow" },
-          { id: 4, text: "The community review system ensures I only use battle-tested prompts. Absolutely brilliant platform.", author: "Marcus T.", role: "Software Engineer" },
-          { id: 5, text: "I've started monetizing my prompts and the revenue split is incredibly fair. A true creator-first platform.", author: "Sophie M.", role: "AI Researcher" },
+          { id: 1, text: "PromptNest transformed my workflow. Finding high-quality prompts is effortless now. Highly recommended!", author: "Sarah W.", role: "Marketer", rating: 5 },
+          { id: 2, text: "The quality of AI art prompts here is unmatched. It's a literal goldmine for creators looking to scale.", author: "David L.", role: "Digital Artist", rating: 5 },
+          { id: 3, text: "We integrated their prompt API into our internal tools and it saved us hundreds of hours.", author: "Elena R.", role: "CTO @ TechFlow", rating: 5 },
+          { id: 4, text: "The community review system ensures I only use battle-tested prompts. Absolutely brilliant platform.", author: "Marcus T.", role: "Software Engineer", rating: 5 },
+          { id: 5, text: "I've started monetizing my prompts and the revenue split is incredibly fair. A true creator-first platform.", author: "Sophie M.", role: "AI Researcher", rating: 5 },
         ]);
       } finally {
         setLoading(false);
@@ -107,10 +117,14 @@ export default function Reviews() {
                   <Quote size={80} strokeWidth={1} className="rotate-12" />
                 </div>
 
-                {/* 5-Star Rating */}
+                {/* 5-Star Rating (Dynamic) */}
                 <div className="flex gap-1 mb-6 relative z-10">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} size={18} className="fill-amber-400 text-amber-400" />
+                    <Star 
+                      key={star} 
+                      size={18} 
+                      className={star <= (review.rating || 5) ? "fill-amber-400 text-amber-400" : "fill-foreground/10 text-foreground/10"} 
+                    />
                   ))}
                 </div>
 

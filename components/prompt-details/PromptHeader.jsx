@@ -1,15 +1,42 @@
 'use client';
 import { Sparkles, Copy, Calendar, Tag, Bookmark, Flag } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/components/AuthProvider';
 
 export default function PromptHeader({ prompt, promptId, onReportClick }) {
+  const { user } = useAuth();
   const [bookmarked, setBookmarked] = useState(false);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
+  useEffect(() => {
+    const fetchBookmarkStatus = async () => {
+      const token = localStorage.getItem('access-token');
+      if (!user || !token) return;
+      try {
+        const res = await fetch(`${API_URL}/prompts/${promptId}/bookmark-status`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setBookmarked(data.isBookmarked);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchBookmarkStatus();
+  }, [user, promptId, API_URL]);
+
   const handleBookmark = async () => {
+    if (!user) {
+      toast.error('Please log in to bookmark this prompt', { position: "bottom-right" });
+      return;
+    }
+    
     try {
+      const token = localStorage.getItem('access-token');
       // Simulate optimistic UI update
       setBookmarked(!bookmarked);
       if (!bookmarked) {
@@ -18,11 +45,16 @@ export default function PromptHeader({ prompt, promptId, onReportClick }) {
         toast.info('Prompt removed from bookmarks.', { position: "bottom-right" });
       }
 
-      await fetch(`${API_URL}/prompts/${promptId}/bookmark`, { method: 'POST' });
+      const res = await fetch(`${API_URL}/prompts/${promptId}/bookmark`, { 
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (!res.ok) throw new Error('Failed to update');
     } catch (err) {
       console.error(err);
       toast.error('Failed to update bookmark.', { position: "bottom-right" });
-      setBookmarked(false); // revert on error
+      setBookmarked(prev => !prev); // revert on error
     }
   };
 

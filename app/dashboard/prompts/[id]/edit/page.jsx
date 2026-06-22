@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { Lock, Zap, Send, FileText, Upload, X, ChevronDown, Loader2 } from 'lucide-react';
@@ -10,9 +10,10 @@ import { motion } from 'framer-motion';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY || 'dummy_imgbb_key';
 
-export default function AddPromptPage() {
+export default function EditPromptPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { id } = useParams();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -27,6 +28,7 @@ export default function AddPromptPage() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
   // Dynamic filter states
   const [categories, setCategories] = useState(['Coding', 'Marketing', 'SEO', 'Copywriting', 'Design', 'Business']);
@@ -40,7 +42,6 @@ export default function AddPromptPage() {
         const res = await fetch(`${API_URL}/prompts/filters`);
         if (res.ok) {
           const data = await res.json();
-          // Merge default ones with fetched ones, exclude 'All'
           const mergedCategories = Array.from(new Set(['Coding', 'Marketing', 'SEO', 'Copywriting', 'Design', 'Business', ...data.categories.filter(c => c !== 'All')]));
           const mergedTools = Array.from(new Set(['ChatGPT', 'Claude 3.5 Sonnet', 'Midjourney', 'Gemini', ...data.aiTools.filter(t => t !== 'All')]));
           
@@ -54,52 +55,63 @@ export default function AddPromptPage() {
     fetchFilters();
   }, []);
 
-  // Still loading auth state
-  if (!user) {
+  useEffect(() => {
+    const fetchPrompt = async () => {
+      if (!id || !user) return;
+      try {
+        const token = localStorage.getItem('access-token');
+        const res = await fetch(`${API_URL}/prompts/${id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          // Ensure the user owns this prompt
+          if (data.creatorEmail !== user.email) {
+            toast.error("You don't have permission to edit this prompt.");
+            router.push('/dashboard/prompts');
+            return;
+          }
+          
+          setFormData({
+            title: data.title || '',
+            description: data.description || '',
+            content: data.content || '',
+            category: data.category || 'Coding',
+            aiTool: data.aiTool || 'ChatGPT',
+            tags: Array.isArray(data.tags) ? data.tags.join(', ') : '',
+            difficulty: data.difficultyLevel || 'Beginner',
+            visibility: data.visibility || 'Public'
+          });
+          setImagePreview(data.thumbnailImage || '');
+          
+          // Handle custom categories/tools
+          if (!categories.includes(data.category)) {
+            setFormData(prev => ({ ...prev, category: 'Other' }));
+            setCustomCategory(data.category);
+          }
+          if (!aiTools.includes(data.aiTool)) {
+            setFormData(prev => ({ ...prev, aiTool: 'Other' }));
+            setCustomAiTool(data.aiTool);
+          }
+          
+        } else {
+          toast.error("Failed to fetch prompt details.");
+          router.push('/dashboard/prompts');
+        }
+      } catch (error) {
+        console.error("Error fetching prompt:", error);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+    
+    fetchPrompt();
+  }, [id, user, categories, aiTools, router]);
+
+  if (!user || isFetching) {
     return (
       <div className="flex justify-center items-center h-[60vh]">
         <Loader2 size={40} className="animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  const subscription = user.subscription || 'Free';
-  const totalPrompts = user.totalPrompts || 0;
-  
-  // Strict Quota Logic implementation
-  const hasReachedQuota = subscription !== 'Premium' && totalPrompts >= 3;
-
-  if (hasReachedQuota) {
-    return (
-      <div className="max-w-2xl mx-auto w-full py-16 px-4">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-surface border border-red-500/20 rounded-[32px] p-8 md:p-12 shadow-xl relative overflow-hidden text-center"
-        >
-          {/* Cinematic Red Glow */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent/5 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
-          
-          <div className="w-20 h-20 bg-gradient-to-br from-red-500/10 to-red-500/5 rounded-full flex items-center justify-center mx-auto mb-6 ring-1 ring-red-500/20 shadow-inner">
-            <Lock size={32} className="text-red-500" />
-          </div>
-          
-          <h1 className="text-3xl font-black text-text-primary mb-4 tracking-tight">Creation Quota Reached</h1>
-          <p className="text-text-secondary mb-8 max-w-md mx-auto leading-relaxed font-medium">
-            Free tier creators are limited to a maximum of 3 prompts. You have successfully published <strong className="text-text-primary">{totalPrompts}</strong> prompts. 
-            Upgrade to Premium to unlock unlimited prompt creation!
-          </p>
-          
-          <Link 
-            href="/pricing" 
-            className="inline-flex items-center justify-center px-8 py-4 bg-text-primary text-background text-lg font-bold rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl w-full sm:w-auto"
-          >
-            <Zap size={20} className="mr-2 text-accent fill-accent" />
-            Upgrade to Premium
-          </Link>
-        </motion.div>
       </div>
     );
   }
@@ -118,7 +130,7 @@ export default function AddPromptPage() {
 
   const removeImage = () => {
     setImageFile(null);
-    setImagePreview('');
+    setImagePreview(''); // If user saves, this will pass empty string (needs to be handled if they want to keep old)
   };
 
   const handleChange = (e) => {
@@ -130,7 +142,7 @@ export default function AddPromptPage() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    let uploadedImageUrl = '';
+    let uploadedImageUrl = imagePreview; // Keep existing if not changed
     
     try {
       if (imageFile) {
@@ -150,24 +162,25 @@ export default function AddPromptPage() {
         }
       }
 
-      // Format payload with specific requested defaults
+      // Format payload
       const finalCategory = formData.category === 'Other' ? customCategory : formData.category;
       const finalAiTool = formData.aiTool === 'Other' ? customAiTool : formData.aiTool;
 
       const payload = {
-        ...formData,
+        title: formData.title,
+        description: formData.description,
+        content: formData.content,
         category: finalCategory,
         aiTool: finalAiTool,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
-        tier: formData.visibility, // Map UI terminology to Backend terminology
-        status: 'pending',
-        copyCount: 0,
+        difficultyLevel: formData.difficulty,
+        visibility: formData.visibility,
         thumbnailImage: uploadedImageUrl
       };
 
       const token = localStorage.getItem('access-token');
-      const res = await fetch(`${API_URL}/prompts`, {
-        method: 'POST',
+      const res = await fetch(`${API_URL}/prompts/${id}`, {
+        method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -175,9 +188,9 @@ export default function AddPromptPage() {
         body: JSON.stringify(payload)
       });
       
-      if (!res.ok) throw new Error('Failed to create prompt');
+      if (!res.ok) throw new Error('Failed to update prompt');
       
-      toast.success('Prompt submitted successfully! Pending approval.', { position: "bottom-right", theme: "dark" });
+      toast.success('Prompt updated successfully!', { position: "bottom-right", theme: "dark" });
       setTimeout(() => {
         router.refresh();
         router.push('/dashboard/prompts');
@@ -185,7 +198,7 @@ export default function AddPromptPage() {
       
     } catch (err) {
       console.error(err);
-      toast.error(err.message || 'Error submitting prompt.', { position: "bottom-right" });
+      toast.error(err.message || 'Error updating prompt.', { position: "bottom-right" });
     } finally {
       setIsSubmitting(false);
     }
@@ -194,20 +207,18 @@ export default function AddPromptPage() {
   return (
     <div className="max-w-4xl mx-auto w-full pb-10">
       
-      {/* Header section */}
       <div className="mb-10 flex items-center">
         <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
           <FileText size={26} strokeWidth={2} />
         </div>
         <div>
-          <h1 className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight">Creator Studio</h1>
-          <p className="text-text-secondary font-medium mt-1">Publish your best AI workflows to the community.</p>
+          <h1 className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight">Edit Prompt</h1>
+          <p className="text-text-secondary font-medium mt-1">Update your existing prompt details.</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-[32px] p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none space-y-8">
         
-        {/* Title */}
         <div>
           <label className="block text-[13px] font-bold text-text-primary uppercase tracking-wider mb-2">Prompt Title *</label>
           <input 
@@ -221,7 +232,6 @@ export default function AddPromptPage() {
           />
         </div>
 
-        {/* Description */}
         <div>
           <label className="block text-[13px] font-bold text-text-primary uppercase tracking-wider mb-2">Short Description *</label>
           <textarea 
@@ -234,7 +244,6 @@ export default function AddPromptPage() {
           />
         </div>
 
-        {/* Prompt Content (Code Editor Style) */}
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="block text-[13px] font-bold text-text-primary uppercase tracking-wider">Prompt Payload *</label>
@@ -242,7 +251,6 @@ export default function AddPromptPage() {
           </div>
           
           <div className="relative group rounded-xl overflow-hidden bg-[#09090B] border border-border/50 shadow-inner">
-            {/* Fake Editor Top Bar */}
             <div className="w-full h-10 bg-white/5 border-b border-white/10 flex items-center px-4">
               <div className="flex space-x-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]"></div>
@@ -263,7 +271,6 @@ export default function AddPromptPage() {
           </div>
         </div>
 
-        {/* 4-Column Grid for Selects */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="relative flex flex-col">
             <label className="block text-[13px] font-bold text-text-primary uppercase tracking-wider mb-2">Category</label>
@@ -351,7 +358,6 @@ export default function AddPromptPage() {
           </div>
         </div>
 
-        {/* Tags */}
         <div>
           <label className="block text-[13px] font-bold text-text-primary uppercase tracking-wider mb-2">Tags</label>
           <input 
@@ -364,7 +370,6 @@ export default function AddPromptPage() {
           />
         </div>
 
-        {/* Thumbnail Image Upload */}
         <div>
           <label className="block text-[13px] font-bold text-text-primary uppercase tracking-wider mb-2">Cover Image (Optional)</label>
           {!imagePreview ? (
@@ -396,11 +401,7 @@ export default function AddPromptPage() {
           )}
         </div>
 
-        {/* Submit */}
-        <div className="pt-8 mt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm font-medium text-text-secondary">
-            Note: All submissions are set to <span className="font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md ml-1">Pending</span> for review.
-          </p>
+        <div className="pt-8 mt-8 border-t border-border flex justify-end">
           <button 
             type="submit"
             disabled={isSubmitting}
@@ -409,12 +410,12 @@ export default function AddPromptPage() {
             {isSubmitting ? (
               <>
                 <Loader2 size={18} className="animate-spin mr-2" />
-                Submitting...
+                Saving...
               </>
             ) : (
               <>
                 <Send size={18} className="mr-2" />
-                Publish Prompt
+                Update Prompt
               </>
             )}
           </button>
@@ -422,7 +423,6 @@ export default function AddPromptPage() {
         
       </form>
 
-      {/* Styles for custom scrollbar in Editor */}
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
