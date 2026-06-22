@@ -14,7 +14,7 @@ export default function CheckoutForm({ clientSecret }) {
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState(false);
   const router = useRouter();
-  const { user } = useAuth(); 
+  const { user, refreshUser } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,12 +62,21 @@ export default function CheckoutForm({ clientSecret }) {
       // Even if the backend fails, we show success in this mock so you can test the router.back()
       // if (!res.ok) throw new Error("Backend failed to upgrade user");
 
-      toast.success('Payment successful! You are now Premium.');
-      
-      setTimeout(() => {
-        // Automatically route the user back to the private prompt they were looking at
-        router.back(); 
-      }, 2000);
+      if (res.ok) {
+        toast.success('Payment successful! You are now Premium.');
+        
+        // Refresh local user data to apply the Premium badge instantly
+        if (typeof refreshUser === 'function') {
+          await refreshUser();
+        }
+
+        setTimeout(() => {
+          // Automatically route the user back to the private prompt they were looking at
+          router.back(); 
+        }, 2000);
+      } else {
+        throw new Error("Backend failed to upgrade user");
+      }
 
     } catch (err) {
       console.error(err);

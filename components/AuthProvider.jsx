@@ -170,8 +170,25 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      if (!auth.currentUser) return;
+      const token = localStorage.getItem('access-token');
+      const userRes = await fetch(`${API_URL}/users/${auth.currentUser.email}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (userRes.ok) {
+        const dbUser = await userRes.json();
+        setUser(prev => ({ ...prev, ...dbUser }));
+      }
+    } catch (err) {
+      console.error("Error refreshing user data", err);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, registerWithEmail, loginWithEmail, logout, updateUserProfile }}>
+    <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, registerWithEmail, loginWithEmail, logout, updateUserProfile, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
