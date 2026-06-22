@@ -1,6 +1,6 @@
 'use client';
 import { Star, Lock, Send, Loader2, MessageSquare, LogIn } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/components/AuthProvider';
@@ -51,7 +51,7 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
       
       // Optimistic update
       setLocalReviews([
-        { name: user.name, email: user.email, rating, comment, date: new Date().toISOString() },
+        { name: user.name, email: user.email, rating, comment, date: new Date().toISOString(), user: { photoURL: user.photoURL, name: user.name } },
         ...localReviews
       ]);
       setComment('');
@@ -177,9 +177,17 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
                   >
                     <div className="flex items-start sm:items-center justify-between mb-4 flex-col sm:flex-row gap-3">
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary font-black text-lg ring-1 ring-primary/20 shadow-inner flex-shrink-0">
-                          {review.user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                        </div>
+                        {review.user?.photoURL ? (
+                          <img 
+                            src={review.user.photoURL} 
+                            alt={review.name || review.user.name || 'User'} 
+                            className="w-12 h-12 rounded-full object-cover ring-1 ring-primary/20 shadow-inner flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary font-black text-lg ring-1 ring-primary/20 shadow-inner flex-shrink-0">
+                            {(review.name || review.user?.name || 'U').charAt(0).toUpperCase()}
+                          </div>
+                        )}
                         <div>
                           <p className="font-bold text-text-primary text-base leading-tight">
                             {review.name || review.user?.name || 'Anonymous User'}
