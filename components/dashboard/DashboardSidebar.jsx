@@ -86,8 +86,7 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
               key={link.href} 
               href={link.href}
               onClick={() => setIsOpen && setIsOpen(false)}
-              className={`flex items-center px-3 py-3 rounded-xl font-bold transition-all duration-300 group relative ${
-                isActive 
+              className={`flex items-center px-3 py-3 rounded-xl font-bold transition-all duration-300 group relative ${isActive
                   ? 'text-primary bg-gradient-to-r from-primary/10 to-transparent' 
                   : 'text-text-secondary hover:bg-foreground/5 hover:text-text-primary'
               }`}
