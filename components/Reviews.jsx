@@ -37,10 +37,11 @@ export default function Reviews() {
             // Map backend fields to frontend expected fields
             const formattedReviews = data.map((review, idx) => ({
               id: review._id || idx,
-              text: review.comment,
-              author: review.name || review.email.split('@')[0],
+              text: review.comment || review.text || review.message || "",
+              author: review.name || (review.email && review.email.split('@')[0]) || "User",
               role: "Community Member", // Default role since role isn't in DB
-              rating: review.rating || 5
+              rating: review.rating || 5,
+              photoURL: review.user?.photoURL || review.photoURL
             }));
             setReviews(formattedReviews);
             return; // Successful fetch
@@ -135,9 +136,17 @@ export default function Reviews() {
 
                 {/* Author Info */}
                 <div className="flex items-center space-x-4 relative z-10 mt-auto pt-6 border-t border-border/50">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary font-bold text-lg ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                    {review.author.charAt(0)}
-                  </div>
+                  {review.photoURL ? (
+                    <img 
+                      src={review.photoURL} 
+                      alt={review.author} 
+                      className="w-12 h-12 rounded-full object-cover ring-1 ring-primary/20 shadow-inner flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary font-bold text-lg ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300 flex-shrink-0">
+                      {review.author.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <div>
                     <p className="font-bold text-text-primary">{review.author}</p>
                     <p className="text-xs font-bold text-text-secondary uppercase tracking-wider mt-1">{review.role}</p>

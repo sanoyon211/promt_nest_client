@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export function middleware(request) {
+export function proxy(request) {
   // Check for the access token cookie
   const token = request.cookies.get('access-token');
   const path = request.nextUrl.pathname;

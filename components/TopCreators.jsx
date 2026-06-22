@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Crown, Layers, Award, Medal } from 'lucide-react';
+import Image from 'next/image';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -103,9 +104,21 @@ export default function TopCreators() {
               >
                 {/* Avatar with Rank */}
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-2xl font-black text-primary flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300 ring-2 ring-transparent group-hover:ring-primary/20">
-                    {creator.name.charAt(0)}
-                  </div>
+                  {creator.photoURL || creator.image ? (
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 ring-2 ring-transparent group-hover:ring-primary/20 transition-all duration-300 relative overflow-hidden">
+                      <Image 
+                        src={creator.photoURL || creator.image} 
+                        alt={creator.name || "Creator"} 
+                        fill
+                        sizes="(max-width: 64px) 100vw, 64px"
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-2xl font-black text-primary flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300 ring-2 ring-transparent group-hover:ring-primary/20">
+                      {creator.name ? creator.name.charAt(0).toUpperCase() : 'C'}
+                    </div>
+                  )}
                   {renderRank(idx)}
                 </div>
 
