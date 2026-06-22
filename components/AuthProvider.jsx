@@ -81,7 +81,7 @@ export function AuthProvider({ children }) {
       setIsLoading(true);
       await signInWithPopup(auth, googleProvider);
       toast.success('Logged in with Google!');
-      router.push(redirectPath);
+      window.location.href = redirectPath;
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
         console.error("Google Login Error", err);
@@ -119,7 +119,7 @@ export function AuthProvider({ children }) {
       });
 
       toast.success('Registration successful!');
-      router.push(redirectPath);
+      window.location.href = redirectPath;
     } catch (err) {
       console.error("Registration Error", err);
       toast.error(err.message || 'Registration failed.');
@@ -133,7 +133,7 @@ export function AuthProvider({ children }) {
       setIsLoading(true);
       await signInWithEmailAndPassword(auth, email, password);
       toast.success('Welcome back!');
-      router.push(redirectPath);
+      window.location.href = redirectPath;
     } catch (err) {
       console.error("Login Error", err);
       toast.error('Invalid email or password.');
