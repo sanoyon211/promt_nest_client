@@ -4,6 +4,7 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import MaintenanceGuard from "@/components/MaintenanceGuard";
 import { AuthProvider } from "@/components/AuthProvider";
 
 const geistSans = Geist({
@@ -39,9 +40,11 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           <AuthProvider>
-            <LayoutWrapper>
-              {children}
-            </LayoutWrapper>
+            <MaintenanceGuard>
+              <LayoutWrapper>
+                {children}
+              </LayoutWrapper>
+            </MaintenanceGuard>
           </AuthProvider>
         </ThemeProvider>
         
