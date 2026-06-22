@@ -92,13 +92,21 @@ export default function PromptCard({ prompt }) {
         {/* Footer: Author & Action Button */}
         <div className="flex items-center justify-between mt-auto">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-[12px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-sm font-black text-primary border border-primary/20 shadow-inner group-hover:scale-105 transition-transform duration-300">
-              {prompt.author?.name?.charAt(0)?.toUpperCase() || 'U'}
-            </div>
+            {prompt.creator?.photoURL || prompt.creator?.image || prompt.author?.photoURL || prompt.author?.image ? (
+              <img 
+                src={prompt.creator?.photoURL || prompt.creator?.image || prompt.author?.photoURL || prompt.author?.image} 
+                alt={prompt.creator?.name || prompt.author?.name || 'Creator'} 
+                className="w-10 h-10 rounded-[12px] object-cover group-hover:scale-105 transition-transform duration-300 shadow-sm border border-border"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-[12px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-sm font-black text-primary border border-primary/20 shadow-inner group-hover:scale-105 transition-transform duration-300">
+                {(prompt.creator?.name || prompt.author?.name)?.charAt(0)?.toUpperCase() || 'U'}
+              </div>
+            )}
             <div className="flex flex-col">
               <span className="text-[10px] text-text-secondary/80 font-bold uppercase tracking-widest mb-0.5">Creator</span>
               <span className="text-[13px] text-text-primary font-black truncate max-w-[120px] tracking-tight">
-                {prompt.author?.name || 'Anonymous'}
+                {prompt.creator?.name || prompt.author?.name || 'Anonymous'}
               </span>
             </div>
           </div>
