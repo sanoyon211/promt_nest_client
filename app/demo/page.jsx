@@ -109,7 +109,7 @@ export default function DemoAccountsPage() {
             <motion.div
               key={idx}
               variants={itemVariants}
-              className={`bg-surface rounded-[32px] border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none transition-all duration-500 hover:-translate-y-2 overflow-hidden flex flex-col relative group ${acc.themeColors.hoverBorder}`}
+              className={`bg-surface rounded-2xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none transition-all duration-500 hover:-translate-y-2 overflow-hidden flex flex-col relative group ${acc.themeColors.hoverBorder}`}
             >
               {/* Top Accent Gradient Background */}
               <div className={`absolute top-0 left-0 w-full h-32 bg-gradient-to-b ${acc.themeColors.glow} opacity-50 -z-10 group-hover:opacity-100 transition-opacity duration-500`}></div>
@@ -127,7 +127,7 @@ export default function DemoAccountsPage() {
                   {acc.desc}
                 </p>
 
-                <div className="space-y-4 mb-8 bg-background p-6 rounded-[24px] border border-border shadow-inner">
+                <div className="space-y-4 mb-6 bg-background p-5 md:p-6 rounded-2xl border border-border shadow-inner">
                   <div>
                     <label className="text-[11px] font-black text-text-secondary/60 uppercase tracking-widest mb-1.5 block">Email Address</label>
                     <div className="font-mono text-[13px] font-bold text-text-primary bg-surface p-3.5 rounded-xl border border-border flex justify-between items-center transition-colors">

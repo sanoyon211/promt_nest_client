@@ -28,7 +28,7 @@ const DetailsSkeleton = () => (
     </div>
     
     {/* Content Block Skeleton */}
-    <div className="w-full h-64 md:h-80 bg-foreground/5 rounded-[32px] mb-10"></div>
+    <div className="w-full h-64 md:h-80 bg-foreground/5 rounded-2xl mb-10"></div>
     
     {/* Instructions Skeleton */}
     <div className="w-1/3 h-8 bg-foreground/5 rounded-lg mb-4"></div>
@@ -77,7 +77,7 @@ export default function PromptDetailsClient({ promptId }) {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md text-center bg-surface p-10 rounded-[32px] border border-border shadow-sm"
+          className="w-full max-w-md text-center bg-surface p-6 md:p-8 rounded-2xl border border-border shadow-sm"
         >
           <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mx-auto mb-6 text-text-secondary">
             <FileQuestion size={40} strokeWidth={1.5} />

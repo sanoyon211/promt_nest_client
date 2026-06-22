@@ -62,7 +62,7 @@ export default function MaintenanceGuard({ children }) {
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="max-w-xl w-full bg-surface border border-border rounded-[32px] p-10 md:p-14 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none relative z-10"
+        className="max-w-xl w-full bg-surface border border-border rounded-2xl p-6 md:p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none relative z-10"
       >
         <div className="w-20 h-20 bg-gradient-to-br from-accent/10 to-accent/5 rounded-full flex items-center justify-center mx-auto mb-8 ring-1 ring-accent/20 shadow-inner">
           <ShieldAlert size={36} className="text-accent" />

@@ -25,7 +25,7 @@ export default function ConfirmModal({
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            className="bg-surface border border-border rounded-[32px] p-8 max-w-md w-full shadow-2xl relative overflow-hidden text-center"
+            className="bg-surface border border-border rounded-2xl p-5 md:p-6 max-w-md w-full shadow-2xl relative overflow-hidden text-center"
           >
             {/* Background Blob */}
             <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl -z-10 pointer-events-none ${isDestructive ? 'bg-red-500/10' : 'bg-orange-500/10'}`}></div>

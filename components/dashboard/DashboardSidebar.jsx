@@ -29,6 +29,8 @@ const NAV_LINKS = {
   ],
   admin: [
     { label: 'My Profile', href: '/dashboard/profile', icon: User },
+    { label: 'My Prompts', href: '/dashboard/prompts', icon: PenTool },
+    { label: 'Create Prompt', href: '/dashboard/add-prompt', icon: PlusCircle },
     { label: 'Bookmarks', href: '/dashboard/bookmarks', icon: Bookmark },
     { label: 'Platform Analytics', href: '/dashboard/admin/analytics', icon: BarChart2 },
     { label: 'All Payments', href: '/dashboard/admin/payments', icon: CreditCard },

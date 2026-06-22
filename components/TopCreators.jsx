@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Crown, Layers, Award, Medal } from 'lucide-react';
+import { Trophy, Crown, Layers, Award, Medal, Copy } from 'lucide-react';
 import Image from 'next/image';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -36,12 +36,12 @@ export default function TopCreators() {
       } catch (error) {
         // Fallback dummy data if API is not ready
         setCreators([
-          { id: 1, name: 'Alice Smith', role: 'Pro Creator', prompts: 120 },
-          { id: 2, name: 'David Chen', role: 'Pro Creator', prompts: 95 },
-          { id: 3, name: 'Sarah Wilson', role: 'Creator', prompts: 85 },
-          { id: 4, name: 'Bob Jones', role: 'Creator', prompts: 64 },
-          { id: 5, name: 'Emma Davis', role: 'Creator', prompts: 42 },
-          { id: 6, name: 'Charlie Day', role: 'Creator', prompts: 38 },
+          { id: 1, name: 'Alice Smith', role: 'Pro Creator', prompts: 120, totalCopies: 450 },
+          { id: 2, name: 'David Chen', role: 'Pro Creator', prompts: 95, totalCopies: 320 },
+          { id: 3, name: 'Sarah Wilson', role: 'Creator', prompts: 85, totalCopies: 210 },
+          { id: 4, name: 'Bob Jones', role: 'Creator', prompts: 64, totalCopies: 150 },
+          { id: 5, name: 'Emma Davis', role: 'Creator', prompts: 42, totalCopies: 95 },
+          { id: 6, name: 'Charlie Day', role: 'Creator', prompts: 38, totalCopies: 70 },
         ]);
       } finally {
         setLoading(false);
@@ -61,7 +61,7 @@ export default function TopCreators() {
   };
 
   return (
-    <section className="py-24 bg-background w-full relative">
+    <section className="py-16 md:py-20 lg:py-24 bg-background w-full relative">
       {/* Subtle background separation */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
 
@@ -141,10 +141,17 @@ export default function TopCreators() {
                     )}
                   </div>
 
-                  <p className="text-xs text-text-secondary font-semibold flex items-center gap-1.5">
-                    <Layers size={12} />
-                    {creator.prompts} Prompts Published
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <p className="text-xs text-text-secondary font-semibold flex items-center gap-1">
+                      <Layers size={12} />
+                      {creator.prompts} Prompts
+                    </p>
+                    <div className="w-1 h-1 rounded-full bg-border"></div>
+                    <p className="text-xs text-text-secondary font-semibold flex items-center gap-1">
+                      <Copy size={12} />
+                      {creator.totalCopies || 0} Copied
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             ))}

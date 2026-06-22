@@ -86,7 +86,7 @@ export default function CreatorAnalyticsPage() {
               { label: 'Total Bookmarks', val: stats.totalBookmarks, icon: Star, color: 'text-accent' },
               { label: 'Published Prompts', val: stats.totalPrompts, icon: FileText, color: 'text-text-secondary' },
             ].map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="bg-surface p-8 rounded-[24px] border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none relative overflow-hidden group">
+              <motion.div key={i} variants={itemVariants} className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none relative overflow-hidden group">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-[11px] font-black text-text-secondary uppercase tracking-widest">{item.label}</h3>
                   <div className={`w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center ${item.color}`}>
@@ -100,7 +100,7 @@ export default function CreatorAnalyticsPage() {
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <motion.div variants={itemVariants} className="bg-surface p-8 rounded-[32px] border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
+            <motion.div variants={itemVariants} className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
               <h2 className="text-lg font-bold text-text-primary mb-6">Prompt Growth (6 Mo)</h2>
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
@@ -121,7 +121,7 @@ export default function CreatorAnalyticsPage() {
               </div>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="bg-surface p-8 rounded-[32px] border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
+            <motion.div variants={itemVariants} className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
               <h2 className="text-lg font-bold text-text-primary mb-6">Total Copies (This Week)</h2>
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">

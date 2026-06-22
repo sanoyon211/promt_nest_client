@@ -84,7 +84,7 @@ export default function AdminAnalyticsPage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-surface p-8 rounded-[24px] border border-border shadow-sm h-[160px] animate-pulse">
+            <div key={i} className="bg-surface p-5 rounded-2xl border border-border shadow-sm h-[160px] animate-pulse">
               <div className="w-full flex justify-between mb-4">
                 <div className="w-24 h-4 bg-foreground/5 rounded-md"></div>
                 <div className="w-10 h-10 bg-foreground/5 rounded-xl"></div>
@@ -93,7 +93,7 @@ export default function AdminAnalyticsPage() {
             </div>
           ))}
         </div>
-        <div className="bg-surface p-8 rounded-[32px] border border-border shadow-sm h-[400px] animate-pulse"></div>
+        <div className="bg-surface p-5 rounded-2xl border border-border shadow-sm h-[400px] animate-pulse"></div>
       </div>
     );
   }
@@ -110,7 +110,7 @@ export default function AdminAnalyticsPage() {
       
       {/* Header */}
       <div className="mb-10 flex items-center">
-        <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
+        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
           <BarChart2 size={26} strokeWidth={2} />
         </div>
         <div>
@@ -127,7 +127,7 @@ export default function AdminAnalyticsPage() {
             <motion.div 
               key={idx} 
               variants={itemVariants} 
-              className="bg-surface p-6 rounded-[24px] border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none relative overflow-hidden group hover:-translate-y-1 transition-all duration-300"
+              className="bg-surface p-5 rounded-2xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none relative overflow-hidden group hover:-translate-y-1 transition-all duration-300"
             >
               <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl pointer-events-none transition-colors duration-500 ${card.glow}`}></div>
               <div className="flex items-center justify-between mb-4">
@@ -147,7 +147,7 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* Platform Growth Chart */}
-        <motion.div variants={itemVariants} className="bg-surface p-6 sm:p-8 rounded-[24px] border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
+        <motion.div variants={itemVariants} className="bg-surface p-5 sm:p-6 rounded-2xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
           <h2 className="text-lg font-bold text-text-primary mb-6">Platform Growth (6 Mo)</h2>
           <div className="h-[320px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -180,7 +180,7 @@ export default function AdminAnalyticsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           
           {/* Engine Prompts Density vs Total Copies */}
-          <motion.div variants={itemVariants} className="bg-surface p-6 rounded-[24px] border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
+          <motion.div variants={itemVariants} className="bg-surface p-5 rounded-2xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
             <div className="flex items-center mb-6">
               <FileText className="text-text-primary mr-2" size={18} strokeWidth={2} />
               <h2 className="text-md font-bold text-text-primary">Density vs Copies</h2>
@@ -205,7 +205,7 @@ export default function AdminAnalyticsPage() {
           </motion.div>
 
           {/* Prompt Distribution Share */}
-          <motion.div variants={itemVariants} className="bg-surface p-6 rounded-[24px] border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
+          <motion.div variants={itemVariants} className="bg-surface p-5 rounded-2xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
             <div className="flex items-center mb-6">
               <PieChartIcon className="text-text-primary mr-2" size={18} strokeWidth={2} />
               <h2 className="text-md font-bold text-text-primary">Distribution Share</h2>

@@ -7,7 +7,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 // Premium Skeleton Loader for the Slider
 const SkeletonReview = () => (
-  <div className="bg-surface p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] border border-border shadow-sm flex flex-col min-h-[280px] md:min-h-[320px] w-[280px] sm:w-[350px] md:w-[400px] flex-shrink-0 animate-pulse">
+  <div className="bg-surface p-5 sm:p-6 rounded-2xl border border-border shadow-sm flex flex-col min-h-[280px] md:min-h-[320px] w-[280px] sm:w-[350px] md:w-[400px] flex-shrink-0 animate-pulse">
     <div className="flex gap-1 mb-6">
       {[1, 2, 3, 4, 5].map(i => <div key={i} className="w-4 sm:w-5 h-4 sm:h-5 bg-foreground/5 rounded-full"></div>)}
     </div>
@@ -144,7 +144,7 @@ export default function Reviews() {
             {duplicatedReviews.map((review, idx) => (
               <div 
                 key={`${review.id}-${idx}`} 
-                className="bg-surface p-6 sm:p-8 md:p-10 rounded-[24px] sm:rounded-[32px] border border-border relative flex flex-col min-h-[280px] md:min-h-[320px] w-[280px] sm:w-[350px] md:w-[400px] flex-shrink-0 group hover:border-primary/30 transition-all duration-500 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-none"
+                className="bg-surface p-5 md:p-6 rounded-2xl border border-border relative flex flex-col min-h-[280px] md:min-h-[320px] w-[280px] sm:w-[350px] md:w-[400px] flex-shrink-0 group hover:border-primary/30 transition-all duration-500 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-none"
               >
                 {/* Watermark Quote Icon */}
                 <div className="absolute top-4 sm:top-6 right-4 sm:right-6 text-foreground/5 group-hover:text-primary/5 transition-colors duration-500 pointer-events-none">

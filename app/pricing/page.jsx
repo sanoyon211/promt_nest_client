@@ -111,7 +111,7 @@ export default function PricingPage() {
             <motion.div 
               variants={itemVariants}
               key={idx} 
-              className={`relative rounded-[32px] transition-all duration-500 group ${
+              className={`relative rounded-2xl transition-all duration-500 group ${
                 plan.highlighted 
                   ? 'scale-100 md:scale-105 z-10 hover:shadow-[0_20px_40px_rgba(79,70,229,0.15)] hover:-translate-y-2' 
                   : 'hover:-translate-y-2 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-none'
@@ -125,7 +125,7 @@ export default function PricingPage() {
                 <div className="absolute -inset-[1px] bg-gradient-to-b from-primary to-accent rounded-[33px] opacity-100"></div>
               )}
               
-              <div className={`relative h-full rounded-[32px] overflow-hidden flex flex-col ${
+              <div className={`relative h-full rounded-2xl overflow-hidden flex flex-col ${
                 plan.highlighted
                   ? 'bg-surface p-8 md:p-10'
                   : 'bg-surface border border-border p-8 md:p-10'

@@ -57,7 +57,7 @@ export default function ReportModal({ isOpen, onClose, promptId }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="relative bg-surface border border-border rounded-[24px] p-6 md:p-8 w-full max-w-lg shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-none z-10"
+            className="relative bg-surface border border-border rounded-2xl p-5 md:p-6 w-full max-w-lg shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-none z-10"
           >
             {/* Close Button */}
             <button 

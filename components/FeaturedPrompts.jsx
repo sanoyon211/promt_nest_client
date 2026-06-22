@@ -56,7 +56,7 @@ export default function FeaturedPrompts() {
   }, []);
 
   return (
-    <section className="py-24 w-full max-w-7xl mx-auto">
+    <section className="py-16 md:py-20 lg:py-24 w-full max-w-7xl mx-auto">
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}

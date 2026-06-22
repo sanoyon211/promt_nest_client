@@ -24,13 +24,13 @@ export default function PromptCard({ prompt }) {
   const badgeClass = getBadgeStyle(prompt.level || prompt.tag);
 
   return (
-    <div className="group relative h-full rounded-[24px] transition-all duration-500 hover:-translate-y-2">
+    <div className="group relative h-full rounded-2xl transition-all duration-500 hover:-translate-y-2">
       
       {/* Premium Ambient Glow on Hover */}
       <div className="absolute -inset-[1.5px] bg-gradient-to-br from-primary/40 via-transparent to-accent/40 rounded-[26px] opacity-0 group-hover:opacity-100 blur-[2px] transition-opacity duration-500 pointer-events-none"></div>
 
       {/* Main Card Container */}
-      <div className="relative bg-surface rounded-[24px] p-5 lg:p-6 border border-border flex flex-col h-full overflow-hidden shadow-sm group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.08)] dark:group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.4)] transition-all duration-500 z-10">
+      <div className="relative bg-surface rounded-2xl p-4 md:p-5 border border-border flex flex-col h-full overflow-hidden shadow-sm group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.08)] dark:group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.4)] transition-all duration-500 z-10">
         
         {/* Subtle inner top glare for 3D depth */}
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>

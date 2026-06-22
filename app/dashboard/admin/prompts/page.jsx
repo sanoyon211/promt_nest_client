@@ -158,7 +158,7 @@ function PromptsTable() {
   // Premium Skeleton Table Loader
   if (loading && prompts.length === 0) {
     return (
-      <div className="bg-surface border border-border rounded-[32px] shadow-sm overflow-hidden p-6 mb-6">
+      <div className="bg-surface border border-border rounded-2xl shadow-sm overflow-hidden p-5 mb-6">
         <div className="w-full h-10 bg-foreground/5 rounded-lg mb-4 animate-pulse"></div>
         {[1, 2, 3, 4, 5].map(i => (
           <div key={i} className="w-full h-16 bg-foreground/5 rounded-lg mb-2 animate-pulse"></div>
@@ -169,7 +169,7 @@ function PromptsTable() {
 
   return (
     <>
-      <div className="bg-surface border border-border rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden mb-8 relative min-h-[400px]">
+      <div className="bg-surface border border-border rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden mb-8 relative min-h-[400px]">
         
         {/* Loading Overlay for pagination */}
         {loading && prompts.length > 0 && (
@@ -279,7 +279,7 @@ function PromptsTable() {
 
       {/* Modern Pagination Controls */}
       {pagination.totalPages > 1 && (
-        <div className="flex justify-between items-center bg-surface border border-border p-4 rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
+        <div className="flex justify-between items-center bg-surface border border-border p-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
           <button 
             onClick={() => handlePageChange(pagination.currentPage - 1)}
             disabled={pagination.currentPage <= 1}
@@ -317,7 +317,7 @@ function PromptsTable() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-surface border border-border p-8 rounded-[32px] w-full max-w-md shadow-2xl relative overflow-hidden"
+              className="bg-surface border border-border p-6 rounded-2xl w-full max-w-md shadow-2xl relative overflow-hidden"
             >
               {/* Decorative background blur */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl -z-10 pointer-events-none"></div>
@@ -388,7 +388,7 @@ export default function AdminPromptsPage() {
       
       {/* Header */}
       <div className="mb-10 flex items-center">
-        <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
+        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
           <ShieldCheck size={26} strokeWidth={2} />
         </div>
         <div>
@@ -399,7 +399,7 @@ export default function AdminPromptsPage() {
       
       {/* React Suspense Boundary required for useSearchParams */}
       <Suspense fallback={
-        <div className="bg-surface border border-border rounded-[32px] shadow-sm overflow-hidden p-6 mb-6">
+        <div className="bg-surface border border-border rounded-2xl shadow-sm overflow-hidden p-5 mb-6">
           <div className="w-full h-10 bg-foreground/5 rounded-lg mb-4 animate-pulse"></div>
           {[1, 2, 3, 4, 5].map(i => <div key={i} className="w-full h-16 bg-foreground/5 rounded-lg mb-2 animate-pulse"></div>)}
         </div>

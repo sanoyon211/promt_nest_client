@@ -69,7 +69,7 @@ export default function PromptContentBlock({ promptId, content, isLocked }) {
       </div>
 
       {/* Editor Block */}
-      <div className="relative group rounded-[24px] overflow-hidden bg-[#09090B] border border-border/50 shadow-2xl min-h-[300px] flex flex-col">
+      <div className="relative group rounded-2xl overflow-hidden bg-[#09090B] border border-border/50 shadow-2xl min-h-[300px] flex flex-col">
         
         {/* MacOS Style Top Bar */}
         <div className="absolute top-0 left-0 w-full h-12 bg-white/5 border-b border-white/10 flex items-center px-5 z-10 backdrop-blur-sm">
@@ -99,7 +99,7 @@ export default function PromptContentBlock({ promptId, content, isLocked }) {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/40 backdrop-blur-md rounded-[24px]"
+            className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/40 backdrop-blur-md rounded-2xl"
           >
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center mb-6 ring-1 ring-white/10 shadow-lg">
               <Lock size={32} className="text-accent" />

@@ -14,7 +14,7 @@ export default function FAQ() {
   ];
 
   return (
-    <section className="py-24 w-full bg-background relative">
+    <section className="py-16 md:py-20 lg:py-24 w-full bg-background relative">
       {/* Decorative top border line */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
 

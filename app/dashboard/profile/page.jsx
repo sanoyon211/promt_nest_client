@@ -80,7 +80,7 @@ export default function ProfilePage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="bg-surface border border-border rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none relative overflow-hidden"
+        className="bg-surface border border-border rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none relative overflow-hidden"
       >
         {/* Dynamic Cover Banner */}
         <div className={`h-32 sm:h-40 w-full relative ${isAdmin
@@ -96,7 +96,7 @@ export default function ProfilePage() {
 
             {/* Profile Photo Area */}
             <div className="flex-shrink-0 relative group z-10">
-              <div className={`relative w-36 h-36 rounded-[28px] bg-background border-[6px] border-surface shadow-xl flex items-center justify-center text-primary text-5xl font-black overflow-hidden ${isEditing ? 'ring-4 ring-primary/20' : ''}`}>
+              <div className={`relative w-36 h-36 rounded-2xl bg-background border-[6px] border-surface shadow-xl flex items-center justify-center text-primary text-5xl font-black overflow-hidden ${isEditing ? 'ring-4 ring-primary/20' : ''}`}>
                 {isEditing && editData.photo ? (
                   <img src={editData.photo} alt="Profile" className="w-full h-full object-cover" />
                 ) : (user.photo || user.photoURL) ? (
@@ -143,7 +143,7 @@ export default function ProfilePage() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
-                    className="space-y-5 bg-background p-6 md:p-8 rounded-[24px] border border-border shadow-inner mt-4 md:mt-0"
+                    className="space-y-5 bg-background p-5 md:p-6 rounded-2xl border border-border shadow-inner mt-4 md:mt-0"
                   >
                     <div>
                       <label className="text-[11px] font-black text-text-secondary/60 uppercase tracking-widest mb-2 block text-left">Display Name</label>
@@ -253,7 +253,7 @@ export default function ProfilePage() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-10 pt-10 border-t border-border"
             >
-              <div className="bg-background rounded-[24px] p-6 border border-border flex items-center group hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-md">
+              <div className="bg-background rounded-2xl p-5 border border-border flex items-center group hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-md">
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mr-5 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                   <PenTool size={24} strokeWidth={2} />
                 </div>
@@ -263,7 +263,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className={`bg-background rounded-[24px] p-6 border border-border flex items-center group transition-all duration-300 shadow-sm hover:shadow-md ${isAdmin ? 'hover:border-red-500/30' : 'hover:border-green-500/30'}`}>
+              <div className={`bg-background rounded-2xl p-5 border border-border flex items-center group transition-all duration-300 shadow-sm hover:shadow-md ${isAdmin ? 'hover:border-red-500/30' : 'hover:border-green-500/30'}`}>
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mr-5 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 ${isAdmin ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'}`}>
                   {isAdmin ? <ShieldCheck size={24} strokeWidth={2} /> : <CheckCircle2 size={24} strokeWidth={2} />}
                 </div>

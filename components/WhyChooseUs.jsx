@@ -43,7 +43,7 @@ export default function WhyChooseUs() {
   ];
 
   return (
-    <section className="py-24 w-full bg-background relative overflow-hidden">
+    <section className="py-16 md:py-20 lg:py-24 w-full bg-background relative overflow-hidden">
       {/* Background Decorative Element */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
       
@@ -78,7 +78,7 @@ export default function WhyChooseUs() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className={`relative overflow-hidden rounded-[32px] p-8 md:p-10 border border-border transition-all duration-500 hover:border-primary/30 group ${feature.span} ${feature.bgStyle}`}
+              className={`relative overflow-hidden rounded-2xl p-5 md:p-6 border border-border transition-all duration-500 hover:border-primary/30 group ${feature.span} ${feature.bgStyle}`}
             >
               {/* Abstract Watermark Icon in Background */}
               <div className="absolute -bottom-6 -right-6 text-foreground/5 transform group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-700 pointer-events-none">

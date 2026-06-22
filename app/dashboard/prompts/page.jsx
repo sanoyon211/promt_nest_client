@@ -85,7 +85,7 @@ export default function MyPromptsPage() {
           </div>
           <div className="w-32 h-10 bg-primary/20 rounded-xl animate-pulse"></div>
         </div>
-        <div className="bg-surface border border-border rounded-[24px] shadow-sm overflow-hidden p-6">
+        <div className="bg-surface border border-border rounded-2xl shadow-sm overflow-hidden p-5">
           <div className="w-full h-10 bg-foreground/5 rounded-lg mb-4 animate-pulse"></div>
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="w-full h-16 bg-foreground/5 rounded-lg mb-2 animate-pulse"></div>
@@ -101,7 +101,7 @@ export default function MyPromptsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-6">
         <div className="flex items-center">
-          <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
             <FolderKanban size={26} strokeWidth={2} />
           </div>
           <div>
@@ -118,7 +118,7 @@ export default function MyPromptsPage() {
         </Link>
       </div>
 
-      <div className="bg-surface border border-border rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden relative">
+      <div className="bg-surface border border-border rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden relative">
         <div className="overflow-x-auto custom-scrollbar">
           
           {prompts.length === 0 ? (

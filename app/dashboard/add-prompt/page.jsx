@@ -68,8 +68,9 @@ export default function AddPromptPage() {
   const isPremium = subscription === 'Premium';
   const totalPrompts = user.totalPrompts || 0;
   
-  // Strict Quota Logic implementation
-  const hasReachedQuota = subscription !== 'Premium' && totalPrompts >= 3;
+  // Strict Quota Logic implementation (Admin bypasses quota)
+  const isAdmin = user?.role?.toLowerCase() === 'admin';
+  const hasReachedQuota = !isPremium && !isAdmin && totalPrompts >= 3;
 
   if (hasReachedQuota) {
     return (
@@ -78,7 +79,7 @@ export default function AddPromptPage() {
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-surface border border-red-500/20 rounded-[32px] p-8 md:p-12 shadow-xl relative overflow-hidden text-center"
+          className="bg-surface border border-red-500/20 rounded-2xl p-6 md:p-10 shadow-xl relative overflow-hidden text-center"
         >
           {/* Cinematic Red Glow */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
@@ -95,7 +96,7 @@ export default function AddPromptPage() {
           </p>
           
           <Link 
-            href="/pricing" 
+            href="/pricing?redirect=/dashboard/add-prompt" 
             className="inline-flex items-center justify-center px-8 py-4 bg-text-primary text-background text-lg font-bold rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl w-full sm:w-auto"
           >
             <Zap size={20} className="mr-2 text-accent fill-accent" />
@@ -206,7 +207,7 @@ export default function AddPromptPage() {
       
       {/* Header section */}
       <div className="mb-10 flex items-center">
-        <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
+        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
           <FileText size={26} strokeWidth={2} />
         </div>
         <div>
@@ -215,7 +216,7 @@ export default function AddPromptPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-[32px] p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none space-y-8">
+      <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-2xl p-5 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none space-y-8">
         
         {/* Title */}
         <div>
@@ -470,7 +471,7 @@ export default function AddPromptPage() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-surface border border-border p-8 rounded-[32px] w-full max-w-md shadow-2xl relative overflow-hidden text-center"
+              className="bg-surface border border-border p-6 rounded-2xl w-full max-w-md shadow-2xl relative overflow-hidden text-center"
             >
               <button 
                 onClick={() => setShowUpgradeModal(false)}
@@ -489,7 +490,7 @@ export default function AddPromptPage() {
               </p>
               
               <Link 
-                href="/payment"
+                href="/payment?redirect=/dashboard/add-prompt"
                 className="flex items-center justify-center px-6 py-4 bg-primary text-white text-[15px] font-bold rounded-xl hover:bg-primary/90 transition-all shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] active:scale-95"
               >
                 Upgrade Now

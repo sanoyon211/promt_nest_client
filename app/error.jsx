@@ -21,9 +21,9 @@ export default function Error({ error, reset }) {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", bounce: 0.5, duration: 0.6 }}
-        className="w-24 h-24 bg-gradient-to-br from-red-500/20 to-red-500/5 rounded-[24px] flex items-center justify-center mb-8 relative ring-1 ring-red-500/20 shadow-inner mx-auto rotate-3"
+        className="w-24 h-24 bg-gradient-to-br from-red-500/20 to-red-500/5 rounded-2xl flex items-center justify-center mb-8 relative ring-1 ring-red-500/20 shadow-inner mx-auto rotate-3"
       >
-        <div className="absolute inset-0 bg-red-500/20 blur-[20px] rounded-[24px] animate-pulse"></div>
+        <div className="absolute inset-0 bg-red-500/20 blur-[20px] rounded-2xl animate-pulse"></div>
         <AlertTriangle size={40} className="text-red-500 relative z-10 -rotate-3" strokeWidth={2.5} />
       </motion.div>
 

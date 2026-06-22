@@ -27,7 +27,7 @@ export default function PromptInstructions({ instructions }) {
   };
 
   return (
-    <div className="mb-12 bg-surface p-8 md:p-10 rounded-[24px] border border-border relative overflow-hidden group hover:border-accent/30 transition-colors duration-500 shadow-sm">
+    <div className="mb-12 bg-surface p-5 md:p-6 rounded-2xl border border-border relative overflow-hidden group hover:border-accent/30 transition-colors duration-500 shadow-sm">
       
       {/* Subtle Background Glow */}
       <div className="absolute -right-20 -top-20 w-48 h-48 bg-accent/5 rounded-full blur-3xl group-hover:bg-accent/10 transition-colors duration-700 pointer-events-none"></div>

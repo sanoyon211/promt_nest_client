@@ -81,7 +81,7 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
           {!isLocked && (
             <div className="mb-10">
               {user ? (
-                <div className="bg-surface p-6 md:p-8 rounded-[24px] border border-border shadow-sm relative overflow-hidden">
+                <div className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm relative overflow-hidden">
                   <h3 className="font-bold text-text-primary mb-4 text-lg">Leave a Review</h3>
                   <form onSubmit={handleSubmitReview}>
                     
@@ -140,7 +140,7 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
                 </div>
               ) : (
                 // Not Logged In Call-to-Action
-                <div className="bg-gradient-to-r from-surface to-background p-6 md:p-8 rounded-[24px] border border-border shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div className="bg-gradient-to-r from-surface to-background p-5 md:p-6 rounded-2xl border border-border shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
                   <div>
                     <h3 className="font-bold text-text-primary text-lg mb-1">Join the conversation</h3>
                     <p className="text-sm font-medium text-text-secondary">Log in to leave a review, bookmark, and copy prompts.</p>
@@ -159,7 +159,7 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
 
           {/* Review List */}
           {localReviews.length === 0 ? (
-            <div className="text-center py-12 bg-surface/50 border border-dashed border-border rounded-[24px]">
+            <div className="text-center py-10 bg-surface/50 border border-dashed border-border rounded-2xl">
               <MessageSquare size={32} className="mx-auto text-text-secondary/50 mb-3" />
               <p className="text-text-primary font-bold text-lg mb-1">No reviews yet</p>
               <p className="text-text-secondary font-medium text-sm">Be the first to share your experience with this prompt.</p>
@@ -173,7 +173,7 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: idx * 0.05 }}
-                    className="bg-surface p-6 rounded-[24px] border border-border shadow-sm hover:border-primary/20 transition-colors"
+                    className="bg-surface p-5 rounded-2xl border border-border shadow-sm hover:border-primary/20 transition-colors"
                   >
                     <div className="flex items-start sm:items-center justify-between mb-4 flex-col sm:flex-row gap-3">
                       <div className="flex items-center space-x-4">
@@ -225,7 +225,7 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/30 backdrop-blur-md rounded-[24px] border border-white/5"
+            className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/30 backdrop-blur-md rounded-2xl border border-white/5"
           >
             <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-4 ring-1 ring-white/10 shadow-lg">
               <Lock size={28} className="text-accent" />

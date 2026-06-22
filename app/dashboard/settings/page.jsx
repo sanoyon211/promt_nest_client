@@ -80,7 +80,7 @@ export default function SettingsPage() {
 
       {/* Header */}
       <div className="mb-10 flex items-center">
-        <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
+        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
           <Settings size={26} strokeWidth={2} />
         </div>
         <div>
@@ -93,7 +93,7 @@ export default function SettingsPage() {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="bg-surface border border-border rounded-[32px] p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none relative overflow-hidden"
+        className="bg-surface border border-border rounded-2xl p-5 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
 

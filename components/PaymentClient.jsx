@@ -157,9 +157,9 @@ export default function PaymentClient() {
         {/* Right Side: Stripe Checkout Form */}
         <motion.div variants={itemVariants} className="relative">
           {/* Glowing border effect */}
-          <div className="absolute -inset-[1px] bg-gradient-to-b from-primary via-accent to-background rounded-[32px] opacity-30 blur-[2px]"></div>
+          <div className="absolute -inset-[1px] bg-gradient-to-b from-primary via-accent to-background rounded-2xl opacity-30 blur-[2px]"></div>
           
-          <div className="bg-surface rounded-[32px] p-8 lg:p-10 border border-border/50 shadow-2xl relative overflow-hidden z-10 flex flex-col h-full">
+          <div className="bg-surface rounded-2xl p-5 md:p-6 lg:p-8 border border-border/50 shadow-2xl relative overflow-hidden z-10 flex flex-col h-full">
             
             {/* Top decorative badge */}
             <div className="absolute top-0 right-0 bg-gradient-to-bl from-accent to-primary text-white text-[10px] font-black uppercase tracking-widest px-6 py-2 rounded-bl-2xl shadow-md">

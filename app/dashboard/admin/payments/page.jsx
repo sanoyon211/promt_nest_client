@@ -82,7 +82,7 @@ export default function AdminPaymentsPage() {
           </div>
           <div className="w-32 h-10 bg-primary/10 rounded-xl animate-pulse"></div>
         </div>
-        <div className="bg-surface border border-border rounded-[32px] shadow-sm overflow-hidden p-6">
+        <div className="bg-surface border border-border rounded-2xl shadow-sm overflow-hidden p-5">
           <div className="w-full h-10 bg-foreground/5 rounded-lg mb-4 animate-pulse"></div>
           {[1, 2, 3, 4, 5].map(i => (
             <div key={i} className="w-full h-16 bg-foreground/5 rounded-lg mb-2 animate-pulse"></div>
@@ -98,7 +98,7 @@ export default function AdminPaymentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-6">
         <div className="flex items-center">
-          <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-green-500/10 to-primary/10 flex items-center justify-center text-green-500 dark:text-green-400 mr-5 shadow-inner ring-1 ring-green-500/20">
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500/10 to-primary/10 flex items-center justify-center text-green-500 dark:text-green-400 mr-5 shadow-inner ring-1 ring-green-500/20">
             <CreditCard size={26} strokeWidth={2} />
           </div>
           <div>
@@ -114,7 +114,7 @@ export default function AdminPaymentsPage() {
         </button>
       </div>
 
-      <div className="bg-surface border border-border rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden relative">
+      <div className="bg-surface border border-border rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden relative">
         <div className="overflow-x-auto custom-scrollbar">
           
           {payments.length === 0 ? (

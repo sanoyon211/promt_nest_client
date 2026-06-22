@@ -128,7 +128,7 @@ export default function PromptHeader({ prompt, promptId, onReportClick }) {
 
       {/* Thumbnail Image */}
       {prompt.thumbnailImage && (
-        <div className="w-full h-64 sm:h-[400px] mb-10 rounded-[24px] overflow-hidden relative border border-border shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-none bg-foreground/5 group">
+        <div className="w-full h-64 sm:h-[400px] mb-10 rounded-2xl overflow-hidden relative border border-border shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-none bg-foreground/5 group">
           {/* Black Overlay: Hover korle halka clear hobe */}
           <div className="absolute inset-0 bg-black/50 group-hover:bg-black/20 transition-colors duration-700 z-10 pointer-events-none"></div>
 

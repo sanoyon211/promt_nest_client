@@ -12,7 +12,7 @@ const SORTS = ['Latest', 'Most Popular', 'Most Copied'];
 
 // Premium Skeleton Loader for Grid
 const SkeletonCard = () => (
-  <div className="w-full h-[320px] bg-surface rounded-[24px] border border-border p-5 flex flex-col animate-pulse shadow-sm">
+  <div className="w-full h-[320px] bg-surface rounded-2xl border border-border p-5 flex flex-col animate-pulse shadow-sm">
     <div className="w-full h-40 bg-foreground/5 rounded-[16px] mb-5"></div>
     <div className="flex justify-between items-start mb-4">
       <div className="w-16 h-5 bg-foreground/5 rounded-md"></div>

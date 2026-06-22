@@ -5,7 +5,7 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 
 export default function CallToAction() {
   return (
-    <section className="py-24 relative overflow-hidden w-full bg-background">
+    <section className="py-16 md:py-20 lg:py-24 relative overflow-hidden w-full bg-background">
       {/* Section Background Subtle Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 mix-blend-multiply dark:mix-blend-lighten"></div>
       

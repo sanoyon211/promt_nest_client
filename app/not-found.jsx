@@ -23,7 +23,7 @@ export default function NotFound() {
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", bounce: 0.5, duration: 0.6 }}
-        className="w-24 h-24 bg-surface border border-border rounded-[24px] flex items-center justify-center mb-8 relative shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-none"
+        className="w-24 h-24 bg-surface border border-border rounded-2xl flex items-center justify-center mb-8 relative shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-none"
       >
         <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full"></div>
         <SearchX size={48} className="text-primary relative z-10" strokeWidth={1.5} />

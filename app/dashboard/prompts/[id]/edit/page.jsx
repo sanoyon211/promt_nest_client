@@ -210,7 +210,7 @@ export default function EditPromptPage() {
     <div className="max-w-4xl mx-auto w-full pb-10">
       
       <div className="mb-10 flex items-center">
-        <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
+        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
           <FileText size={26} strokeWidth={2} />
         </div>
         <div>
@@ -219,7 +219,7 @@ export default function EditPromptPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-[32px] p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none space-y-8">
+      <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-2xl p-5 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none space-y-8">
         
         <div>
           <label className="block text-[13px] font-bold text-text-primary uppercase tracking-wider mb-2">Prompt Title *</label>

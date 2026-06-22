@@ -96,7 +96,7 @@ export default function AdminUsersPage() {
             </div>
           </div>
         </div>
-        <div className="bg-surface border border-border rounded-[32px] shadow-sm overflow-hidden p-6">
+        <div className="bg-surface border border-border rounded-2xl shadow-sm overflow-hidden p-5">
           <div className="w-full h-10 bg-foreground/5 rounded-lg mb-4 animate-pulse"></div>
           {[1, 2, 3, 4, 5].map(i => (
             <div key={i} className="w-full h-16 bg-foreground/5 rounded-lg mb-2 animate-pulse"></div>
@@ -111,7 +111,7 @@ export default function AdminUsersPage() {
       
       {/* Header */}
       <div className="mb-10 flex items-center">
-        <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
+        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary mr-5 shadow-inner ring-1 ring-primary/20">
           <Users size={26} strokeWidth={2} />
         </div>
         <div>
@@ -123,7 +123,7 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      <div className="bg-surface border border-border rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden relative">
+      <div className="bg-surface border border-border rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden relative">
         <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
             <thead>

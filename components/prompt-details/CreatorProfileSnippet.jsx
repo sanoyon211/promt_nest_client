@@ -6,7 +6,7 @@ export default function CreatorProfileSnippet({ creator }) {
   if (!creator) return null;
 
   return (
-    <div className="bg-surface rounded-[24px] p-6 md:p-8 border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none mb-12 group hover:border-primary/30 transition-all duration-500 relative overflow-hidden">
+    <div className="bg-surface rounded-2xl p-5 md:p-6 border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none mb-12 group hover:border-primary/30 transition-all duration-500 relative overflow-hidden">
       
       {/* Decorative Subtle Glow */}
       <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-[50px] -translate-y-1/2 translate-x-1/2 pointer-events-none transition-colors duration-500 group-hover:bg-primary/10"></div>
