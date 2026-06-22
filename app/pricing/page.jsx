@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Check, Sparkles, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
@@ -7,6 +8,15 @@ import { motion } from 'framer-motion';
 
 export default function PricingPage() {
   const { user } = useAuth();
+  const [redirectPath, setRedirectPath] = useState('/dashboard/profile');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const red = params.get('redirect');
+      if (red) setRedirectPath(red);
+    }
+  }, []);
 
   const plans = [
     {
@@ -37,7 +47,7 @@ export default function PricingPage() {
         "Lifetime access, no monthly fees",
       ],
       cta: "Upgrade Now",
-      href: user ? "/payment" : "/login?redirect=/pricing",
+      href: user ? `/payment?redirect=${encodeURIComponent(redirectPath)}` : `/login?redirect=/pricing`,
       highlighted: true,
       badge: "Best Value"
     }

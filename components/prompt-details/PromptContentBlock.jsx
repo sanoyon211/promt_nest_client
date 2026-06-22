@@ -111,7 +111,7 @@ export default function PromptContentBlock({ promptId, content, isLocked }) {
               This highly optimized prompt is exclusive to our Premium Creators. Upgrade your account to unlock this and thousands more.
             </p>
             <Link 
-              href="/pricing" 
+              href={`/pricing?redirect=/prompt/${promptId}`} 
               className="bg-text-primary text-background px-8 py-4 rounded-xl font-bold text-base md:text-lg hover:bg-text-secondary active:scale-95 transition-all shadow-xl flex items-center gap-2"
             >
               Unlock Premium Access

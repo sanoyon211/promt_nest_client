@@ -231,7 +231,7 @@ export default function ProfilePage() {
                     {!isPremium && !isAdmin && (
                       <div className="flex-shrink-0 mt-4 md:mt-0">
                         <Link
-                          href="/pricing"
+                          href="/pricing?redirect=/dashboard/profile"
                           className="inline-flex items-center justify-center px-6 py-3 bg-text-primary text-background font-bold rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl w-full md:w-auto text-[14px]"
                         >
                           <Zap size={18} className="mr-2 text-accent fill-accent" />

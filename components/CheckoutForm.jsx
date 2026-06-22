@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -14,6 +14,7 @@ export default function CheckoutForm({ clientSecret }) {
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, refreshUser } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -71,8 +72,8 @@ export default function CheckoutForm({ clientSecret }) {
         }
 
         setTimeout(() => {
-          // Automatically route the user back to the private prompt they were looking at
-          router.back(); 
+          const redirectUrl = searchParams?.get('redirect') || '/dashboard/profile';
+          router.push(redirectUrl); 
         }, 2000);
       } else {
         throw new Error("Backend failed to upgrade user");
