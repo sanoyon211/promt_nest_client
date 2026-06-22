@@ -126,7 +126,7 @@ export default function CopiedPromptsPage() {
                         </div>
                       </td>
                       <td className="p-5 text-text-secondary font-medium">
-                        {item.prompt?.creator?.name || 'Unknown'}
+                        {item.prompt?.creator?.name || item.prompt?.author?.name || item.prompt?.creator?.username || item.prompt?.author?.username || 'Unknown'}
                       </td>
                       <td className="p-5 text-text-secondary font-medium">
                         {item.prompt?.category || 'General'}

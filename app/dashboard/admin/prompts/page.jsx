@@ -216,7 +216,7 @@ function PromptsTable() {
                       <td className="p-5 pl-8 font-bold text-text-primary">
                         <div className="truncate max-w-[150px] sm:max-w-[250px] group-hover:text-primary transition-colors">{p.title}</div>
                       </td>
-                      <td className="p-5 text-text-secondary font-medium">{p.creator?.name || <span className="italic opacity-50">Unknown</span>}</td>
+                      <td className="p-5 text-text-secondary font-medium">{p.creator?.name || p.author?.name || p.creator?.username || p.author?.username || <span className="italic opacity-50">Unknown</span>}</td>
                       <td className="p-5 text-text-secondary font-medium">{p.category}</td>
                       <td className="p-5">
                         <span className={`px-3 py-1.5 rounded-md text-[10px] font-black border uppercase tracking-widest shadow-sm ${getStatusStyle(p.status)}`}>

@@ -143,7 +143,7 @@ export default function BookmarksPage() {
                         </div>
                       </td>
                       <td className="p-5 text-text-secondary font-medium">
-                        {bookmark.prompt?.creator?.name || 'Unknown'}
+                        {bookmark.prompt?.creator?.name || bookmark.prompt?.author?.name || bookmark.prompt?.creator?.username || bookmark.prompt?.author?.username || 'Unknown'}
                       </td>
                       <td className="p-5 text-text-secondary font-medium">
                         {bookmark.prompt?.category || 'General'}

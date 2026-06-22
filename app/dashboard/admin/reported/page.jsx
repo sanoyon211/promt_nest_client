@@ -214,7 +214,7 @@ export default function AdminReportedPage() {
                               <ExternalLink size={14} />
                             </Link>
                           </div>
-                          <span className="text-[12px] text-text-secondary font-medium mt-0.5">By {report.prompt?.creator?.name || 'Unknown'}</span>
+                          <span className="text-[12px] text-text-secondary font-medium mt-0.5">By {report.prompt?.creator?.name || report.prompt?.author?.name || report.prompt?.creator?.username || report.prompt?.author?.username || 'Unknown'}</span>
                         </div>
                       </td>
                       <td className="p-5">
