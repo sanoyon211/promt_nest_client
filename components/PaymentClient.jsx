@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 // For local testing, we use the standard Stripe Test Key. 
 // Replace with your real environment variable: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function PaymentClient() {
   const [clientSecret, setClientSecret] = useState('');

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Lock, Zap, Send, FileText, Upload, X, ChevronDown, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY || 'dummy_imgbb_key';
 
 export default function EditPromptPage() {

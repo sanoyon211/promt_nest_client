@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Sparkles, Library } from 'lucide-react';
 import PromptCard from './PromptCard';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // Premium Skeleton Loader Component
 const SkeletonCard = () => (
@@ -33,7 +33,7 @@ export default function FeaturedPrompts() {
   useEffect(() => {
     const fetchPrompts = async () => {
       try {
-        const res = await fetch(`${API_URL}/prompts?limit=6`);
+        const res = await fetch(`${API_URL}/prompts?featured=true&limit=6`);
         if (res.ok) {
           const json = await res.json();
           const fetchedPrompts = json.data || json;

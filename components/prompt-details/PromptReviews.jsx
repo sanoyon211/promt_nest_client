@@ -14,7 +14,7 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localReviews, setLocalReviews] = useState(reviews || []);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     const fetchReviews = async () => {

@@ -11,7 +11,7 @@ import PromptReviews from './PromptReviews';
 import ReportModal from './ReportModal';
 import { useAuth } from '@/components/AuthProvider';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // Premium Skeleton Loader for the entire Details Page
 const DetailsSkeleton = () => (

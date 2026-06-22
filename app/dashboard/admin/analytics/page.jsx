@@ -6,7 +6,7 @@ import { Users, FileText, Star, Copy, TrendingUp, BarChart2, PieChart as PieChar
 import { useAuth } from '@/components/AuthProvider';
 import { motion } from 'framer-motion';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function AdminAnalyticsPage() {
   const { theme, systemTheme } = useTheme();

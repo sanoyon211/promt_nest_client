@@ -9,7 +9,7 @@ import {
 } from 'recharts';
 import { FileText, Bookmark, Zap, ShieldCheck } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 const defaultDailyCopies = [
   { day: 'Mon', copies: 0 }, { day: 'Tue', copies: 0 },

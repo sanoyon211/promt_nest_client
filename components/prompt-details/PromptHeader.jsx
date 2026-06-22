@@ -8,7 +8,7 @@ import { useAuth } from '@/components/AuthProvider';
 export default function PromptHeader({ prompt, promptId, onReportClick }) {
   const { user } = useAuth();
   const [bookmarked, setBookmarked] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     const fetchBookmarkStatus = async () => {

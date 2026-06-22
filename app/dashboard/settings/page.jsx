@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/AuthProvider';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function SettingsPage() {
   const { user } = useAuth();

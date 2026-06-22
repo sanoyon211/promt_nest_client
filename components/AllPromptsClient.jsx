@@ -5,7 +5,7 @@ import PromptCard from './PromptCard';
 import { motion } from 'framer-motion';
 import { Search, ChevronDown, SlidersHorizontal, Library, FileQuestion } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 const LEVELS = ['All', 'Beginner', 'Intermediate', 'Pro'];
 const SORTS = ['Latest', 'Most Popular', 'Most Copied'];

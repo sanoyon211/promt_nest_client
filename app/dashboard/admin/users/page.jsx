@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ConfirmModal from '@/components/ConfirmModal';
 import Image from 'next/image';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function AdminUsersPage() {
   const { user } = useAuth();

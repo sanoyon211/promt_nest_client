@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Trophy, Crown, Layers, Award, Medal, Copy } from 'lucide-react';
 import Image from 'next/image';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // Premium Skeleton Loader for Creators
 const SkeletonCreator = () => (
