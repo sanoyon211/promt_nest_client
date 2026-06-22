@@ -184,12 +184,13 @@ export default function MyPromptsPage() {
                       </td>
                       <td className="p-5 pr-8 text-right">
                         <div className="flex justify-end space-x-2 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <button 
+                          <Link 
+                            href={user?.role?.toLowerCase() === 'creator' ? '/dashboard/creator' : '/dashboard'}
                             title="View Analytics" 
-                            className="p-2.5 bg-background border border-border rounded-xl text-text-secondary hover:text-primary hover:border-primary/30 transition-all active:scale-95 shadow-sm"
+                            className="p-2.5 bg-background border border-border rounded-xl text-text-secondary hover:text-primary hover:border-primary/30 transition-all active:scale-95 shadow-sm inline-flex"
                           >
                             <BarChart size={16} />
-                          </button>
+                          </Link>
                           <Link 
                             href={`/dashboard/prompts/${prompt._id}/edit`} 
                             title="Edit Prompt" 
