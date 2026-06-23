@@ -1,7 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
+import dynamic from 'next/dynamic';
+
+const PlatformGrowthChart = dynamic(() => import('@/components/dashboard/DashboardCharts').then(mod => mod.PlatformGrowthChart), { ssr: false });
+const DensityVsCopiesChart = dynamic(() => import('@/components/dashboard/DashboardCharts').then(mod => mod.DensityVsCopiesChart), { ssr: false });
+const DistributionShareChart = dynamic(() => import('@/components/dashboard/DashboardCharts').then(mod => mod.DistributionShareChart), { ssr: false });
 import { Users, FileText, Star, Copy, TrendingUp, BarChart2, PieChart as PieChartIcon } from 'lucide-react';
 import { useAuth } from '@/components/AuthProvider';
 import { motion } from 'framer-motion';
@@ -150,29 +154,7 @@ export default function AdminAnalyticsPage() {
         <motion.div variants={itemVariants} className="bg-surface p-5 sm:p-6 rounded-2xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
           <h2 className="text-lg font-bold text-text-primary mb-6">Platform Growth (6 Mo)</h2>
           <div className="h-[320px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={stats.chartData || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.25}/>
-                    <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorPrompts" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={COLORS.secondary} stopOpacity={0.25}/>
-                    <stop offset="95%" stopColor={COLORS.secondary} stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.grid} vertical={false} opacity={0.5} />
-                <XAxis dataKey="name" stroke={COLORS.grid} tick={{fill: COLORS.grid, fontSize: 11, fontWeight: 500}} axisLine={false} tickLine={false} dy={10} />
-                <YAxis stroke={COLORS.grid} tick={{fill: COLORS.grid, fontSize: 11, fontWeight: 500}} axisLine={false} tickLine={false} dx={-10} />
-                <RechartsTooltip 
-                  contentStyle={{ backgroundColor: COLORS.surface, borderColor: COLORS.grid, color: COLORS.text, borderRadius: '12px', padding: '12px 16px', fontSize: '13px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
-                  itemStyle={{ fontWeight: 'bold' }}
-                />
-                <Area type="monotone" dataKey="users" name="Users" stroke={COLORS.primary} strokeWidth={3} fillOpacity={1} fill="url(#colorUsers)" />
-                <Area type="monotone" dataKey="prompts" name="Prompts" stroke={COLORS.secondary} strokeWidth={3} fillOpacity={1} fill="url(#colorPrompts)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            <PlatformGrowthChart data={stats.chartData} COLORS={COLORS} />
           </div>
         </motion.div>
 
@@ -186,21 +168,7 @@ export default function AdminAnalyticsPage() {
               <h2 className="text-md font-bold text-text-primary">Density vs Copies</h2>
             </div>
             <div className="h-[220px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.engineStats || []} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={COLORS.grid} vertical={false} opacity={0.3} />
-                  <XAxis dataKey="name" stroke={COLORS.grid} tick={{fill: COLORS.grid, fontSize: 10}} axisLine={false} tickLine={false} dy={5} />
-                  <YAxis yAxisId="left" stroke={COLORS.grid} tick={{fill: COLORS.grid, fontSize: 10}} axisLine={false} tickLine={false} dx={-5} />
-                  <RechartsTooltip 
-                    contentStyle={{ backgroundColor: COLORS.surface, borderColor: COLORS.grid, color: COLORS.text, borderRadius: '12px', fontSize: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
-                    itemStyle={{ fontWeight: 'bold' }}
-                    cursor={{ fill: COLORS.grid, opacity: 0.1 }}
-                  />
-                  <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', marginTop: '5px' }} />
-                  <Bar yAxisId="left" dataKey="copies" name="Copies" fill="#06B6D4" radius={[4, 4, 0, 0]} barSize={20} />
-                  <Bar yAxisId="left" dataKey="prompts" name="Prompts" fill="#8B5CF6" radius={[4, 4, 0, 0]} barSize={20} />
-                </BarChart>
-              </ResponsiveContainer>
+              <DensityVsCopiesChart data={stats.engineStats} COLORS={COLORS} />
             </div>
           </motion.div>
 
@@ -211,41 +179,7 @@ export default function AdminAnalyticsPage() {
               <h2 className="text-md font-bold text-text-primary">Distribution Share</h2>
             </div>
             <div className="h-[220px] w-full flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={stats.engineStats || []}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={75}
-                    paddingAngle={4}
-                    dataKey="prompts"
-                    nameKey="name"
-                    stroke="none"
-                  >
-                    {(stats.engineStats || []).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={ENGINE_COLORS[entry.name] || ENGINE_COLORS['Other']} />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip 
-                    contentStyle={{ backgroundColor: COLORS.surface, borderColor: COLORS.grid, color: COLORS.text, borderRadius: '12px', fontSize: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
-                    itemStyle={{ fontWeight: 'bold' }}
-                    formatter={(value) => [value, 'Prompts']}
-                  />
-                  <Legend 
-                    layout="horizontal" 
-                    verticalAlign="bottom" 
-                    align="center"
-                    iconType="circle"
-                    wrapperStyle={{ fontSize: '10px', fontWeight: 'bold' }}
-                    formatter={(value, entry) => {
-                      const color = ENGINE_COLORS[value] || ENGINE_COLORS['Other'];
-                      return <span style={{ color }}>{value}</span>;
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              <DistributionShareChart data={stats.engineStats} COLORS={COLORS} ENGINE_COLORS={ENGINE_COLORS} />
             </div>
           </motion.div>
           

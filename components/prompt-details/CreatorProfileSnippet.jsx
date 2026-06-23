@@ -1,8 +1,41 @@
 'use client';
 import { ShieldCheck, Star, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function CreatorProfileSnippet({ creator }) {
+  const [totalPrompts, setTotalPrompts] = useState(creator?.totalPrompts || 0);
+
+  useEffect(() => {
+    if (creator && (creator.totalPrompts === undefined || creator.totalPrompts === 0)) {
+      const fetchCreatorPrompts = async () => {
+        try {
+          const res = await fetch(`${API_URL}/prompts?limit=1000`);
+          if (res.ok) {
+            const data = await res.json();
+            const promptsArray = data.data || data;
+            if (Array.isArray(promptsArray)) {
+              const creatorId = creator._id || creator.id;
+              const creatorPrompts = promptsArray.filter(p => 
+                p.creator?._id === creatorId || 
+                p.creator?.id === creatorId || 
+                p.author?._id === creatorId || 
+                p.author?.id === creatorId
+              );
+              setTotalPrompts(creatorPrompts.length);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch creator prompts", error);
+        }
+      };
+      fetchCreatorPrompts();
+    }
+  }, [creator]);
+
   if (!creator) return null;
 
   return (
@@ -13,9 +46,19 @@ export default function CreatorProfileSnippet({ creator }) {
 
       <div className="flex items-center gap-5 md:gap-6 z-10">
         {/* Avatar */}
-        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-2xl md:text-3xl font-black text-primary flex-shrink-0 ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-inner">
-          {creator.name?.charAt(0)?.toUpperCase() || 'U'}
-        </div>
+        {creator.photoURL || creator.image ? (
+          <Image 
+            src={creator.photoURL || creator.image} 
+            alt={creator.name || 'Creator'} 
+            width={80}
+            height={80}
+            className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover flex-shrink-0 ring-1 ring-primary/20 group-hover:ring-primary transition-all duration-500 shadow-inner"
+          />
+        ) : (
+          <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-2xl md:text-3xl font-black text-primary flex-shrink-0 ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-inner">
+            {creator.name?.charAt(0)?.toUpperCase() || 'U'}
+          </div>
+        )}
         
         {/* Creator Info */}
         <div className="flex-1 min-w-0">
@@ -45,7 +88,7 @@ export default function CreatorProfileSnippet({ creator }) {
       <div className="flex items-center gap-6 sm:pl-6 sm:border-l sm:border-border z-10 w-full sm:w-auto justify-between sm:justify-start pt-5 sm:pt-0 border-t sm:border-t-0 border-border/50">
         <div className="text-left sm:text-right">
           <div className="text-2xl md:text-3xl font-black text-text-primary tracking-tight">
-            {creator.totalPrompts || 0}
+            {totalPrompts}
           </div>
           <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mt-1">
             Prompts

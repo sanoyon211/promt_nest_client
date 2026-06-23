@@ -4,6 +4,7 @@ import { useAuth } from '@/components/AuthProvider';
 import Link from 'next/link';
 import { Mail, Shield, Star, Zap, PenTool, Edit2, Save, X, Loader2, CheckCircle2, ShieldCheck, Camera } from 'lucide-react';
 import { toast } from 'react-toastify';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProfilePage() {
@@ -98,12 +99,13 @@ export default function ProfilePage() {
             <div className="flex-shrink-0 relative group z-10">
               <div className={`relative w-36 h-36 rounded-2xl bg-background border-[6px] border-surface shadow-xl flex items-center justify-center text-primary text-5xl font-black overflow-hidden ${isEditing ? 'ring-4 ring-primary/20' : ''}`}>
                 {isEditing && editData.photo ? (
-                  <img src={editData.photo} alt="Profile" className="w-full h-full object-cover" />
+                  <Image src={editData.photo} alt="Profile" fill className="object-cover" />
                 ) : (user.photo || user.photoURL) ? (
-                  <img
+                  <Image
                     src={user.photo || user.photoURL}
                     alt="Profile"
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <span className="bg-gradient-to-br from-primary/10 to-accent/10 w-full h-full flex items-center justify-center">

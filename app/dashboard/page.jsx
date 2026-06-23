@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
-  BarChart, Bar
-} from 'recharts';
+import dynamic from 'next/dynamic';
+
+const PromptGrowthChart = dynamic(() => import('@/components/dashboard/DashboardCharts').then(mod => mod.PromptGrowthChart), { ssr: false });
+const TotalCopiesChart = dynamic(() => import('@/components/dashboard/DashboardCharts').then(mod => mod.TotalCopiesChart), { ssr: false });
 import { FileText, Bookmark, Zap, ShieldCheck } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -173,36 +173,14 @@ export default function DashboardHome() {
             <motion.div variants={itemVariants} className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm">
               <h2 className="text-lg font-bold text-text-primary mb-6">Prompt Growth (6 Mo)</h2>
               <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={creatorStats.chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorPrompts" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke={COLORS.grid} vertical={false} />
-                    <XAxis dataKey="name" stroke={COLORS.grid} tick={{fill: COLORS.grid, fontSize: 11}} axisLine={false} tickLine={false} />
-                    <YAxis stroke={COLORS.grid} tick={{fill: COLORS.grid, fontSize: 11}} axisLine={false} tickLine={false} />
-                    <RechartsTooltip contentStyle={{ backgroundColor: COLORS.surface, borderColor: COLORS.grid, borderRadius: '12px' }} />
-                    <Area type="monotone" dataKey="prompts" stroke={COLORS.primary} strokeWidth={3} fill="url(#colorPrompts)" />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <PromptGrowthChart data={creatorStats.chartData} COLORS={COLORS} />
               </div>
             </motion.div>
 
             <motion.div variants={itemVariants} className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm">
               <h2 className="text-lg font-bold text-text-primary mb-6">Total Copies (This Week)</h2>
               <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={creatorStats.dailyCopiesData || defaultDailyCopies} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={COLORS.grid} vertical={false} />
-                    <XAxis dataKey="day" stroke={COLORS.grid} tick={{fill: COLORS.grid, fontSize: 11}} axisLine={false} tickLine={false} />
-                    <YAxis stroke={COLORS.grid} tick={{fill: COLORS.grid, fontSize: 11}} axisLine={false} tickLine={false} />
-                    <RechartsTooltip cursor={{fill: COLORS.grid, opacity: 0.1}} contentStyle={{ backgroundColor: COLORS.surface, borderColor: COLORS.grid, borderRadius: '12px' }} />
-                    <Bar dataKey="copies" fill={COLORS.secondary} radius={[6, 6, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <TotalCopiesChart data={creatorStats.dailyCopiesData || defaultDailyCopies} COLORS={COLORS} />
               </div>
             </motion.div>
           </div>

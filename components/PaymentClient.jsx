@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from './CheckoutForm';
@@ -145,7 +146,7 @@ export default function PaymentClient() {
 
           <div className="mt-12 p-6 bg-surface border border-border rounded-2xl flex items-center">
             <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center mr-4 border border-border shadow-sm flex-shrink-0">
-              <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" className="w-10 h-10 rounded-full" />
+              <Image src="https://i.pravatar.cc/150?img=11" alt="Avatar" width={40} height={40} className="w-10 h-10 rounded-full" />
             </div>
             <div>
               <p className="text-[14px] italic text-text-secondary font-medium leading-relaxed">"Upgrading to Premium was a no-brainer. The private SEO prompts saved me 10+ hours a week."</p>

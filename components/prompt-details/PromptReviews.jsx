@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/components/AuthProvider';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function PromptReviews({ reviews, isLocked, promptId }) {
   const { user } = useAuth();
@@ -178,9 +179,11 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
                     <div className="flex items-start sm:items-center justify-between mb-4 flex-col sm:flex-row gap-3">
                       <div className="flex items-center space-x-4">
                         {review.user?.photoURL ? (
-                          <img 
+                          <Image 
                             src={review.user.photoURL} 
                             alt={review.name || review.user.name || 'User'} 
+                            width={48}
+                            height={48}
                             className="w-12 h-12 rounded-full object-cover ring-1 ring-primary/20 shadow-inner flex-shrink-0"
                           />
                         ) : (

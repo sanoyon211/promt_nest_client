@@ -1,5 +1,6 @@
 'use client';
 import { Sparkles, Copy, Calendar, Tag, Bookmark, Flag } from 'lucide-react';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
@@ -132,10 +133,11 @@ export default function PromptHeader({ prompt, promptId, onReportClick }) {
           {/* Black Overlay: Hover korle halka clear hobe */}
           <div className="absolute inset-0 bg-black/50 group-hover:bg-black/20 transition-colors duration-700 z-10 pointer-events-none"></div>
 
-          <img
+          <Image
             src={prompt.thumbnailImage}
             alt={prompt.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           />
         </div>
       )}

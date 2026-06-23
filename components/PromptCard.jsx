@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Copy, Sparkles, ArrowUpRight, Crown } from 'lucide-react';
 
 export default function PromptCard({ prompt }) {
@@ -40,10 +41,11 @@ export default function PromptCard({ prompt }) {
           <div className="w-full h-44 mb-5 rounded-[16px] overflow-hidden flex-shrink-0 relative border border-border/50 bg-background/50 group-hover:border-primary/20 transition-colors duration-500">
             {/* Soft gradient overlay for blending */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent z-10 pointer-events-none"></div>
-            <img 
+            <Image 
               src={prompt.thumbnailImage} 
               alt={prompt.title} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
             />
             {/* Absolute Pro Badge on Image */}
             {isPro && (
@@ -93,9 +95,11 @@ export default function PromptCard({ prompt }) {
         <div className="flex items-center justify-between mt-auto">
           <div className="flex items-center space-x-3">
             {prompt.creator?.photoURL || prompt.creator?.image || prompt.author?.photoURL || prompt.author?.image ? (
-              <img 
+              <Image 
                 src={prompt.creator?.photoURL || prompt.creator?.image || prompt.author?.photoURL || prompt.author?.image} 
                 alt={prompt.creator?.name || prompt.author?.name || 'Creator'} 
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-[12px] object-cover group-hover:scale-105 transition-transform duration-300 shadow-sm border border-border"
               />
             ) : (

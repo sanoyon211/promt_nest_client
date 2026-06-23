@@ -34,7 +34,7 @@
   --color-text-secondary: var(--text-secondary);
   --color-border: var(--border);
   --font-sans: var(--font-inter);
-  --font-heading: var(--font-space-grotesk);
+  --font-heading: var(--font-outfit);
 }
 
 /* Premium Reset & Body Styles */
@@ -57,8 +57,10 @@ body {
 }
 
 /* Typography styles */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading), "Space Grotesk", sans-serif;
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
 }
 
 /* Text Highlight korle jeno professional lage */

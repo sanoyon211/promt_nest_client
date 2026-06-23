@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, Star, Quote } from 'lucide-react';
+import Image from 'next/image';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -210,9 +211,11 @@ export default function Reviews() {
 
                 <div className="flex items-center space-x-3 sm:space-x-4 relative z-10 mt-auto pt-5 sm:pt-6 border-t border-border/50 pointer-events-none">
                   {review.photoURL ? (
-                    <img 
+                    <Image 
                       src={review.photoURL} 
                       alt={review.author} 
+                      width={48}
+                      height={48}
                       className="w-10 sm:w-12 h-10 sm:h-12 rounded-full object-cover ring-1 ring-primary/20 shadow-inner flex-shrink-0"
                     />
                   ) : (

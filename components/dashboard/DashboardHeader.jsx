@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import { Menu, Search, Bell } from 'lucide-react';
 import { useAuth } from '@/components/AuthProvider';
 import { motion } from 'framer-motion';
@@ -55,9 +56,11 @@ export default function DashboardHeader({ setIsSidebarOpen }) {
           {/* User Display Picture Profile Link */}
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-primary font-black border border-primary/20 overflow-hidden shadow-inner flex-shrink-0">
             {(user?.photo || user?.photoURL) ? (
-              <img 
+              <Image 
                 src={user.photo || user.photoURL} 
                 alt={user?.name || 'User Profile Image'} 
+                width={40}
+                height={40}
                 className="w-full h-full object-cover" 
               />
             ) : (
