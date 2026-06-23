@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -7,13 +7,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import MaintenanceGuard from "@/components/MaintenanceGuard";
 import { AuthProvider } from "@/components/AuthProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
 });
 
@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-text-primary selection:bg-primary/20 selection:text-primary min-h-screen flex flex-col`}
+        className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased bg-background text-text-primary selection:bg-primary/20 selection:text-primary min-h-screen flex flex-col`}
       >
         <ThemeProvider
           attribute="class"

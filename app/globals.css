@@ -33,8 +33,8 @@
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-border: var(--border);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-space-grotesk);
 }
 
 /* Premium Reset & Body Styles */
@@ -45,7 +45,7 @@ html {
 body {
   background-color: var(--background);
   color: var(--text-primary);
-  /* Next.js er default var(--font-geist-sans) ba modern sans-serif use kora holo */
+  /* Inter for body text */
   font-family: var(--font-sans), "Inter", system-ui, -apple-system, sans-serif;
   
   /* Text ke clean ar premium dekhabar jonno */
@@ -54,6 +54,11 @@ body {
   
   /* Dark/Light mode switch korle jeno smooth transition hoy */
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Typography styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), "Space Grotesk", sans-serif;
 }
 
 /* Text Highlight korle jeno professional lage */
