@@ -100,7 +100,7 @@ export default function PromptDetailsClient({ promptId }) {
   const isLocked = prompt.isLocked || false;
 
   return (
-    <div className="w-full min-h-screen bg-background relative selection:bg-primary/20 selection:text-primary">
+    <div className="w-full min-h-screen bg-background relative overflow-x-hidden selection:bg-primary/20 selection:text-primary">
       {/* Decorative Background Blur */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 mix-blend-multiply dark:mix-blend-lighten"></div>
 
