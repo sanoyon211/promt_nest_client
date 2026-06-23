@@ -48,7 +48,7 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
   const role = user?.role?.toLowerCase() || 'user';
   const links = NAV_LINKS[role] || NAV_LINKS.user;
 
-  const SidebarContent = () => (
+  const renderSidebarContent = () => (
     <div className="h-full flex flex-col bg-surface border-r border-border/60 w-64 pt-6 pb-6 relative z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-none">
 
       {/* Brand */}
@@ -139,7 +139,7 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
     <>
       {/* Desktop Sidebar (Persistent) */}
       <div className="hidden md:block fixed inset-y-0 left-0 z-40 w-64">
-        <SidebarContent />
+        {renderSidebarContent()}
       </div>
 
       {/* Mobile Sidebar (Animated Drawer) */}
@@ -161,7 +161,7 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="md:hidden fixed inset-y-0 left-0 z-[70] w-64 shadow-2xl"
             >
-              <SidebarContent />
+              {renderSidebarContent()}
             </motion.div>
           </>
         )}

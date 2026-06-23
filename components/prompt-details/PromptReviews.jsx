@@ -7,6 +7,8 @@ import { useAuth } from '@/components/AuthProvider';
 import Link from 'next/link';
 import Image from 'next/image';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 export default function PromptReviews({ reviews, isLocked, promptId }) {
   const { user } = useAuth();
   const [rating, setRating] = useState(5);
@@ -14,8 +16,6 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localReviews, setLocalReviews] = useState(reviews || []);
-
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -196,7 +196,7 @@ export default function PromptReviews({ reviews, isLocked, promptId }) {
                             {review.name || review.user?.name || 'Anonymous User'}
                           </p>
                           <p className="text-[12px] font-medium text-text-secondary mt-0.5">
-                            {new Date(review.date || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} 
+                            {review.date ? new Date(review.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Just now'} 
                           </p>
                         </div>
                       </div>
