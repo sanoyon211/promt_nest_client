@@ -81,7 +81,7 @@ export function AuthProvider({ children }) {
       setIsLoading(true);
       await signInWithPopup(auth, googleProvider);
       toast.success('Logged in with Google!');
-      window.location.href = redirectPath;
+      router.push(redirectPath);
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
         console.error("Google Login Error", err);
@@ -119,7 +119,7 @@ export function AuthProvider({ children }) {
       });
 
       toast.success('Registration successful!');
-      window.location.href = redirectPath;
+      router.push(redirectPath);
     } catch (err) {
       console.error("Registration Error", err);
       toast.error(err.message || 'Registration failed.');
@@ -133,7 +133,7 @@ export function AuthProvider({ children }) {
       setIsLoading(true);
       await signInWithEmailAndPassword(auth, email, password);
       toast.success('Welcome back!');
-      window.location.href = redirectPath;
+      router.push(redirectPath);
     } catch (err) {
       console.error("Login Error", err);
       toast.error('Invalid email or password.');
@@ -149,6 +149,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('access-token');
       document.cookie = "access-token=; path=/; max-age=0; SameSite=Lax";
       setUser(null);
+      toast.success('Logged out successfully!');
       router.push('/login');
     } catch (err) {
       console.error("Logout error", err);

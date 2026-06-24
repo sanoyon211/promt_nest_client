@@ -183,7 +183,7 @@ export default function MyPromptsPage() {
                         {new Date(prompt.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </td>
                       <td className="p-5 pr-8 text-right">
-                        <div className="flex justify-end space-x-2 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="flex justify-end space-x-2 transition-opacity duration-300">
                           <Link 
                             href={user?.role?.toLowerCase() === 'creator' ? '/dashboard/creator' : '/dashboard'}
                             title="View Analytics" 

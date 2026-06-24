@@ -213,7 +213,7 @@ export default function AdminUsersPage() {
                         </div>
                       </td>
                       <td className="p-5 pr-8 text-right">
-                        <div className="flex justify-end opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="flex justify-end transition-opacity duration-300">
                           <button 
                             onClick={() => handleDeleteClick(u)} 
                             title="Permanently Delete User" 

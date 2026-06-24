@@ -114,15 +114,21 @@ function PromptsTable() {
   const toggleFeature = async (id, currentFeatured) => {
     const newFeatured = !currentFeatured;
     try {
-      setPrompts(prompts.map(p => p._id === id ? { ...p, featured: newFeatured } : p));
-      await fetch(`${API_URL}/admin/prompts/${id}/feature`, {
+      const res = await fetch(`${API_URL}/admin/prompts/${id}/feature`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({ featured: newFeatured })
       });
+      
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Failed to update feature status');
+      }
+
+      setPrompts(prompts.map(p => p._id === id ? { ...p, isFeatured: newFeatured } : p));
       toast.success(newFeatured ? 'Prompt featured!' : 'Prompt unfeatured', { position: "bottom-right", theme: "dark" });
     } catch (err) {
-      toast.error('Failed to update feature status', { position: "bottom-right" });
+      toast.error(err.message || 'Failed to update feature status', { position: "bottom-right" });
     }
   };
 
@@ -225,11 +231,11 @@ function PromptsTable() {
                       </td>
                       <td className="p-5 text-center">
                         <button 
-                          onClick={() => toggleFeature(p._id, p.featured)}
-                          className={`p-2.5 rounded-xl transition-all hover:scale-110 active:scale-95 mx-auto flex shadow-sm ${p.featured ? 'bg-amber-400/10 text-amber-500 border border-amber-400/30' : 'bg-background border border-border text-text-secondary/40 hover:text-amber-500 hover:border-amber-500/30'}`}
-                          title={p.featured ? "Remove Feature Status" : "Mark as Featured"}
+                          onClick={() => toggleFeature(p._id, p.isFeatured)}
+                          className={`p-2.5 rounded-xl transition-all hover:scale-110 active:scale-95 mx-auto flex shadow-sm ${p.isFeatured ? 'bg-amber-400/10 text-amber-500 border border-amber-400/30' : 'bg-background border border-border text-text-secondary/40 hover:text-amber-500 hover:border-amber-500/30'}`}
+                          title={p.isFeatured ? "Remove Feature Status" : "Mark as Featured"}
                         >
-                          <Star size={16} className={p.featured ? "fill-current" : ""} />
+                          <Star size={16} className={p.isFeatured ? "fill-current" : ""} />
                         </button>
                       </td>
                       <td className="p-5 pr-8 text-right">
