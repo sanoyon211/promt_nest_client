@@ -3,7 +3,7 @@
 AI Prompt Sharing & Marketplace Platform is a modern, premium web application designed for AI enthusiasts, creators, and developers to discover, share, and monetize high-quality AI prompts. 
 
 ## 🌐 Live URL
-[https://promt-nest-client.vercel.app](https://promt-nest-client.vercel.app) *(Placeholder for production deployment)*
+[https://promptnest-beta.vercel.app](https://promptnest-beta.vercel.app) *(Placeholder for production deployment)*
 
 ## 🎯 Purpose
 With the rapid growth of AI tools like ChatGPT, Midjourney, and Gemini, crafting the perfect prompt has become a highly sought-after skill. This platform serves as a centralized hub where users can:
