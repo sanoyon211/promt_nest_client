@@ -155,7 +155,7 @@ export default function PromptHeader({ prompt, promptId, onReportClick }) {
         </div>
 
         <div className="flex items-center bg-surface px-4 py-2.5 rounded-xl border border-border shadow-sm">
-          Updated <span className="text-text-primary ml-1.5">{prompt.updatedAt ? new Date(prompt.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Just now'}</span>
+          Updated <span className="text-text-primary ml-1.5">{(prompt.updatedAt || prompt.createdAt) ? new Date(prompt.updatedAt || prompt.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Just now'}</span>
         </div>
       </div>
     </div>

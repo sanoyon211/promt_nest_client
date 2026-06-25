@@ -158,12 +158,12 @@ export default function MyReviewsPage() {
                         </div>
                       </td>
                       <td className="p-5 text-text-secondary font-medium">
-                        <div className="truncate max-w-[250px] sm:max-w-xs italic text-[13px] bg-background/50 px-3 py-1.5 rounded-lg border border-border/50 inline-block" title={review.text}>
-                          "{review.text}"
+                        <div className="truncate max-w-[250px] sm:max-w-xs italic text-[13px] bg-background/50 px-3 py-1.5 rounded-lg border border-border/50 inline-block" title={review.comment}>
+                          "{review.comment}"
                         </div>
                       </td>
                       <td className="p-5 text-text-secondary font-medium text-[13px]">
-                        {new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {new Date(review.date || review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </td>
                       <td className="p-5 pr-8 text-right">
                         <div className="flex justify-end space-x-2">

@@ -106,12 +106,37 @@ export default function AllPromptsClient() {
     const fetchPrompts = async () => {
       setLoading(true);
       try {
-        const queryParams = new URLSearchParams(searchParams.toString());
+        const apiParams = new URLSearchParams();
+
+        // Map frontend URL params to backend API params
+        const q = searchParams.get('q');
+        if (q) apiParams.set('search', q);
+
+        const categoryParam = searchParams.get('category');
+        if (categoryParam && categoryParam !== 'All') apiParams.set('category', categoryParam);
+
+        const toolParam = searchParams.get('tool');
+        if (toolParam && toolParam !== 'All') apiParams.set('aiTool', toolParam);
+
+        const levelParam = searchParams.get('level');
+        if (levelParam && levelParam !== 'All') apiParams.set('level', levelParam);
+
+        const sortParam = searchParams.get('sort');
+        if (sortParam === 'Most Popular') {
+          apiParams.set('sort', 'most-popular');
+        } else if (sortParam === 'Most Copied') {
+          apiParams.set('sort', 'most-copied');
+        } else {
+          apiParams.set('sort', 'latest');
+        }
+
+        const pageParam = searchParams.get('page');
+        if (pageParam) apiParams.set('page', pageParam);
 
         // 🚀 Adding Strict Limit of 12 items per page for the backend
-        queryParams.set('limit', '12');
+        apiParams.set('limit', '12');
 
-        const res = await fetch(`${API_URL}/prompts?${queryParams.toString()}`);
+        const res = await fetch(`${API_URL}/prompts?${apiParams.toString()}`);
 
         if (res.ok) {
           const data = await res.json();
